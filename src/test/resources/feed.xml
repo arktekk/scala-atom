@@ -1,0 +1,31 @@
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>urn:uuid:something-random</id>
+  <title>Example list</title>
+  <updated>2011-01-01T08:00:00.00Z</updated>
+  <published>2011-01-01T08:00:00.00Z</published>
+  <link href="http://www.example.com" rel="alternate"/>
+  <author>
+    <name>Example</name>
+  </author>
+  <entry>
+    <id>urn:id:1</id>
+    <title>Item one is here</title>
+    <updated>2011-01-01T08:00:00:00Z</updated>
+    <link href="http://www.example.com/item/1" rel="edit" title="Item One"/>
+    <summary>summary</summary>
+    <content type="text">content</content>
+    <author>
+      <name>Someone</name>
+      <email>test@example.com</email>
+      <url>http://www.example.org</url>
+    </author>
+  </entry>
+  <entry>
+    <id>urn:id:2</id>
+    <title>Item one is here</title>
+    <updated>2011-01-01T08:00:00:00Z</updated>
+    <link href="http://www.example.com/item/2" rel="edit" title="Item One"/>
+    <summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">Hello</div></summary>
+    <content type="application/xhtml+xml" src="http://www.example.com/text"/>
+  </entry>
+</feed>
