@@ -30,6 +30,8 @@ object TextConstruct {
       case TextType.TEXT => Textual((elem \ text).head)
     }
   }
+  
+  def unapply(construct: TextConstruct) = Some((construct.textType, construct.value))
 
   case class Textual(text: String) extends TextConstruct {
     val textType = TextType.TEXT
@@ -51,7 +53,7 @@ object TextConstruct {
     lazy val value = CDATA(html)
   }
 
-  case class Div(elem: Elem) {
+  case class Div private[atom](elem: Elem) {
     require("div" == elem.name)
     def toXML: Elem = elem
   }
