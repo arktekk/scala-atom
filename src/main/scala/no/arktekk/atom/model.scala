@@ -29,7 +29,7 @@ import java.io._
 import io.Source
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 object Atom {
   val namespace = "http://www.w3.org/2005/Atom"

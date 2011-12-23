@@ -22,7 +22,7 @@ import com.codecommit.antixml.QName._
 import com.codecommit.antixml.Selector._
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 sealed trait TextConstruct {
   def textType: TextType

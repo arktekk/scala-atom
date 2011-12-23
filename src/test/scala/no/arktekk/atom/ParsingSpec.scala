@@ -20,7 +20,7 @@ import org.specs2.mutable.Specification
 import io.Source
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 class ParsingSpec extends Specification {
 

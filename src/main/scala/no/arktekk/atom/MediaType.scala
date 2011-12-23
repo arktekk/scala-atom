@@ -17,7 +17,7 @@
 package no.arktekk.atom
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 class MediaType private(val major: String, val minor:String, val params: Map[String, String]) {
   override def toString = "%s/%s".format(major, minor) + params.mkString(";")

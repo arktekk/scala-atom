@@ -19,7 +19,7 @@ package no.arktekk.atom
 import com.codecommit.antixml._
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 trait Extension {
   def namespaced: Namespaced
