@@ -29,6 +29,8 @@ sealed trait TextConstruct {
 
   def value: Node
 
+  def toString: String
+
   def toXML(name: String) = Atom.withChildren(name, Attributes(("type", textType.value)), Group(value))
 }
 
@@ -39,7 +41,7 @@ object TextConstruct {
       case TextType.HTML => HTML((elem \ text).head)
       case TextType.XHTML => XHTML(Div((elem \ "div").head))
       case TextType.TEXT => Textual((elem \ text).head)
-    }
+    }.orElse(Some(Textual((elem \ text).head)))
   }
   
   def unapply(construct: TextConstruct) = Some((construct.textType, construct.value))
@@ -56,12 +58,16 @@ object TextConstruct {
     def textType = TextType.XHTML
 
     lazy val value = div.toXML
+
+    override def toString = value.toString()
   }
 
   case class HTML(html: String) extends TextConstruct {
     def textType = TextType.HTML
 
     lazy val value = CDATA(html)
+
+    override def toString = html
   }
 
   case class Div private[atom](elem: Elem) {

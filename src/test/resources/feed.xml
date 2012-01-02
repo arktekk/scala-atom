@@ -26,7 +26,7 @@
   <entry>
     <id>urn:id:1</id>
     <title>Item one is here</title>
-    <updated>2011-01-01T08:00:00:00Z</updated>
+    <updated>2011-01-01T08:00:00.00Z</updated>
     <link href="http://www.example.com/item/1" rel="edit" title="Item One"/>
     <summary>summary</summary>
     <content type="text">content</content>
@@ -39,7 +39,7 @@
   <entry>
     <id>urn:id:2</id>
     <title>Item one is here</title>
-    <updated>2011-01-01T08:00:00:00Z</updated>
+    <updated>2011-01-01T08:00:00.00Z</updated>
     <link href="http://www.example.com/item/2" rel="edit" title="Item One"/>
     <summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">Hello</div></summary>
     <content type="application/xhtml+xml" src="http://www.example.com/text"/>

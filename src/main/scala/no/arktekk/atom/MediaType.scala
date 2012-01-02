@@ -28,13 +28,18 @@ object MediaType {
   val IMAGE_JPEG = MediaType("image/jpeg")
   val IMAGE_PNG = MediaType("image/png")
 
-  def apply(mt: String): MediaType = {
+  def apply(mt: String): Option[MediaType] = {
     import javax.activation.MimeType
     import scala.collection.JavaConversions._
     val mimeType = new MimeType(mt)
     val names = mimeType.getParameters.getNames.asInstanceOf[java.util.Enumeration[String]]
     val params = names.foldLeft(Map[String, String]())((acc, p) => acc + (p -> mimeType.getParameter(p)))
-    new MediaType(mimeType.getPrimaryType, mimeType.getSubType, params)
+    try {
+      Some(new MediaType(mimeType.getPrimaryType, mimeType.getSubType, params))
+    }
+    catch {
+      case _ => None
+    }
   }
 
   def unapply(mediaType: MediaType) = Some((mediaType.major, mediaType.minor, mediaType.params))

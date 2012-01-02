@@ -49,11 +49,11 @@ object Atom {
     Elem(None, name, attr, namespaces, Group.empty ++ children)
   }
   
-  def parse[A >: Base](src: Source): A = {
+  def parse[A <: Base](src: Source): A = {
     val elem = XML.fromSource(src)
     elem match {
-      case e@Elem(_, "feed", _, _, _) => Feed(e)
-      case e@Elem(_, "entry", _, _, _) => Entry(e)
+      case e@Elem(_, "feed", _, _, _) => Feed(e).asInstanceOf[A]
+      case e@Elem(_, "entry", _, _, _) => Entry(e).asInstanceOf[A]
       case e => throw new IllegalArgumentException("unknown XML here: %s".format(e))
     }
   }
@@ -90,21 +90,21 @@ sealed trait Base extends Extensible {
 
   private[atom] def wrapped: Elem
 
-  def id = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
+  def id: URI = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
 
-  def title = (wrapped \ "title").headOption.flatMap(TextConstruct(_)).get
+  def title: TextConstruct = (wrapped \ "title").headOption.flatMap(TextConstruct(_)).get
 
-  def rights = (wrapped \ "rights").headOption.flatMap(TextConstruct(_))
+  def rights: Option[TextConstruct] = (wrapped \ "rights").headOption.flatMap(TextConstruct(_))
 
-  def updated = (wrapped \ "updated" \ text).headOption.map(dateTimeFormat.parseDateTime(_)).get
+  def updated: DateTime = (wrapped \ "updated" \ text).headOption.map(dateTimeFormat.parseDateTime(_)).get
 
-  def authors = (wrapped \ "author").map(Person(_)).toList
+  def authors: List[Person] = (wrapped \ "author").map(Person(_)).toList
 
-  def contributors = (wrapped \ "contributor").map(Person(_)).toList
+  def contributors: List[Person] = (wrapped \ "contributor").map(Person(_)).toList
 
-  def categories = (wrapped \ "category").map(Category(_)).toList
+  def categories: List[Category] = (wrapped \ "category").map(Category(_)).toList
 
-  def links = (wrapped \ "link").map(Link(_)).toList
+  def links: List[Link] = (wrapped \ "link").map(Link(_)).toList
 
   def toXML: Elem = wrapped
 
@@ -141,9 +141,9 @@ case class Feed private[atom](wrapped: Elem) extends Base {
   
   type A = Feed
 
-  def subtitle = (wrapped \ "subtitle").headOption.flatMap(TextConstruct(_))
+  def subtitle: Option[TextConstruct] = (wrapped \ "subtitle").headOption.flatMap(TextConstruct(_))
 
-  def entries = (wrapped \ "entry").map(Entry(_)).toList
+  def entries: List[Entry] = (wrapped \ "entry").map(Entry(_)).toList
 
   def logo = (wrapped \ "logo" \ text).headOption.map(URI.create(_))
 
@@ -190,11 +190,11 @@ case class Entry private[atom](wrapped: Elem) extends Base {
 
   def copy(elem: Elem) = new Entry(elem)
 
-  def published = (wrapped \ "published" \ text).headOption.map(dateTimeFormat.parseDateTime(_))
+  def published: Option[DateTime] = (wrapped \ "published" \ text).headOption.map(dateTimeFormat.parseDateTime(_))
 
-  def content = (wrapped \ "content").headOption.map(Content(_))
+  def content: Option[Content] = (wrapped \ "content").headOption.flatMap(Content(_))
 
-  def summary = (wrapped \ "summary").headOption.map(Content(_))
+  def summary: Option[Content] = (wrapped \ "summary").headOption.flatMap(Content(_))
 
   def withPublished(published: DateTime) = copy(removeChild("published").copy(children = wrapped.children ++ List(simple("published", dateTimeFormat.print(published)))))
 
@@ -271,7 +271,7 @@ case class Link private[atom](wrapped: Elem) {
 
   def rel = wrapped.attrs.get("rel")
 
-  def mediaType = wrapped.attrs.get("type").map(MediaType(_))
+  def mediaType: Option[MediaType ] = wrapped.attrs.get("type").flatMap(MediaType(_))
 
   def title = wrapped.attrs.get("title")
 }
@@ -294,9 +294,12 @@ sealed trait Content {
 object Content {
 
   def apply(elem: Elem): Option[Content] = {
-    TextConstruct(elem).map(Text(_)).orElse(
-      elem.attrs.get("href").map(x => External(URI.create(x), elem.attrs.get("type").map(MediaType(_))))
-    ).orElse(elem.attrs.get("type").map(MediaType(_)).map(x => Inline(x, elem.children.head.asInstanceOf[Elem])))
+    val mediaType = elem.attrs.get("type").flatMap(MediaType(_))
+    mediaType match {
+      case mt@Some(_) if (elem.attrs.contains("href")) => Some(External(URI.create(elem.attrs("href")), mt))
+      case Some(mt) => Some(Inline(mt, elem.children.head.asInstanceOf[Elem]))
+      case None => TextConstruct(elem).map(Text(_))
+    }
   }
 
   case class Text(text: TextConstruct) extends Content {
