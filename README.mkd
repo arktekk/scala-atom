@@ -3,3 +3,7 @@
 Based on (Anti XML)[http://anti-xml.org]
 
 
+##TODO
+
+Add support for "atom:source"
+Should we have a registry for extensions?
