@@ -204,6 +204,10 @@ case class Category private[atom](wrapped: Elem) extends Extensible {
   def scheme = wrapped.attrs.get("scheme")
   def term = wrapped.attrs.get("term").get
   def label = wrapped.attrs.get("label")
+
+  type A = Category
+
+  def copy(wrapped: Elem) = copy(wrapped = wrapped)
 }
 
 object Category {
@@ -235,6 +239,11 @@ object Generator {
 }
 
 case class Person private[atom](wrapped: Elem) extends Extensible {
+
+  type A = Person
+
+  def copy(wrapped: Elem) = copy(wrapped = wrapped)
+
   def name = (wrapped \ "name" \ text).head
 
   def email = (wrapped \ "email" \ text).headOption
@@ -254,6 +263,11 @@ object Person {
 
 case class Link private[atom](wrapped: Elem) extends Extensible {
   require(wrapped.name == "link")
+
+  type A = Link
+
+  def copy(wrapped: Elem) = copy(wrapped = wrapped)
+
   def href = wrapped.attrs.get("href").map(URI.create(_)).get
 
   def rel = wrapped.attrs.get("rel")

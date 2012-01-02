@@ -2,7 +2,7 @@ package no.arktekk.atom
 
 import org.specs2.mutable.Specification
 import io.Source
-import com.codecommit.antixml.Elem
+import com.codecommit.antixml._
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,8 +22,11 @@ class ExtensionSpec extends Specification {
       val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml")))
       val simple = entry.getExtension[SimpleExtension](Namespaced("urn:ext:ext", "hello"))
       simple mustEqual Some(SimpleExtension((entry.wrapped \ "hello").head.asInstanceOf[Elem]))
+      simple.get.value mustEqual "Hi!"
     }
   }
 }
 
-case class SimpleExtension(wrapped: Elem) extends ElementWrapper(wrapped)
+case class SimpleExtension(override val wrapped: Elem) extends ElementWrapper(wrapped) {
+  def value = (wrapped \ text).head
+}

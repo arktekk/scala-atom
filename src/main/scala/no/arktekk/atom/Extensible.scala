@@ -12,6 +12,8 @@ import com.codecommit.antixml.Elem
  */
 
 trait Extensible {
+  type A <: Extensible
+
   def wrapped: Elem
 
   def getExtension[A <: ElementWrapper](ns: Namespaced)(implicit manifest: Manifest[A]): Option[A] = {
@@ -25,5 +27,11 @@ trait Extensible {
     selected.flatMap {
       case s: Elem => ctor.map(_.newInstance(s).asInstanceOf[A])
     }.toList
+  }
+
+  def copy(wrapped: Elem): A
+
+  def addExtension(wrapper: ElementWrapper): A = {
+    copy(wrapped.copy(children = wrapped.children :+ wrapper.wrapped))
   }
 }

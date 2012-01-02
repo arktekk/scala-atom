@@ -11,6 +11,8 @@ import com.codecommit.antixml._
  */
 
 abstract class ElementWrapper(elem: Elem) {
+  def wrapped = elem
+
   final def getAttribute(name: String) = elem.attrs.get(name)
 
   final def query(name: String): Group[Node] = elem \ name
