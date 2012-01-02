@@ -1,0 +1,5 @@
+#Scala Atom library
+
+Based on (Anti XML)[http://anti-xml.org]
+
+
