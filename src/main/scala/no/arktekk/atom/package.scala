@@ -17,8 +17,27 @@
 package no.arktekk
 
 import java.net.URI
+import com.codecommit.antixml.{Node, Elem, Selector}
 
 package object atom {
   implicit def string2URI(iri: String) : URI = URI.create(iri)
   implicit def string2TextConstruct(text: String) : TextConstruct = TextConstruct.Textual(text)
+
+  def namespaceSelector(namespace: String, element: String): Selector[Elem] = new Selector[Elem] {
+    def apply(node: Node) = node match {
+      case e@Elem(_, _, _, _, _) => e
+      case _ => sys.error("woot?!")
+    }
+
+    def isDefinedAt(node: Node) = node match {
+      case e@Elem(prefix, name, _, scopes, _) =>
+        val x = scopes.find({
+          case (_, `namespace`) => true;
+          case _ => false
+        }).map(_._1)
+        prefix.equals(x)
+      case _ =>
+        false
+    }
+  }
 }

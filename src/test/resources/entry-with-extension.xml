@@ -1,10 +1,10 @@
-<entry xmlns="http://www.w3.org/2005/Atom">
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:ext="urn:ext:ext">
   <id>urn:id:1</id>
   <title>Item one is here</title>
   <updated>2011-01-01T08:00:00.00Z</updated>
   <link href="http://www.example.com/item/1" rel="edit" title="Item One"/>
   <summary>summary</summary>
-  <content type="text">content</content>
+  <ext:hello>Hi!</ext:hello>
   <author>
     <name>Someone</name>
     <email>test@example.com</email>

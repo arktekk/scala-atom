@@ -18,7 +18,6 @@ package no.arktekk.atom
 
 import java.net.URI
 import org.joda.time.DateTime
-import com.codecommit.antixml._
 import collection.immutable.Map
 import java.lang.String
 import org.joda.time.format.DateTimeFormat
@@ -28,6 +27,7 @@ import com.codecommit.antixml.Selector._
 import java.io._
 import io.{Codec, Source}
 import java.nio.charset.Charset
+import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -52,22 +52,11 @@ object Atom {
   def parse[A <: Base](src: Source): A = {
     val elem = XML.fromSource(src)
     elem match {
-      case e@Elem(_, "feed", _, _, _) => Feed(e).asInstanceOf[A]
-      case e@Elem(_, "entry", _, _, _) => Entry(e).asInstanceOf[A]
+      case e@Elem(_, "feed", _, _, _) if (e.scope.find{case (_, ns) => ns == namespace}.isDefined) => Feed(e).asInstanceOf[A]
+      case e@Elem(_, "entry", _, _, _) if (e.scope.find{case (_, ns) => ns == namespace}.isDefined) => Entry(e).asInstanceOf[A]
       case e => throw new IllegalArgumentException("unknown XML here: %s".format(e))
     }
   }
-}
-
-private[atom] sealed trait Extensible
-
-private[atom] sealed trait ExtensibleComponent[A <: Extensible] {
-
-  def findExtension(namespaced: Namespaced): Extension
-
-  def findExtensions(namespaced: Namespaced): List[Extension]
-
-  def addExtension(ex: Extension): A
 }
 
 case class Document[A <: Base](root: A, namespaces: Map[String, String] = Map(("", Atom.namespace))) {
@@ -87,8 +76,6 @@ case class Document[A <: Base](root: A, namespaces: Map[String, String] = Map(("
 sealed trait Base extends Extensible {
 
   type A <: Base
-
-  private[atom] def wrapped: Elem
 
   def id: URI = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
 
@@ -213,7 +200,7 @@ object Entry {
   }
 }
 
-case class Category private[atom](wrapped: Elem) {
+case class Category private[atom](wrapped: Elem) extends Extensible {
   def scheme = wrapped.attrs.get("scheme")
   def term = wrapped.attrs.get("term").get
   def label = wrapped.attrs.get("label")
@@ -247,7 +234,7 @@ object Generator {
   }
 }
 
-case class Person private[atom](wrapped: Elem) {
+case class Person private[atom](wrapped: Elem) extends Extensible {
   def name = (wrapped \ "name" \ text).head
 
   def email = (wrapped \ "email" \ text).headOption
@@ -265,7 +252,7 @@ object Person {
   )
 }
 
-case class Link private[atom](wrapped: Elem) {
+case class Link private[atom](wrapped: Elem) extends Extensible {
   require(wrapped.name == "link")
   def href = wrapped.attrs.get("href").map(URI.create(_)).get
 
