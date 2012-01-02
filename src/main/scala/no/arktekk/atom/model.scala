@@ -26,7 +26,8 @@ import java.util.UUID
 import Atom._
 import com.codecommit.antixml.Selector._
 import java.io._
-import io.Source
+import io.{Codec, Source}
+import java.nio.charset.Charset
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -76,8 +77,8 @@ case class Document[A <: Base](root: A, namespaces: Map[String, String] = Map(("
     copy(root.copy(root.wrapped.copy(scope = ns)), ns)
   }
 
-  def writeTo(writer: Writer)(implicit encoding: String = "UTF-8") {
-    XMLSerializer.apply(encoding = encoding, outputDeclaration = true).serializeDocument(root.toXML, writer)
+  def writeTo(writer: Writer)(implicit codec: Charset = Codec.UTF8) {
+    XMLSerializer(codec.name(), true).serializeDocument(root.toXML, writer)
   }
 
   override def toString = root.toString
@@ -89,19 +90,21 @@ sealed trait Base extends Extensible {
 
   private[atom] def wrapped: Elem
 
+  def id = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
+
   def title = (wrapped \ "title").headOption.flatMap(TextConstruct(_)).get
+
+  def rights = (wrapped \ "rights").headOption.flatMap(TextConstruct(_))
 
   def updated = (wrapped \ "updated" \ text).headOption.map(dateTimeFormat.parseDateTime(_)).get
 
-  def published = (wrapped \ "published" \ text).headOption.map(dateTimeFormat.parseDateTime(_))
-
   def authors = (wrapped \ "author").map(Person(_)).toList
 
+  def contributors = (wrapped \ "contributor").map(Person(_)).toList
+
+  def categories = (wrapped \ "category").map(Category(_)).toList
+
   def links = (wrapped \ "link").map(Link(_)).toList
-
-  def content = (wrapped \ "content").headOption.map(Content(_))
-
-  def summary = (wrapped \ "summary").headOption.map(Content(_))
 
   def toXML: Elem = wrapped
 
@@ -109,15 +112,19 @@ sealed trait Base extends Extensible {
 
   def copy(elem: Elem): A
 
-  def withId(id: IRI) = copy(removeChild("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
+  def withId(id: URI) = copy(removeChild("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
 
-  def withTitle(title: TextConstruct) = copy(removeChild("id").copy(children = wrapped.children ++ List(title.toXML("title"))))
+  def withTitle(title: TextConstruct) = copy(removeChild("title").copy(children = wrapped.children ++ List(title.toXML("title"))))
+
+  def withRights(rights: TextConstruct) = copy(removeChild("rights").copy(children = wrapped.children ++ List(rights.toXML("rights"))))
 
   def withUpdated(updated: DateTime) = copy(removeChild("updated").copy(children = wrapped.children ++ List(simple("updated", dateTimeFormat.print(updated)))))
 
-  def withPublished(published: DateTime) = copy(removeChild("published").copy(children = wrapped.children ++ List(simple("published", dateTimeFormat.print(published)))))
-
   def addAuthor(author: Person) = copy(wrapped.copy(children = wrapped.children ++ List(author.wrapped)))
+
+  def addContributor(contrib: Person) = copy(wrapped.copy(children = wrapped.children ++ List(contrib.wrapped)))
+
+  def addCategory(category: Category) = copy(wrapped.copy(children = wrapped.children ++ List(category.wrapped)))
 
   def addLink(link: Link) = copy(wrapped.copy(children = wrapped.children ++ List(link.wrapped)))
 
@@ -134,7 +141,19 @@ case class Feed private[atom](wrapped: Elem) extends Base {
   
   type A = Feed
 
+  def subtitle = (wrapped \ "subtitle").headOption.flatMap(TextConstruct(_))
+
   def entries = (wrapped \ "entry").map(Entry(_)).toList
+
+  def logo = (wrapped \ "logo" \ text).headOption.map(URI.create(_))
+
+  def icon = (wrapped \ "icon" \ text).headOption.map(URI.create(_))
+
+  def withSubtitle(title: TextConstruct) = copy(removeChild("subtitle").copy(children = wrapped.children ++ List(title.toXML("subtitle"))))
+
+  def withLogo(logo: URI) = copy(removeChild("logo").copy(children = wrapped.children ++ List(simple("logo", logo.toString))))
+
+  def withIcon(icon: URI) = copy(removeChild("icon").copy(children = wrapped.children ++ List(simple("icon", icon.toString))))
 
   def withEntries(entries: Seq[Entry]) = {
     val matcher: PartialFunction[Node, Elem] = {
@@ -152,7 +171,7 @@ case class Feed private[atom](wrapped: Elem) extends Base {
 }
 
 object Feed {
-  def apply(id: IRI, title: TextConstruct, updated: DateTime, author: Person): Feed = {
+  def apply(id: URI, title: TextConstruct, updated: DateTime, author: Person): Feed = {
     val elem = Elem(None, "feed", Attributes(), namespaces, children = Group(
       simple("id", id.toString), title.toXML("title"), simple("updated", dateTimeFormat.print(updated))
     ))
@@ -160,7 +179,7 @@ object Feed {
   }
 
   def apply(title: String, updated: DateTime, author: Person): Feed = {
-    Feed(IRI("urn:uuid:%s".format(UUID.randomUUID().toString)), title, updated, author)
+    Feed(URI.create("urn:uuid:%s".format(UUID.randomUUID().toString)), title, updated, author)
   }
 }
 
@@ -170,6 +189,14 @@ case class Entry private[atom](wrapped: Elem) extends Base {
   type A = Entry
 
   def copy(elem: Elem) = new Entry(elem)
+
+  def published = (wrapped \ "published" \ text).headOption.map(dateTimeFormat.parseDateTime(_))
+
+  def content = (wrapped \ "content").headOption.map(Content(_))
+
+  def summary = (wrapped \ "summary").headOption.map(Content(_))
+
+  def withPublished(published: DateTime) = copy(removeChild("published").copy(children = wrapped.children ++ List(simple("published", dateTimeFormat.print(published)))))
 
   def withSummary(summary: Content) = copy(removeChild("summary").copy(children = wrapped.children ++ List(summary.toXML("summary"))))
 
@@ -181,11 +208,44 @@ case class Entry private[atom](wrapped: Elem) extends Base {
 }
 
 object Entry {
-  def apply(id: IRI, title: String, updated: DateTime): Entry = {
+  def apply(id: URI, title: String, updated: DateTime): Entry = {
     Entry(onlyElementName("entry").copy(children = Group(simple("id", id.toString), simple("title", title), simple("updated", dateTimeFormat.print(updated)))))
   }
 }
 
+case class Category private[atom](wrapped: Elem) {
+  def scheme = wrapped.attrs.get("scheme")
+  def term = wrapped.attrs.get("term").get
+  def label = wrapped.attrs.get("label")
+}
+
+object Category {
+  def apply(scheme: Option[String], term: String, label: Option[String]): Category = {
+    val attrs = new Attributes(
+      Map[QName, String]() ++
+        scheme.map((QName(None, "scheme") -> _.toString)) +
+        ("term" -> term) ++
+        label.map((QName(None, "label") -> _))
+    )
+    Category(onlyElementName("category").copy(attrs = attrs))
+  }
+}
+
+case class Generator private[atom](wrapped: Elem) {
+
+  def uri = wrapped.attrs.get("uri").map(URI.create(_))
+
+  def version = wrapped.attrs.get("version")
+
+  def value = (wrapped \ text).head
+}
+
+object Generator {
+  def apply(uri: Option[URI], version: Option[String], value: String): Generator = {
+    val attr = new Attributes(Map[QName, String]() ++ uri.map((QName(None, "uri") -> _.toString)) ++ version.map((QName(None, "version") -> _)))
+    Generator(simple("generator", value, attr))
+  }
+}
 
 case class Person private[atom](wrapped: Elem) {
   def name = (wrapped \ "name" \ text).head
@@ -225,14 +285,6 @@ object Link {
     val attrs = List[(QName, String)](("href" -> href.toString), ("rel" -> rel)) ++ toAttributes("type", mediaType) ++ toAttributes("title", title)
     Link(onlyElementName("link").copy(attrs = Attributes() ++ attrs))
   }
-}
-
-case class IRI(underlying: URI) {
-  override def toString = underlying.toString
-}
-
-object IRI {
-  def apply(string: String): IRI = IRI(URI.create(string))
 }
 
 sealed trait Content {
