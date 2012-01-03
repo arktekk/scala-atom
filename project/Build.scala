@@ -3,8 +3,9 @@ import sbt.Keys._
 import sbtrelease.Release._
 import sbtrelease.ReleasePart
 import sbtrelease.ReleaseKeys._
+import xml.Group
 
-object AtomClient extends Build {
+object ScalaAtom extends Build {
 
   val antiXMLversion = "0.3"
 
@@ -22,8 +23,8 @@ object AtomClient extends Build {
       name := "scala-atom", 
       libraryDependencies := Seq(
         "joda-time" % "joda-time" % "2.0",
-		"org.joda" % "joda-convert" % "1.1",
-		"com.codecommit" %% "anti-xml" % antiXMLversion,
+	    	"org.joda" % "joda-convert" % "1.1",
+		    "com.codecommit" %% "anti-xml" % antiXMLversion,
         "org.specs2" %% "specs2" % "1.6.1" % "test"
       ),
 
@@ -42,7 +43,59 @@ object AtomClient extends Build {
           setNextVersion,
           commitNextVersion
         )
-      }
-    )
+      },
+    manifestSetting,
+    publishSetting,
+    credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+    ) ++ mavenCentralFrouFrou
+  )
+
+  object Resolvers {
+    val sonatypeNexusSnapshots = "Sonatype Nexus Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+    val sonatypeNexusStaging = "Sonatype Nexus Staging" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+  }
+
+  lazy val manifestSetting = packageOptions <+= (name, version, organization) map {
+    (title, version, vendor) =>
+      Package.ManifestAttributes(
+        "Created-By" -> "Simple Build Tool",
+        "Built-By" -> System.getProperty("user.name"),
+        "Build-Jdk" -> System.getProperty("java.version"),
+        "Specification-Title" -> title,
+        "Specification-Version" -> version,
+        "Specification-Vendor" -> vendor,
+        "Implementation-Title" -> title,
+        "Implementation-Version" -> version,
+        "Implementation-Vendor-Id" -> vendor,
+        "Implementation-Vendor" -> vendor
+      )
+  }
+
+  lazy val publishSetting = publishTo <<= (version) { version: String =>
+    if (version.trim.endsWith("SNAPSHOT"))
+      Some(Resolvers.sonatypeNexusSnapshots)
+    else
+      Some(Resolvers.sonatypeNexusStaging)
+  }
+
+  // Things we care about primarily because Maven Central demands them
+  lazy val mavenCentralFrouFrou = Seq(
+    homepage := Some(new URL("http://github.com/arktekk/scala-atom/")),
+    startYear := Some(2012),
+    licenses := Seq(("Apache 2", new URL("http://www.apache.org/licenses/LICENSE-2.0.txt"))),
+    pomExtra <<= (pomExtra, name, description) {(pom, name, desc) => pom ++ Group(
+      <scm>
+        <url>http://github.com/arktekk/scala-atom</url>
+        <connection>scm:git:git://github.com/arktekk/scala-atom.git</connection>
+        <developerConnection>scm:git:git@github.com:arktekk/scala-atom.git</developerConnection>
+      </scm>
+      <developers>
+        <developer>
+          <id>hamnis</id>
+          <name>Erlend Hamnaberg</name>
+          <url>http://twitter.com/hamnis</url>
+        </developer>
+      </developers>
+    )}
   )
 }
