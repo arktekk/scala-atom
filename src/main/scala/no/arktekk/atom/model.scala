@@ -19,13 +19,12 @@ package no.arktekk.atom
 import java.net.URI
 import org.joda.time.DateTime
 import collection.immutable.Map
-import java.lang.String
 import org.joda.time.format.DateTimeFormat
 import java.util.UUID
 import Atom._
 import com.codecommit.antixml.Selector._
 import java.io._
-import io.{Codec, Source}
+import io.Source
 import java.nio.charset.Charset
 import com.codecommit.antixml._
 
@@ -57,20 +56,6 @@ object Atom {
       case e => throw new IllegalArgumentException("unknown XML here: %s".format(e))
     }
   }
-}
-
-case class Document[A <: Base](root: A, namespaces: Map[String, String] = Map(("", Atom.namespace))) {
-
-  def addNamespace(prefix: String, namespace: String) = {
-    val ns = namespaces + (prefix -> namespace)
-    copy(root.copy(root.wrapped.copy(scope = ns)), ns)
-  }
-
-  def writeTo(writer: Writer)(implicit codec: Charset = Codec.UTF8) {
-    XMLSerializer(codec.name(), true).serializeDocument(root.toXML, writer)
-  }
-
-  override def toString = root.toString
 }
 
 sealed trait Base extends Extensible {
@@ -115,11 +100,39 @@ sealed trait Base extends Extensible {
 
   def addLink(link: Link) = copy(wrapped.copy(children = wrapped.children ++ List(link.wrapped)))
 
+  def addNamespace(prefix: String, namespace: String) = {
+    def nextValidPrefix(prefix: String) = {
+      var i = 1
+      while (wrapped.scope.contains("ns" + i)) {
+        i = i + 1
+      }
+      "ns" + i
+    }
+
+    if (prefix.isEmpty) {
+      val p = nextValidPrefix(prefix)
+      copy(wrapped.copy(scope = wrapped.scope + (p -> namespace)))
+    }
+    else copy(wrapped.copy(scope = wrapped.scope + (prefix -> namespace)))
+  }
+
+  def writeTo(writer: Writer)(implicit charset: Charset) {
+    XMLSerializer(charset.name(), true).serializeDocument(wrapped, writer)
+  }
+
+  def writeTo(stream: OutputStream)(implicit charset: Charset) {
+    writeTo(new OutputStreamWriter(stream, charset))(charset)
+  }
+
+  def writeTo(file: File)(implicit charset: Charset) {
+    writeTo(new FileWriter(file))(charset)
+  }
+
   protected def removeChild(name: String) = {
     val matcher: PartialFunction[Node, Elem] = {
       case x:Elem => x
     }
-    (wrapped \ name).drop(1).unselect.headOption.map(matcher).getOrElse(wrapped)
+    (wrapped \ name).take(0).unselect.headOption.map(matcher).getOrElse(wrapped)
   }
 }
 
@@ -314,5 +327,4 @@ object Content {
   case class External(href: URI, mediaType: Option[MediaType]) extends Content {
     private[atom] def toXML(name: String) = onlyElementName(name).copy(attrs = Attributes(("href" -> href.toString)) ++ mediaType.foldLeft(Map[QName, String]())((acc, mt) => acc + ("type" -> mt.toString)))
   }
-
 }
