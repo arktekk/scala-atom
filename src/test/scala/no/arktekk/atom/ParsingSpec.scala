@@ -34,6 +34,16 @@ class ParsingSpec extends Specification {
       feed.authors.head.name mustEqual "Example"
       feed.entries.length mustEqual 2
     }
+
+    "create a feed from feed-with-non-default-namespace.xml" in {
+      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed-with-non-default-namespace.xml")))
+      feed.id mustEqual URI.create("urn:uuid:something-random")
+      feed.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
+      feed.authors.length mustEqual 1
+      feed.authors.head.name mustEqual "Example"
+      feed.entries.length mustEqual 1
+    }
+
     "create an entry from entry.xml" in {
       val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry.xml")))
       entry.id mustEqual URI.create("urn:id:1")
