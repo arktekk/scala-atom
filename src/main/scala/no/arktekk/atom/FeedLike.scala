@@ -27,16 +27,4 @@ private[atom] trait FeedLike extends AtomLike {
   def withLogo(logo: URI) = copy(removeChild("logo").copy(children = wrapped.children ++ List(simple("logo", logo.toString))))
 
   def withIcon(icon: URI) = copy(removeChild("icon").copy(children = wrapped.children ++ List(simple("icon", icon.toString))))
-
-  def withEntries(entries: Seq[Entry]) = {
-    val matcher: PartialFunction[Node, Elem] = {
-      case x: Elem => x
-    }
-    val toCopy = (wrapped \ "entry").take(0).unselect.headOption.map(matcher).getOrElse(wrapped)
-    copy(toCopy.copy(children = toCopy.children ++ entries.map(_.wrapped)))
-  }
-
-  def addEntry(entry: Entry) = {
-    copy(wrapped.copy(children = wrapped.children ++ List(entry.wrapped)))
-  }
 }
