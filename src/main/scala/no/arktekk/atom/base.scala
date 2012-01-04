@@ -71,7 +71,7 @@ sealed trait Base extends AtomLike {
   }
 }
 
-case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
+case class Feed private[atom](override val wrapped: Elem) extends ElementWrapper(wrapped) with Base with FeedLike {
   require(wrapped.name == "feed")
 
   type A = Feed
@@ -106,7 +106,7 @@ object Feed {
   }
 }
 
-case class Entry private[atom](wrapped: Elem) extends Base with EntryLike {
+case class Entry private[atom](override val wrapped: Elem) extends ElementWrapper(wrapped) with Base with EntryLike {
   require(wrapped.name == "entry")
 
   type A = Entry
