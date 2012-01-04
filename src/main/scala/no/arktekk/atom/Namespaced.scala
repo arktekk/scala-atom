@@ -20,7 +20,9 @@ case class Namespaced(namespace: String, prefix: Option[String], name: String) {
 }
 
 object Namespaced {
-  def apply(namespace:String, prefix: String, name:String): Namespaced = apply(namespace, Some(prefix), name)
-  def apply(namespace:String, qname: QName): Namespaced = apply(namespace, qname.prefix, qname.name)
-  def apply(namespace:String, name: String): Namespaced = apply(namespace, None, name)
+  def apply(namespace: String, prefix: String, name: String): Namespaced = apply(namespace, Some(prefix), name)
+
+  def apply(namespace: String, qname: QName): Namespaced = apply(namespace, qname.prefix, qname.name)
+
+  def apply(namespace: String, name: String): Namespaced = apply(namespace, None, name)
 }

@@ -43,7 +43,7 @@ object TextConstruct {
       case TextType.TEXT => Textual((elem \ text).head)
     }.orElse(Some(Textual((elem \ text).head)))
   }
-  
+
   def unapply(construct: TextConstruct) = Some((construct.textType, construct.value))
 
   case class Textual(text: String) extends TextConstruct {
@@ -72,13 +72,16 @@ object TextConstruct {
 
   case class Div private[atom](elem: Elem) {
     require("div" == elem.name)
+
     def toXML: Elem = elem
   }
 
   object Div {
     val namespace = "http://www.w3.org/1999/xhtml"
+
     def apply(text: String): Div = Div(XML.fromString("<div xmlns=\"%s\">%s</div>".format(namespace, text)))
   }
+
 }
 
 sealed trait TextType {
@@ -104,4 +107,5 @@ object TextType {
   case object TEXT extends TextType {
     val value = "text"
   }
+
 }

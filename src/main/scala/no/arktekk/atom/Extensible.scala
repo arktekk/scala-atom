@@ -16,6 +16,7 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml.Elem
+import Atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
