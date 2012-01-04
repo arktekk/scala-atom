@@ -16,14 +16,38 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml._
+import extension.AtomExtension
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-abstract class ElementWrapper(elem: Elem) {
-  def wrapped = elem
+trait ElementWrapper {
+  type T <: ElementWrapper
 
-  final def getAttribute(name: String) = elem.attrs.get(name)
+  protected def self : T
 
-  final def query(name: String): Group[Node] = elem \ name
+  def wrapped: Elem
+
+  def copy(elem: Elem): T
+  
+  def addChild(w: ElementWrapper) = copy(wrapped.copy(children = wrapped.children ++ List(w.wrapped)))
+  
+  def addChildren[B](ext: AtomExtension[T, B], value: B) : T = {
+    copy(wrapped.copy(children = wrapped.children ++ ext.toElem(value, self).map(_.wrapped)))
+  }
+}
+
+object ElementWrapper {
+  def apply(elem: Elem): ElementWrapper = new BasicElementWrapper(elem)
+  
+  class BasicElementWrapper(elem: Elem) extends ElementWrapper {
+    type T = ElementWrapper
+
+
+    protected val self = this
+
+    def wrapped = elem
+
+    def copy(elem: Elem) = new BasicElementWrapper(elem)
+  }
 }

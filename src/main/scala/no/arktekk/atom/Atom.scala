@@ -76,34 +76,8 @@ object Atom {
         false
     }
   }
+  
+  def prefixAndElementSelector(prefix: String, element: String): Selector[Elem] = {
+    Selector({case e@Elem(Some(`prefix`), `element`, _, _, _) => e})
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -21,20 +21,29 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-class SimpleTextExtension(elem: Elem) extends ElementWrapper(elem) {
+class SimpleTextElementWrapper(elem: Elem) extends ElementWrapper {
+
+  type T = SimpleTextElementWrapper
+
+  protected val self = this
+
+  def wrapped = elem
+
+  def copy(elem: Elem) = new SimpleTextElementWrapper(elem)
+
   def value = (wrapped \ text).head
 
-  def addAttribute(name: QName, value: String) = new SimpleTextExtension(elem.copy(attrs = elem.attrs + (name -> value)))
+  def addAttribute(name: QName, value: String) = copy(elem.copy(attrs = elem.attrs + (name -> value)))
 
-  def removeAttribute(name: QName) = new SimpleTextExtension(elem.copy(attrs = elem.attrs - name))
+  def removeAttribute(name: QName) = copy(elem.copy(attrs = elem.attrs - name))
 
-  def withValue(text: String) = new SimpleTextExtension(elem.copy(children = Group(Text(text))))
+  def withValue(text: String) = copy(elem.copy(children = Group(Text(text))))
 }
 
-object SimpleTextExtension {
-  def apply(namespaced: Namespaced, value: String): SimpleTextExtension = {
-    new SimpleTextExtension(Elem(namespaced.prefix, namespaced.name, Attributes(), namespaced.toMap, Group(Text(value))))
+object SimpleTextElementWrapper {
+  def apply(namespaced: Namespaced, value: String): SimpleTextElementWrapper = {
+    new SimpleTextElementWrapper(Elem(namespaced.prefix, namespaced.name, Attributes(), namespaced.toMap, Group(Text(value))))
   }
 
-  def unapply(e: SimpleTextExtension) = Some(e.wrapped)
+  def unapply(e: SimpleTextElementWrapper) = Some(e.wrapped)
 }

@@ -30,15 +30,15 @@ import com.codecommit.antixml._
  */
 sealed trait Base extends AtomLike {
 
-  type A <: Base
+  type T <: Base
 
-  protected def self: A
+  protected def self: T
 
   override def toString = wrapped.toString()
 
-  def addNamespace(prefix: String, namespace: String): A  = addNamespace((prefix.trim(), namespace.trim()))
+  def addNamespace(prefix: String, namespace: String): T  = addNamespace((prefix.trim(), namespace.trim()))
 
-  def addNamespace(prefixNS: (String, String)): A = {
+  def addNamespace(prefixNS: (String, String)): T = {
     def nextValidPrefix = {
       var i = 1
       while (wrapped.scope.contains("ns" + i)) {
@@ -71,10 +71,10 @@ sealed trait Base extends AtomLike {
   }
 }
 
-case class Feed private[atom](override val wrapped: Elem) extends ElementWrapper(wrapped) with Base with FeedLike {
+case class Feed private[atom](wrapped: Elem) extends ElementWrapper with Base with FeedLike {
   require(wrapped.name == "feed")
 
-  type A = Feed
+  type T = Feed
 
   protected val self = this
 
@@ -106,10 +106,10 @@ object Feed {
   }
 }
 
-case class Entry private[atom](override val wrapped: Elem) extends ElementWrapper(wrapped) with Base with EntryLike {
+case class Entry private[atom](wrapped: Elem) extends ElementWrapper with Base with EntryLike {
   require(wrapped.name == "entry")
 
-  type A = Entry
+  type T = Entry
 
   protected val self = this
 

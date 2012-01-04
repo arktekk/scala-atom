@@ -22,12 +22,14 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Link private[atom](wrapped: Elem) extends Extensible {
+case class Link private[atom](wrapped: Elem) extends ElementWrapper {
   require(wrapped.name == "link")
 
-  type A = Link
+  type T = Link
 
-  def copy(wrapped: Elem) = copy(wrapped = wrapped)
+  protected val self = this
+
+  def copy(wrapped: Elem) = new Link(wrapped)
 
   def href = wrapped.attrs.get("href").map(URI.create(_)).get
 
@@ -36,6 +38,14 @@ case class Link private[atom](wrapped: Elem) extends Extensible {
   def mediaType: Option[MediaType] = wrapped.attrs.get("type").flatMap(MediaType(_))
 
   def title = wrapped.attrs.get("title")
+  
+  def withTitle(title: String) = copy(wrapped.copy(attrs = wrapped.attrs + ("title" -> title)))
+
+  def withHref(href: URI) = copy(wrapped.copy(attrs = wrapped.attrs + ("href" -> href.toString)))
+
+  def withRel(rel: String) = copy(wrapped.copy(attrs = wrapped.attrs + ("rel" -> rel)))
+
+  def withMediaType(mt: MediaType) = copy(wrapped.copy(attrs = wrapped.attrs + ("type" -> mt.toString)))
 }
 
 

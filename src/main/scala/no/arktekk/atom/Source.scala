@@ -20,8 +20,10 @@ import com.codecommit.antixml.Elem
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Source(wrapped: Elem) extends FeedLike {
-  type A = Source
+case class Source(wrapped: Elem) extends FeedLike with ElementWrapper {
+  type T = Source
+
+  protected val self = this
 
   def copy(elem: Elem) = new Source(elem)
 }

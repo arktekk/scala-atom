@@ -23,11 +23,13 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Person private[atom](wrapped: Elem) extends Extensible {
+case class Person private[atom](wrapped: Elem) extends ElementWrapper {
 
-  type A = Person
+  type T = Person
 
-  def copy(wrapped: Elem) = copy(wrapped = wrapped)
+  val self = this
+
+  def copy(elem: Elem) = new Person(elem)
 
   def name = (wrapped \ "name" \ text).head
 

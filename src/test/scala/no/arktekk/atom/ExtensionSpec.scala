@@ -15,9 +15,13 @@
  */
 package no.arktekk.atom
 
+import extension.{SimpleTextElementWrapper, AtomExtension}
 import org.specs2.mutable.Specification
 import io.{Source => IOSource}
 import com.codecommit.antixml._
+import java.net.URI
+import org.joda.time.DateTime
+import Atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -30,13 +34,24 @@ class ExtensionSpec extends Specification {
     }
     "find extension in parsed" in {
       val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml")))
-      val simple = entry.getExtension[SimpleExtension](Namespaced("urn:ext:ext", "hello"))
-      simple mustEqual Some(SimpleExtension((entry.wrapped \ "hello").head.asInstanceOf[Elem]))
-      simple.get.value mustEqual "Hi!"
+      val simple = HelloExtension.fromLike(entry)
+      simple.value mustEqual "Hi!"
+    }
+
+    "Add extension to entry" in {
+      val entry = Entry(URI.create("hellothingy"), "Title", new DateTime())
+      val updatedEntry = entry.addChildren(HelloExtension, Hello("Hi!"))
+      entry must not beTheSameAs(updatedEntry)
+      val simple = HelloExtension.fromLike(updatedEntry)
+      simple.value mustEqual "Hi!"
     }
   }
 }
 
-case class SimpleExtension(override val wrapped: Elem) extends ElementWrapper(wrapped) {
-  def value = (wrapped \ text).head
+case class Hello(value: String)
+
+object HelloExtension extends AtomExtension[Entry, Hello] {
+  def fromLike(like: Entry) = new Hello((like.wrapped \ prefixAndElementSelector("ext", "hello") \ text).head)
+
+  def toElem(a: Hello, e: Entry) = Seq(SimpleTextElementWrapper(Namespaced("urn:ext:ext", "ext", "hello"), a.value))
 }

@@ -23,8 +23,10 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-private[atom] trait AtomLike extends Extensible {
-  type A <: AtomLike
+private[atom] trait AtomLike {
+  type T <: AtomLike
+
+  def wrapped: Elem
 
   def id: URI = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
 
@@ -42,7 +44,7 @@ private[atom] trait AtomLike extends Extensible {
 
   def links: List[Link] = (wrapped \ "link").map(Link(_)).toList
 
-  def copy(elem: Elem): A
+  def copy(elem: Elem): T
 
   def withId(id: URI) = copy(removeChild("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
 
