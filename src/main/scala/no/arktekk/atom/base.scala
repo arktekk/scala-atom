@@ -34,6 +34,8 @@ sealed trait Base extends Extensible {
 
   type A <: Base
 
+  protected def self: A
+
   def id: URI = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
 
   def title: TextConstruct = (wrapped \ "title").headOption.flatMap(TextConstruct(_)).get
@@ -72,20 +74,26 @@ sealed trait Base extends Extensible {
 
   def addLink(link: Link) = copy(wrapped.copy(children = wrapped.children ++ List(link.wrapped)))
 
-  def addNamespace(prefix: String, namespace: String) = {
-    def nextValidPrefix(prefix: String) = {
+  def addNamespace(prefix: String, namespace: String): A  = addNamespace((prefix.trim(), namespace.trim()))
+
+  def addNamespace(prefixNS: (String, String)): A = {
+    def nextValidPrefix = {
       var i = 1
       while (wrapped.scope.contains("ns" + i)) {
         i = i + 1
       }
       "ns" + i
     }
+    val currentNS = wrapped.scope
 
-    if (prefix.isEmpty) {
-      val p = nextValidPrefix(prefix)
-      copy(wrapped.copy(scope = wrapped.scope + (p -> namespace)))
+    prefixNS match {
+      case (x, y) if (!currentNS.filter{case (_, z) => z == y}.isEmpty) => self
+      case ("", y) => {
+        val p = nextValidPrefix
+        copy(wrapped.copy(scope = currentNS + (p -> y)))
+      }
+      case (x, y) => copy(wrapped.copy(scope = currentNS +(x -> y)))
     }
-    else copy(wrapped.copy(scope = wrapped.scope + (prefix -> namespace)))
   }
 
   def writeTo(writer: Writer)(implicit charset: Charset) {
@@ -112,6 +120,8 @@ case class Feed private[atom](wrapped: Elem) extends Base {
   require(wrapped.name == "feed")
 
   type A = Feed
+
+  protected val self = this
 
   def subtitle: Option[TextConstruct] = (wrapped \ "subtitle").headOption.flatMap(TextConstruct(_))
 
@@ -159,6 +169,8 @@ case class Entry private[atom](wrapped: Elem) extends Base {
   require(wrapped.name == "entry")
 
   type A = Entry
+
+  protected val self = this
 
   def copy(elem: Elem) = new Entry(elem)
 

@@ -17,15 +17,9 @@ package no.arktekk.atom
  */
 
 import java.net.URI
-import org.joda.time.DateTime
 import collection.immutable.Map
 import org.joda.time.format.DateTimeFormat
-import java.util.UUID
-import Atom._
-import com.codecommit.antixml.Selector._
-import java.io._
 import io.Source
-import java.nio.charset.Charset
 import com.codecommit.antixml._
 
 /**
