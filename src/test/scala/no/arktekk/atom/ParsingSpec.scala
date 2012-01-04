@@ -17,7 +17,7 @@
 package no.arktekk.atom
 
 import org.specs2.mutable.Specification
-import io.Source
+import io.{Source => IOSource}
 import java.net.URI
 
 /**
@@ -27,7 +27,7 @@ class ParsingSpec extends Specification {
 
   "A parser" should {
     "create a feed from feed.xml" in {
-      val feed : Feed = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/feed.xml")))
+      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed.xml")))
       feed.id mustEqual URI.create("urn:uuid:something-random")
       feed.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
       feed.authors.length mustEqual 1
@@ -35,7 +35,7 @@ class ParsingSpec extends Specification {
       feed.entries.length mustEqual 2
     }
     "create an entry from entry.xml" in {
-      val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/entry.xml")))
+      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry.xml")))
       entry.id mustEqual URI.create("urn:id:1")
       entry.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
       entry.authors.length mustEqual 1

@@ -19,7 +19,7 @@ package no.arktekk.atom
 import java.net.URI
 import collection.immutable.Map
 import org.joda.time.format.DateTimeFormat
-import io.Source
+import io.{Source => IOSource}
 import com.codecommit.antixml._
 
 /**
@@ -42,7 +42,7 @@ object Atom {
     Elem(None, name, attr, namespaces, Group.empty ++ children)
   }
 
-  def parse[A <: Base](src: Source): A = {
+  def parse[A <: Base](src: IOSource): A = {
     val elem = XML.fromSource(src)
     elem match {
       case e@Elem(_, "feed", _, _, _) if (e.scope.find {

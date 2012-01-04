@@ -16,7 +16,7 @@
 package no.arktekk.atom
 
 import org.specs2.mutable.Specification
-import io.Source
+import io.{Source => IOSource}
 import com.codecommit.antixml._
 
 /**
@@ -25,11 +25,11 @@ import com.codecommit.antixml._
 class ExtensionSpec extends Specification {
   "A parser that handles extensions" should {
     "parse correctly" in {
-      val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml")))
+      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml")))
       entry must not be null
     }
     "find extension in parsed" in {
-      val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml")))
+      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml")))
       val simple = entry.getExtension[SimpleExtension](Namespaced("urn:ext:ext", "hello"))
       simple mustEqual Some(SimpleExtension((entry.wrapped \ "hello").head.asInstanceOf[Elem]))
       simple.get.value mustEqual "Hi!"
