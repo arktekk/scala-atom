@@ -1,7 +1,7 @@
 #Scala Atom library
 
 Based on (Anti XML)[http://anti-xml.org]
-
+Uses SBT v0.11.2
 
 ##TODO
 
