@@ -13,7 +13,7 @@ import com.codecommit.antixml.Selector._
  * To change this template use File | Settings | File Templates.
  */
 
-trait EntryLike extends AtomLike {
+private[atom] trait EntryLike extends AtomLike {
   def published: Option[DateTime] = (wrapped \ "published" \ text).headOption.map(dateTimeFormat.parseDateTime(_))
 
   def content: Option[Content] = (wrapped \ "content").headOption.flatMap(Content(_))
