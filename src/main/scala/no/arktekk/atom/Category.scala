@@ -23,15 +23,15 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Category private[atom](wrapped: Elem) extends ElementWrapper {
+  type T = Category
+
+  protected val self = this
+
   def scheme = wrapped.attrs.get("scheme")
 
   def term = wrapped.attrs.get("term").get
 
   def label = wrapped.attrs.get("label")
-
-  type T = Category
-
-  protected val self = this
 
   def copy(elem: Elem) = new Category(elem)
 }
