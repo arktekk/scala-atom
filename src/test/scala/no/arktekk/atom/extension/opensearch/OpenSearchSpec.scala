@@ -2,7 +2,8 @@ package no.arktekk.atom.extension.opensearch
 
 import org.specs2.mutable.Specification
 import io.{Source => IOSource}
-import no.arktekk.atom.{Feed, Atom}
+import no.arktekk.atom.{Person, Feed, Atom}
+import org.joda.time.DateTime
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,6 +23,24 @@ class OpenSearchSpec extends Specification {
     "Find correct extensions" in {
       val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/extensions/opensearch.xml"))).right.get
       ItemsPerPageAtomExtension.fromLike(feed) must be equalTo(Some(10))
+    }
+    "Add extensions" in {
+      val feed : Feed = Feed("Hei og haa", new DateTime(), Person.author("me"))
+      var other = feed.apply(TotalResultsAtomExtension, Some(1))
+
+      feed must not beTheSameAs(other)
+
+      other = feed.apply(StartIndexAtomExtension, Some(1))
+
+      feed must not beTheSameAs(other)
+
+      other = feed.apply(ItemsPerPageAtomExtension, Some(1))
+
+      feed must not beTheSameAs(other)
+
+      other = feed.apply(QueryAtomExtension, Seq(Query(Role.REQUEST)))
+
+      feed must not beTheSameAs(other)
     }
   }
 }
