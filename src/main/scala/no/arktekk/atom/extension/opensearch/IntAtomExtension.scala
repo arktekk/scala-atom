@@ -24,7 +24,7 @@ import com.codecommit.antixml.text
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-class IntAtomExtension(name:String) extends OptionSelectableElementWrapperAtomExtension[FeedLike, Int] {
+private[opensearch] class IntAtomExtension(name:String) extends OptionSelectableElementWrapperAtomExtension[FeedLike, Int] {
   val selector = namespaceSelector(openSearchNamespace, name)
 
   def function = (e) => (e \ text).headOption.map(_.toInt)
