@@ -33,7 +33,11 @@ trait ElementWrapper {
   def addChild(w: ElementWrapper) = copy(wrapped.copy(children = wrapped.children ++ List(w.wrapped)))
   
   def addChildren[B](ext: AtomExtension[T, B], value: B) : T = {
-    copy(wrapped.copy(children = wrapped.children ++ ext.toElem(value, self).map(_.wrapped)))
+    addChildren(ext.toElem(value, self))
+  }
+
+  def addChildren[B](children: Seq[ElementWrapper]) : T = {
+    copy(wrapped.copy(children = wrapped.children ++ children.map(_.wrapped)))
   }
 }
 
