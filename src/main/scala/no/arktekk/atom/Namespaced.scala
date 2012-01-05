@@ -14,6 +14,8 @@ case class Namespaced(namespace: String, prefix: Option[String], name: String) {
   require(namespace != null, "Null namespace not allowed")
   require(name != null, "Null name not allowed")
 
+  def toQName = QName(prefix, name)
+
   def toMap = {
     Map((prefix.getOrElse("") -> namespace))
   }
