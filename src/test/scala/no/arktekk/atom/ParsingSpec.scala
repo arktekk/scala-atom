@@ -27,7 +27,7 @@ class ParsingSpec extends Specification {
 
   "A parser" should {
     "create a feed from feed.xml" in {
-      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed.xml")))
+      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed.xml"))).right.get
       feed.id mustEqual URI.create("urn:uuid:something-random")
       feed.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
       feed.authors.length mustEqual 1
@@ -36,7 +36,7 @@ class ParsingSpec extends Specification {
     }
 
     "create a feed from feed-with-non-default-namespace.xml" in {
-      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed-with-non-default-namespace.xml")))
+      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed-with-non-default-namespace.xml"))).right.get
       feed.id mustEqual URI.create("urn:uuid:something-random")
       feed.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
       feed.authors.length mustEqual 1
@@ -45,7 +45,7 @@ class ParsingSpec extends Specification {
     }
 
     "create an entry from entry.xml" in {
-      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry.xml")))
+      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry.xml"))).right.get
       entry.id mustEqual URI.create("urn:id:1")
       entry.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
       entry.authors.length mustEqual 1
@@ -54,6 +54,12 @@ class ParsingSpec extends Specification {
       person.email mustEqual Some("test@example.com")
       person.url mustEqual Some("http://www.example.org")
       entry.summary.get.asInstanceOf[Content.Text].text.toString mustEqual "summary"
+    }
+
+    "fail with parsing entry-without-namespace-def.xml" in {
+      val ex = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-without-namespace-def.xml"))).left.get
+      ex must not be null
+      ex.getMessage must contain("unknown XML here")
     }
   }
 }

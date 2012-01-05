@@ -1,0 +1,13 @@
+<entry>
+  <id>urn:id:1</id>
+  <title>Item one is here</title>
+  <updated>2011-01-01T08:00:00.00Z</updated>
+  <link href="http://www.example.com/item/1" rel="edit" title="Item One"/>
+  <summary>summary</summary>
+  <content type="text">content</content>
+  <author>
+    <name>Someone</name>
+    <email>test@example.com</email>
+    <url>http://www.example.org</url>
+  </author>
+</entry>

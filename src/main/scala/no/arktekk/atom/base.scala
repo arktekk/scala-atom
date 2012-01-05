@@ -36,6 +36,12 @@ sealed trait Base extends AtomLike {
 
   override def toString = wrapped.toString()
 
+  protected def isValid(elem: Elem, name: String) = elem match {
+    case Elem(None, `name`, _, scope, _) if (!scope.isEmpty) => scope("") == namespace
+    case Elem(Some(ns),`name`, _, scope, _) if (!scope.isEmpty) => scope(ns) == namespace
+    case _ => false
+  }
+
   def addNamespace(prefix: String, namespace: String): T  = addNamespace((prefix.trim(), namespace.trim()))
 
   def addNamespace(prefixNS: (String, String)): T = {
@@ -72,7 +78,7 @@ sealed trait Base extends AtomLike {
 }
 
 case class Feed private[atom](wrapped: Elem) extends ElementWrapper with Base with FeedLike {
-  require(wrapped.name == "feed")
+  require(isValid(wrapped, "feed"))
 
   type T = Feed
 
@@ -107,7 +113,7 @@ object Feed {
 }
 
 case class Entry private[atom](wrapped: Elem) extends ElementWrapper with Base with EntryLike {
-  require(wrapped.name == "entry")
+  require(isValid(wrapped, "entry"))
 
   type T = Entry
 

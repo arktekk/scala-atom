@@ -42,16 +42,21 @@ object Atom {
     Elem(None, name, attr, namespaces, Group.empty ++ children)
   }
 
-  def parse[A <: Base](src: IOSource): A = {
-    val elem = XML.fromSource(src)
-    elem match {
-      case e@Elem(_, "feed", _, _, _) if (e.scope.find {
-        case (_, ns) => ns == namespace
-      }.isDefined) => Feed(e).asInstanceOf[A]
-      case e@Elem(_, "entry", _, _, _) if (e.scope.find {
-        case (_, ns) => ns == namespace
-      }.isDefined) => Entry(e).asInstanceOf[A]
-      case e => throw new IllegalArgumentException("unknown XML here: %s".format(e))
+  def parse[A <: Base](src: IOSource): Either[Exception, A] = {
+    try {
+      val elem = XML.fromSource(src)
+      elem match {
+        case e@Elem(_, "feed", _, _, _) if (e.scope.find {
+          case (_, ns) => ns == namespace
+        }.isDefined) => Right(Feed(e).asInstanceOf[A])
+        case e@Elem(_, "entry", _, _, _) if (e.scope.find {
+          case (_, ns) => ns == namespace
+        }.isDefined) => Right(Entry(e).asInstanceOf[A])
+        case e => Left(new IllegalArgumentException("unknown XML here: %s".format(e)))
+      }
+    }
+    catch {
+      case e: Exception => Left(e)
     }
   }
 
@@ -61,12 +66,12 @@ object Atom {
 
   def namespaceSelector(namespace: String, element: String): Selector[Elem] = new Selector[Elem] {
     def apply(node: Node) = node match {
-      case e@Elem(_, _, _, _, _) => e
+      case e: Elem => e
       case _ => sys.error("woot?!")
     }
 
     def isDefinedAt(node: Node) = node match {
-      case e@Elem(prefix, name, _, scopes, _) =>
+      case e@Elem(prefix, `element`, _, scopes, _) =>
         val x = scopes.find({
           case (_, `namespace`) => true;
           case _ => false
@@ -76,7 +81,8 @@ object Atom {
         false
     }
   }
-  
+
+  //TODO: Remove this when AntiXML Fixes mapping based on namespaces.
   def prefixAndElementSelector(prefix: String, element: String): Selector[Elem] = {
     Selector({case e@Elem(Some(`prefix`), `element`, _, _, _) => e})
   }

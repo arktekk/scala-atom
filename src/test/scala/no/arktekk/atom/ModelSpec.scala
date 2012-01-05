@@ -3,6 +3,7 @@ package no.arktekk.atom
 import org.specs2.mutable.Specification
 import java.net.URI
 import org.joda.time.DateTime
+import com.codecommit.antixml.{Group, Attributes, Elem}
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,6 +29,9 @@ class ModelSpec extends Specification {
       val scope2 = entryWitchShouldBeTheSame.wrapped.scope
 
       scope1 should beTheSameAs(scope2)
+    }
+    "fail create when someone has created something weird" in {
+      Entry(Elem(None, "entry", Attributes(), Map(), Group.empty)) must throwA[IllegalArgumentException]
     }
   }
 }
