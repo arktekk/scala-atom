@@ -23,11 +23,7 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-private[atom] trait AtomLike {
-  type T <: AtomLike
-
-  def wrapped: Elem
-
+private[atom] trait AtomLike extends ElementWrapper {
   def id: URI = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
 
   def title: TextConstruct = (wrapped \ "title").headOption.flatMap(TextConstruct(_)).get
@@ -43,8 +39,6 @@ private[atom] trait AtomLike {
   def categories: List[Category] = (wrapped \ "category").map(Category(_)).toList
 
   def links: List[Link] = (wrapped \ "link").map(Link(_)).toList
-
-  def copy(elem: Elem): T
 
   def withId(id: URI) = copy(removeChild("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
 

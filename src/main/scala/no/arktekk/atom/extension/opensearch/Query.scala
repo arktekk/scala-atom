@@ -4,7 +4,7 @@ import java.util.Locale
 import java.nio.charset.Charset
 import no.arktekk.atom.extension.AtomExtension
 import com.codecommit.antixml.{Group, Attributes, Elem}
-import no.arktekk.atom.{Atom, ElementWrapper, Base}
+import no.arktekk.atom.{FeedLike, Atom, ElementWrapper, Base}
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,8 +65,8 @@ object Query {
   }
 }
 
-object QueryAtomExtension extends AtomExtension[Base, Seq[Query]] {
-  def fromLike(like: Base) = (like.wrapped \ Atom.namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
+object QueryAtomExtension extends AtomExtension[FeedLike, Seq[Query]] {
+  def fromLike(like: FeedLike) = (like.wrapped \ Atom.namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
 
   def toElem(a: Seq[Query], wrapper: ElementWrapper) = a.map(_.toElem).map(ElementWrapper(_))
 }

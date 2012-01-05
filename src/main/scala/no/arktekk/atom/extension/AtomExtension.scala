@@ -20,6 +20,7 @@ import no.arktekk.atom.ElementWrapper
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
+ * @author Trygve Laugst&oslash;l<trygvis@inamo.no>
  */
 trait AtomExtension[Like, A] {
   def fromLike(like: Like): A
@@ -60,4 +61,3 @@ object AtomExtension {
     def toElem(t: (A, B, C, D, E), wrapper: ElementWrapper): Seq[ElementWrapper] = a.toElem(t._1, wrapper) ++ b.toElem(t._2, wrapper) ++ c.toElem(t._3, wrapper) ++ d.toElem (t._4, wrapper) ++ e.toElem (t._5, wrapper)
   }
 }
-
