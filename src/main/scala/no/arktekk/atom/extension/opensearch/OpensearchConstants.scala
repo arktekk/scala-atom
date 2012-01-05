@@ -15,21 +15,12 @@
  */
 package no.arktekk.atom.extension.opensearch
 
-import no.arktekk.atom.Atom._
-import no.arktekk.atom.extension.opensearch.OpensearchConstants._
-import no.arktekk.atom.extension.{OptionSelectableElementWrapperAtomExtension, SimpleTextElementWrapper}
-import no.arktekk.atom.{FeedLike, Namespaced}
-import com.codecommit.antixml.text
-
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-class IntAtomExtension(name:String) extends OptionSelectableElementWrapperAtomExtension[FeedLike, Int] {
-  val selector = namespaceSelector(openSearchNamespace, name)
+object OpensearchConstants {
+  val openSearchNamespace = "http://a9.com/-/spec/opensearch/1.1/"
 
-  def function = (e) => (e \ text).headOption.map(_.toInt)
+  val defaultPrefix = "os"
 
-  def toElem(a: Option[Int]) = {
-    a.map(x => SimpleTextElementWrapper(Namespaced(openSearchNamespace, defaultPrefix, name), x.toString)).toSeq
-  }
 }

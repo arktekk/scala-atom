@@ -40,7 +40,7 @@ class ExtensionSpec extends Specification {
 
     "Add extension to entry" in {
       val entry = Entry(URI.create("hellothingy"), "Title", new DateTime())
-      val updatedEntry = entry.addChildren(HelloExtension, Hello("Hi!"))
+      val updatedEntry = entry.apply(HelloExtension, Hello("Hi!"))
       entry must not beTheSameAs(updatedEntry)
       val simple = HelloExtension.fromLike(updatedEntry)
       simple.value mustEqual "Hi!"
@@ -53,5 +53,5 @@ case class Hello(value: String)
 object HelloExtension extends AtomExtension[Entry, Hello] {
   def fromLike(like: Entry) = new Hello((like.wrapped \ namespaceSelector("urn:ext:ext", "hello") \ text).head)
 
-  def toElem(a: Hello, e: ElementWrapper) = Seq(SimpleTextElementWrapper(Namespaced("urn:ext:ext", "ext", "hello"), a.value))
+  def toElem(a: Hello) = Seq(SimpleTextElementWrapper(Namespaced("urn:ext:ext", "ext", "hello"), a.value))
 }

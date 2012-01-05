@@ -1,19 +1,30 @@
+/*
+ * Copyright 2011 Arktekk AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package no.arktekk.atom.extension.opensearch
 
 import java.util.Locale
 import java.nio.charset.Charset
 import no.arktekk.atom.extension.AtomExtension
 import com.codecommit.antixml.{Group, Attributes, Elem}
-import no.arktekk.atom.{FeedLike, Atom, ElementWrapper, Base}
+import no.arktekk.atom.{FeedLike, Atom, ElementWrapper}
+import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 
 /**
- * Created by IntelliJ IDEA.
- * User: maedhros
- * Date: 1/5/12
- * Time: 9:31 AM
- * To change this template use File | Settings | File Templates.
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-
 case class Query(role: Role, attributes: Attributes = Attributes(), namespaces: Map[String, String] = Map((defaultPrefix -> openSearchNamespace))) {
   def title = attributes.get("title")
 
@@ -68,7 +79,7 @@ object Query {
 object QueryAtomExtension extends AtomExtension[FeedLike, Seq[Query]] {
   def fromLike(like: FeedLike) = (like.wrapped \ Atom.namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
 
-  def toElem(a: Seq[Query], wrapper: ElementWrapper) = a.map(_.toElem).map(ElementWrapper(_))
+  def toElem(a: Seq[Query]) = a.map(_.toElem).map(ElementWrapper(_))
 }
 
 class Role(val name: String) {
