@@ -42,26 +42,34 @@ sealed trait Base extends AtomLike {
     case _ => false
   }
 
+  def addNamespaces(namespaces: Map[String, String]): T  = {
+    if (namespaces.isEmpty) self
+    else {
+      def nextValidPrefix = {
+        var i = 1
+        while (wrapped.scope.contains("ns" + i)) {
+          i = i + 1
+        }
+        "ns" + i
+      }
+      var currentNS = wrapped.scope
+
+      namespaces.foreach{
+        case (x, y) if (!currentNS.filter{case (_, z) => z == y}.isEmpty) =>
+        case ("", y) => {
+          val p = nextValidPrefix
+          currentNS = currentNS + (p -> y)
+        }
+        case (x, y) => currentNS = currentNS + (x -> y)
+      }
+      if (currentNS == wrapped.scope) self else copy(wrapped.copy(scope = currentNS))
+    }
+  }
+
   def addNamespace(prefix: String, namespace: String): T  = addNamespace((prefix.trim(), namespace.trim()))
 
   def addNamespace(prefixNS: (String, String)): T = {
-    def nextValidPrefix = {
-      var i = 1
-      while (wrapped.scope.contains("ns" + i)) {
-        i = i + 1
-      }
-      "ns" + i
-    }
-    val currentNS = wrapped.scope
-
-    prefixNS match {
-      case (x, y) if (!currentNS.filter{case (_, z) => z == y}.isEmpty) => self
-      case ("", y) => {
-        val p = nextValidPrefix
-        copy(wrapped.copy(scope = currentNS + (p -> y)))
-      }
-      case (x, y) => copy(wrapped.copy(scope = currentNS +(x -> y)))
-    }
+    addNamespaces(Map(prefixNS))
   }
 
   def writeTo(writer: Writer)(implicit charset: Charset) {
