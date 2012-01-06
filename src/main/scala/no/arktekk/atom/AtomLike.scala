@@ -24,29 +24,31 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 private[atom] trait AtomLike extends ElementWrapper {
-  def id: URI = (wrapped \ "id" \ text).headOption.map(URI.create(_)).get
+  protected val atomSelector = namespaceSelector(Atom.namespace, _ : String)
 
-  def title: TextConstruct = (wrapped \ "title").headOption.flatMap(TextConstruct(_)).get
+  def id: URI = (wrapped \ atomSelector("id") \ text).headOption.map(URI.create(_)).get
 
-  def rights: Option[TextConstruct] = (wrapped \ "rights").headOption.flatMap(TextConstruct(_))
+  def title: TextConstruct = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_)).get
 
-  def updated: DateTime = (wrapped \ "updated" \ text).headOption.map(dateTimeFormat.parseDateTime(_)).get
+  def rights: Option[TextConstruct] = (wrapped \ atomSelector("rights")).headOption.flatMap(TextConstruct(_))
 
-  def authors: List[Person] = (wrapped \ "author").map(Person(_)).toList
+  def updated: DateTime = (wrapped \ atomSelector("updated") \ text).headOption.map(dateTimeFormat.parseDateTime(_)).get
 
-  def contributors: List[Person] = (wrapped \ "contributor").map(Person(_)).toList
+  def authors: List[Person] = (wrapped \ atomSelector("author")).map(Person(_)).toList
 
-  def categories: List[Category] = (wrapped \ "category").map(Category(_)).toList
+  def contributors: List[Person] = (wrapped \ atomSelector("contributor")).map(Person(_)).toList
 
-  def links: List[Link] = (wrapped \ "link").map(Link(_)).toList
+  def categories: List[Category] = (wrapped \ atomSelector("category")).map(Category(_)).toList
 
-  def withId(id: URI) = copy(removeChild("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
+  def links: List[Link] = (wrapped \ atomSelector("link")).map(Link(_)).toList
 
-  def withTitle(title: TextConstruct) = copy(removeChild("title").copy(children = wrapped.children ++ List(title.toXML("title"))))
+  def withId(id: URI) = copy(removeChildren("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
 
-  def withRights(rights: TextConstruct) = copy(removeChild("rights").copy(children = wrapped.children ++ List(rights.toXML("rights"))))
+  def withTitle(title: TextConstruct) = copy(removeChildren("title").copy(children = wrapped.children ++ List(title.toXML("title"))))
 
-  def withUpdated(updated: DateTime) = copy(removeChild("updated").copy(children = wrapped.children ++ List(simple("updated", dateTimeFormat.print(updated)))))
+  def withRights(rights: TextConstruct) = copy(removeChildren("rights").copy(children = wrapped.children ++ List(rights.toXML("rights"))))
+
+  def withUpdated(updated: DateTime) = copy(removeChildren("updated").copy(children = wrapped.children ++ List(simple("updated", dateTimeFormat.print(updated)))))
 
   def addAuthor(author: Person) = copy(wrapped.copy(children = wrapped.children ++ List(author.wrapped)))
 
@@ -56,11 +58,8 @@ private[atom] trait AtomLike extends ElementWrapper {
 
   def addLink(link: Link) = copy(wrapped.copy(children = wrapped.children ++ List(link.wrapped)))
 
-  protected def removeChild(name: String) = {
-    val matcher: PartialFunction[Node, Elem] = {
-      case x: Elem => x
-    }
-    (wrapped \ name).take(0).unselect.headOption.map(matcher).getOrElse(wrapped)
+  protected def removeChildren(name: String): Elem = {
+    val zipper = (wrapped \ atomSelector(name)).take(0)
+    zipper.unselect.headOption.map(_.asInstanceOf[Elem]).getOrElse(wrapped)
   }
-
 }

@@ -95,10 +95,7 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
   def copy(elem: Elem) = new Feed(elem)
 
   def withEntries(entries: Seq[Entry]) = {
-    val matcher: PartialFunction[Node, Elem] = {
-      case x: Elem => x
-    }
-    val toCopy = (wrapped \ "entry").take(0).unselect.headOption.map(matcher).getOrElse(wrapped)
+    val toCopy = removeChildren("entry")
     copy(toCopy.copy(children = toCopy.children ++ entries.map(_.wrapped)))
   }
 

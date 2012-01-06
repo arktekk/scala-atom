@@ -18,25 +18,24 @@ package no.arktekk.atom
 import org.joda.time.DateTime
 import no.arktekk.atom.Atom._
 import com.codecommit.antixml._
-import com.codecommit.antixml.Selector._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 trait EntryLike extends AtomLike {
-  def published: Option[DateTime] = (wrapped \ "published" \ text).headOption.map(dateTimeFormat.parseDateTime(_))
+  def published: Option[DateTime] = (wrapped \ atomSelector("published") \ text).headOption.map(dateTimeFormat.parseDateTime(_))
 
-  def content: Option[Content] = (wrapped \ "content").headOption.flatMap(Content(_))
+  def content: Option[Content] = (wrapped \ atomSelector("content")).headOption.flatMap(Content(_))
 
-  def summary: Option[Content] = (wrapped \ "summary").headOption.flatMap(Content(_))
+  def summary: Option[Content] = (wrapped \ atomSelector("summary")).headOption.flatMap(Content(_))
 
-  def withPublished(published: DateTime) = copy(removeChild("published").copy(children = wrapped.children ++ List(simple("published", dateTimeFormat.print(published)))))
+  def withPublished(published: DateTime) = copy(removeChildren("published").copy(children = wrapped.children ++ List(simple("published", dateTimeFormat.print(published)))))
 
-  def withSummary(summary: Content) = copy(removeChild("summary").copy(children = wrapped.children ++ List(summary.toXML("summary"))))
+  def withSummary(summary: Content) = copy(removeChildren("summary").copy(children = wrapped.children ++ List(summary.toXML("summary"))))
 
-  def withContent(content: Content) = copy(removeChild("content").copy(children = wrapped.children ++ List(content.toXML("content"))))
+  def withContent(content: Content) = copy(removeChildren("content").copy(children = wrapped.children ++ List(content.toXML("content"))))
 
-  def removeContent() = copy(removeChild("content"))
+  def removeContent() = copy(removeChildren("content"))
 
-  def removeSummary() = copy(removeChild("summary"))
+  def removeSummary() = copy(removeChildren("summary"))
 }
