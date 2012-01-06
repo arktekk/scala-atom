@@ -21,24 +21,24 @@ import no.arktekk.atom.{ElementWrapper}
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait SelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends AtomExtension[A, B] {
-  def selector: Selector[Elem]
-  def function: (Elem) => B
+trait SelectableElementWrapperAtomExtension[A <: ElementWrapper, B, C] extends AtomExtension[A, C] {
+  protected def selector: Selector[Elem]
+  protected def function: (Elem) => B
 
-  protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => B): B
+  protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => B): C
 
   def fromLike(like: A) = select(like.wrapped, selector, function)
 }
 
-trait OptionSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends SelectableElementWrapperAtomExtension[A, Option[B]] {
+trait OptionSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends SelectableElementWrapperAtomExtension[A, B, Option[B]] {
 
-  override protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => Option[B]): Option[B] = {
-    (elem \ selector).headOption.flatMap(f)
+  override protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => B): Option[B] = {
+    (elem \ selector).headOption.map(f)
   }
 }
 
-trait SeqSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends SelectableElementWrapperAtomExtension[A, Seq[B]] {
-  override protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => Seq[B]): Seq[B] = {
-    (elem \ selector).flatMap(f)
+trait SeqSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends SelectableElementWrapperAtomExtension[A, B, Seq[B]] {
+  override protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => B): Seq[B] = {
+    (elem \ selector).map(f)
   }
 }

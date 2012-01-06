@@ -22,23 +22,24 @@ class OpenSearchSpec extends Specification {
 
     "Find correct extensions" in {
       val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/extensions/opensearch.xml"))).right.get
-      ItemsPerPageAtomExtension.fromLike(feed) must be equalTo(Some(10))
+      OpenSearchResponseAtomExtension.fromLike(feed).itemsPerPage must be equalTo(Some(10))
     }
     "Add extensions" in {
       val feed : Feed = Feed("Hei og haa", new DateTime(), Person.author("me"))
-      var other = feed.apply(TotalResultsAtomExtension, Some(1))
+
+      var other = feed.apply(OpenSearchResponseAtomExtension, OpenSearchResponse(totalResults = Some(1)))
 
       feed must not beTheSameAs(other)
 
-      other = feed.apply(StartIndexAtomExtension, Some(1))
+      other = feed.apply(OpenSearchResponseAtomExtension, OpenSearchResponse(totalResults = Some(1)))
 
       feed must not beTheSameAs(other)
 
-      other = feed.apply(ItemsPerPageAtomExtension, Some(1))
+      other = feed.apply(OpenSearchResponseAtomExtension, OpenSearchResponse(totalResults = Some(1)))
 
       feed must not beTheSameAs(other)
 
-      other = feed.apply(QueryAtomExtension, Seq(Query(Role.REQUEST)))
+      other = feed.apply(OpenSearchResponseAtomExtension, OpenSearchResponse(Seq(Query(Role.REQUEST))))
 
       feed must not beTheSameAs(other)
     }

@@ -76,12 +76,6 @@ object Query {
   }
 }
 
-object QueryAtomExtension extends AtomExtension[FeedLike, Seq[Query]] {
-  def fromLike(like: FeedLike) = (like.wrapped \ Atom.namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
-
-  def toElem(a: Seq[Query]) = a.map(_.toElem).map(ElementWrapper(_))
-}
-
 class Role(val name: String) {
   override def hashCode() = name.hashCode()
 

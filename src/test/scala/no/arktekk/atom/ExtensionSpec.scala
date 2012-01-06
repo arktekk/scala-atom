@@ -53,5 +53,5 @@ case class Hello(value: String)
 object HelloExtension extends AtomExtension[Entry, Hello] {
   def fromLike(like: Entry) = new Hello((like.wrapped \ namespaceSelector("urn:ext:ext", "hello") \ text).head)
 
-  def toElem(a: Hello) = Seq(SimpleTextElementWrapper(Namespaced("urn:ext:ext", "ext", "hello"), a.value))
+  def toElem(a: Hello, w: ElementWrapper) = Seq(SimpleTextElementWrapper(Namespaced("urn:ext:ext", "ext", "hello"), a.value))
 }

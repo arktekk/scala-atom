@@ -18,18 +18,18 @@ package no.arktekk.atom.extension.opensearch
 import no.arktekk.atom.Atom._
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 import no.arktekk.atom.extension.{OptionSelectableElementWrapperAtomExtension, SimpleTextElementWrapper}
-import no.arktekk.atom.{FeedLike, Namespaced}
 import com.codecommit.antixml.text
+import no.arktekk.atom.{ElementWrapper, FeedLike, Namespaced}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 private[opensearch] class IntAtomExtension(name:String) extends OptionSelectableElementWrapperAtomExtension[FeedLike, Int] {
-  val selector = namespaceSelector(openSearchNamespace, name)
+  protected val selector = namespaceSelector(openSearchNamespace, name)
 
-  def function = (e) => (e \ text).headOption.map(_.toInt)
+  protected def function = (e) => (e \ text).headOption.map(_.toInt).get
 
-  def toElem(a: Option[Int]) = {
+  def toElem(a: Option[Int], w: ElementWrapper) = {
     a.map(x => SimpleTextElementWrapper(Namespaced(openSearchNamespace, defaultPrefix, name), x.toString)).toSeq
   }
 }
