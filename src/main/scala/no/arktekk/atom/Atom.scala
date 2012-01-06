@@ -76,7 +76,7 @@ object Atom {
           case (_, `namespace`) => true;
           case _ => false
         }).map(_._1)
-        prefix.equals(x)
+        prefix.orElse(Some("")).equals(x)
       case _ =>
         false
     }
