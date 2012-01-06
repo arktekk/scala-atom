@@ -63,7 +63,7 @@ object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearc
     OpenSearchResponse(queries, numbers._1, numbers._2, numbers._3)
   }
 
-  def toElem(a: OpenSearchResponse, wrapper: ElementWrapper) = {
-    a.queries.map(_.toElem).map(ElementWrapper(_)) ++ numberExt.toElem((a.totalResults, a.itemsPerPage, a.startIndex), wrapper)
+  def toChildren(a: OpenSearchResponse, wrapper: ElementWrapper) = {
+    a.queries.map(_.toElem).map(ElementWrapper(_)) ++ numberExt.toChildren((a.totalResults, a.itemsPerPage, a.startIndex), wrapper)
   }
 }

@@ -16,7 +16,7 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml._
-import extension.AtomExtension
+import extension.{AtomExtension}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -33,7 +33,14 @@ trait ElementWrapper {
   def addChild(w: ElementWrapper) = copy(wrapped.copy(children = wrapped.children ++ List(w.wrapped)))
   
   def apply[A >: T, B](ext: AtomExtension[A, B], value: B) : T = {
-    addChildren(ext.toElem(value, self))
+    val applied = updateAttributes(ext.toAttributes(value))
+    addChildren(ext.toChildren(value, applied))
+  }
+  private def updateAttributes(attrs: Seq[NamespacedAttribute]): T = {
+    val fold = attrs.foldLeft((Map[String, String](), Map[QName, String]())){
+      case ((x,y),z) => (x ++ z.ns.toMap) -> (y + (z.ns.toQName -> z.value))
+    }
+    copy(wrapped.copy(scope = wrapped.scope ++ fold._1, attrs = wrapped.attrs ++ fold._2))
   }
 
   def addChildren[B](children: Seq[ElementWrapper]) : T = {

@@ -29,7 +29,7 @@ private[opensearch] class IntAtomExtension(name:String) extends OptionSelectable
 
   protected def function = (e) => (e \ text).headOption.map(_.toInt).get
 
-  def toElem(a: Option[Int], w: ElementWrapper) = {
+  def toChildren(a: Option[Int], w: ElementWrapper) = {
     a.map(x => SimpleTextElementWrapper(Namespaced(openSearchNamespace, defaultPrefix, name), x.toString)).toSeq
   }
 }
