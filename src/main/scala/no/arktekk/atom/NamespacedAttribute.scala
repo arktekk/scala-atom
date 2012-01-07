@@ -16,7 +16,13 @@
 
 package no.arktekk.atom
 
+
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class NamespacedAttribute(ns: Namespaced, value: String)
+case class NamespacedAttribute(ns: NamespacedName, value: String)
+
+object NamespacedAttribute {
+  def apply(name: String, value: String): NamespacedAttribute = apply(NamespacedName(name), value)
+  def apply(ns: String, prefix: String, name: String, value: String): NamespacedAttribute = apply(NamespacedName(ns, prefix, name), value)
+}

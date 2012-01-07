@@ -29,7 +29,7 @@ class ParsingSpec extends Specification {
     "create a feed from feed.xml" in {
       val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed.xml"))).right.get
       feed.id mustEqual URI.create("urn:uuid:something-random")
-      feed.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
+      feed.updated mustEqual Atom.parseDateTime("2011-01-01T08:00:00.00Z")
       feed.authors.length mustEqual 1
       feed.authors.head.name mustEqual "Example"
       feed.entries.length mustEqual 2
@@ -38,7 +38,7 @@ class ParsingSpec extends Specification {
     "create a feed from feed-with-non-default-namespace.xml" in {
       val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/feed-with-non-default-namespace.xml"))).right.get
       feed.id mustEqual URI.create("urn:uuid:something-random")
-      feed.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
+      feed.updated mustEqual Atom.parseDateTime("2011-01-01T08:00:00.00Z")
       feed.authors.length mustEqual 1
       feed.authors.head.name mustEqual "Example"
       feed.entries.length mustEqual 1
@@ -47,7 +47,7 @@ class ParsingSpec extends Specification {
     "create an entry from entry.xml" in {
       val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry.xml"))).right.get
       entry.id mustEqual URI.create("urn:id:1")
-      entry.updated mustEqual Atom.dateTimeFormat.parseDateTime("2011-01-01T08:00:00.00Z")
+      entry.updated mustEqual Atom.parseDateTime("2011-01-01T08:00:00.00Z")
       entry.authors.length mustEqual 1
       val person: Person = entry.authors.head
       person.name mustEqual "Someone"

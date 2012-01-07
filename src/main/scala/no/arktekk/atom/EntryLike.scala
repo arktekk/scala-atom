@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 trait EntryLike extends AtomLike {
-  def published: Option[DateTime] = (wrapped \ atomSelector("published") \ text).headOption.map(dateTimeFormat.parseDateTime(_))
+  def published: Option[DateTime] = (wrapped \ atomSelector("published") \ text).headOption.map(parseDateTime(_))
 
   def content: Option[Content] = (wrapped \ atomSelector("content")).headOption.flatMap(Content(_))
 
   def summary: Option[Content] = (wrapped \ atomSelector("summary")).headOption.flatMap(Content(_))
 
-  def withPublished(published: DateTime) = copy(removeChildren("published").copy(children = wrapped.children ++ List(simple("published", dateTimeFormat.print(published)))))
+  def withPublished(published: DateTime) = copy(removeChildren("published").copy(children = wrapped.children ++ List(simple("published", dateTimeToString(published)))))
 
   def withSummary(summary: Content) = copy(removeChildren("summary").copy(children = wrapped.children ++ List(summary.toXML("summary"))))
 

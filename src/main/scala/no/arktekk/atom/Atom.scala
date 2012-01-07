@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012 Arktekk AS
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package no.arktekk.atom
 
 /*
@@ -18,9 +34,10 @@ package no.arktekk.atom
 
 import java.net.URI
 import collection.immutable.Map
-import org.joda.time.format.DateTimeFormat
 import io.{Source => IOSource}
 import com.codecommit.antixml._
+import org.joda.time.DateTime
+import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -28,7 +45,30 @@ import com.codecommit.antixml._
 object Atom {
   val namespace = "http://www.w3.org/2005/Atom"
   val namespaces: Map[String, String] = Map(("", namespace))
-  val dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SS'Z'").withZoneUTC()
+  private val dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC()
+  private val dateTimeFormatNoMillis = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC()
+
+  def parseDateTime(input: String) = {
+    val formatters = List(dateTimeFormat, dateTimeFormatNoMillis)
+
+    def format(formatter: DateTimeFormatter): Either[Exception, DateTime] = {
+      try {
+        Right(formatter.parseDateTime(input))
+      }
+      catch {
+        case e: Exception => Left(e)
+      }
+    }
+
+    val parser = formatters.map(format(_))
+    val right = parser.find(_.isRight)
+    right.getOrElse(Left(throw new IllegalArgumentException(input + "Not a valid Atom date"))) match {
+      case Right(e) => e
+      case Left(e) => throw e
+    }
+  }
+  
+  def dateTimeToString(dateTime: DateTime) = dateTimeFormat.print(dateTime)
 
   private[atom] def onlyElementName(name: String) = {
     Elem(None, name, Attributes(), namespaces, Group.empty)

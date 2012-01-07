@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
 object Feed {
   def apply(id: URI, title: TextConstruct, updated: DateTime, author: Person): Feed = {
     val elem = Elem(None, "feed", Attributes(), namespaces, children = Group(
-      simple("id", id.toString), title.toXML("title"), simple("updated", dateTimeFormat.print(updated))
+      simple("id", id.toString), title.toXML("title"), simple("updated", dateTimeToString(updated))
     ))
     Feed(elem).addAuthor(author)
   }
@@ -130,6 +130,6 @@ case class Entry private[atom](wrapped: Elem) extends Base with EntryLike {
 
 object Entry {
   def apply(id: URI, title: String, updated: DateTime): Entry = {
-    Entry(onlyElementName("entry").copy(children = Group(simple("id", id.toString), simple("title", title), simple("updated", dateTimeFormat.print(updated)))))
+    Entry(onlyElementName("entry").copy(children = Group(simple("id", id.toString), simple("title", title), simple("updated", dateTimeToString(updated)))))
   }
 }

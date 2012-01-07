@@ -16,44 +16,32 @@
 
 package no.arktekk.atom.extension.thr
 
-import no.arktekk.atom.extension.AtomExtension
 import org.joda.time.DateTime
-import com.codecommit.antixml.{QName, Elem}
 import no.arktekk.atom._
+import extension.AtomExtension
 import no.arktekk.atom.Atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 object AtomLinkThreadingExtension extends AtomExtension[Link, AtomThreading] {
-  val count = Namespaced("http://purl.org/syndication/thread/1.0", "thr", "count")
-  val updated = Namespaced("http://purl.org/syndication/thread/1.0", "thr", "updated")
+  val count = NamespacedName(ThreadingConstants.ns, ThreadingConstants.prefix, "count")
+  val updated = NamespacedName(ThreadingConstants.ns, ThreadingConstants.prefix, "updated")
 
   def fromLike(like: Link) = {
-    val c = like.wrapped.attrs.get(count.toQName).map(_.toInt)
-    val u = like.wrapped.attrs.get(updated.toQName).map(dateTimeFormat.parseDateTime(_))
+    val c = like.wrapped.attrs.get(count.qName).map(_.toInt)
+    val u = like.wrapped.attrs.get(updated.qName).map(parseDateTime(_))
     AtomThreading(c, u)
   }
 
 
   override def toAttributes(a: AtomThreading) = {
     a.count.map(x => NamespacedAttribute(count, x.toString)).toSeq ++
-    a.updated.map(x => NamespacedAttribute(updated, dateTimeFormat.print(x))).toSeq
+      a.updated.map(x => NamespacedAttribute(updated, dateTimeToString(x))).toSeq
   }
 
   def toChildren(a: AtomThreading, wrapper: ElementWrapper) = Nil
 }
-/*
-object InReplyToExtensionEntry extends AtomExtension[Entry, InReplyTo] {
-
-}*/
 
 case class AtomThreading(count: Option[Int] = None, updated: Option[DateTime] = None)
 
-/*case class InReplyTo(wrapped: Elem) extends ElementWrapper {
-  type T = InReplyTo
-
-  protected def self = this
-
-  def copy(elem: Elem) = new InReplyTo(elem)
-}*/

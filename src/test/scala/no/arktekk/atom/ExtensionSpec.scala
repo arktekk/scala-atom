@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,5 +53,5 @@ case class Hello(value: String)
 object HelloExtension extends AtomExtension[Entry, Hello] {
   def fromLike(like: Entry) = new Hello((like.wrapped \ namespaceSelector("urn:ext:ext", "hello") \ text).head)
 
-  def toChildren(a: Hello, w: ElementWrapper) = Seq(SimpleTextElementWrapper(Namespaced("urn:ext:ext", "ext", "hello"), a.value))
+  def toChildren(a: Hello, w: ElementWrapper) = Seq(SimpleTextElementWrapper(NamespacedName("urn:ext:ext", "ext", "hello"), a.value))
 }

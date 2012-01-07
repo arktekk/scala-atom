@@ -15,8 +15,7 @@
  */
 package no.arktekk.atom.extension
 
-import com.codecommit.antixml.{Attributes, Elem}
-import no.arktekk.atom.{NamespacedAttribute, Namespaced, ElementWrapper}
+import no.arktekk.atom.{NamespacedAttribute, ElementWrapper}
 
 
 /**
@@ -74,5 +73,4 @@ object AtomExtension {
     override def toAttributes(t: (A, B, C, D, E)) = a.toAttributes(t._1) ++ b.toAttributes(t._2) ++ c.toAttributes(t._3) ++ d.toAttributes(t._4) ++ e.toAttributes(t._5)
   }
 }
-
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package no.arktekk.atom.extension
 
-import no.arktekk.atom.{Namespaced, ElementWrapper}
+import no.arktekk.atom.{NamespacedName, ElementWrapper}
 import com.codecommit.antixml._
 
 /**
@@ -41,8 +41,8 @@ class SimpleTextElementWrapper(elem: Elem) extends ElementWrapper {
 }
 
 object SimpleTextElementWrapper {
-  def apply(namespaced: Namespaced, value: String): SimpleTextElementWrapper = {
-    new SimpleTextElementWrapper(Elem(namespaced.prefix, namespaced.name, Attributes(), namespaced.toMap, Group(Text(value))))
+  def apply(nsn: NamespacedName, value: String): SimpleTextElementWrapper = {
+    new SimpleTextElementWrapper(Elem(nsn.prefix, nsn.name, Attributes(), nsn.toMap, Group(Text(value))))
   }
 
   def unapply(e: SimpleTextElementWrapper) = Some(e.wrapped)

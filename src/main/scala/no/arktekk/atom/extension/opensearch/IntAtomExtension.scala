@@ -19,7 +19,7 @@ import no.arktekk.atom.Atom._
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 import no.arktekk.atom.extension.{OptionSelectableElementWrapperAtomExtension, SimpleTextElementWrapper}
 import com.codecommit.antixml.text
-import no.arktekk.atom.{ElementWrapper, FeedLike, Namespaced}
+import no.arktekk.atom.{ElementWrapper, FeedLike, NamespacedName}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -30,6 +30,6 @@ private[opensearch] class IntAtomExtension(name:String) extends OptionSelectable
   protected def function = (e) => (e \ text).headOption.map(_.toInt).get
 
   def toChildren(a: Option[Int], w: ElementWrapper) = {
-    a.map(x => SimpleTextElementWrapper(Namespaced(openSearchNamespace, defaultPrefix, name), x.toString)).toSeq
+    a.map(x => SimpleTextElementWrapper(NamespacedName(openSearchNamespace, defaultPrefix, name), x.toString)).toSeq
   }
 }

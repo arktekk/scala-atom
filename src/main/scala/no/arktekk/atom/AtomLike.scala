@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ private[atom] trait AtomLike extends ElementWrapper {
 
   def rights: Option[TextConstruct] = (wrapped \ atomSelector("rights")).headOption.flatMap(TextConstruct(_))
 
-  def updated: DateTime = (wrapped \ atomSelector("updated") \ text).headOption.map(dateTimeFormat.parseDateTime(_)).get
+  def updated: DateTime = (wrapped \ atomSelector("updated") \ text).headOption.map(parseDateTime(_)).get
 
   def authors: List[Person] = (wrapped \ atomSelector("author")).map(Person(_)).toList
 
@@ -48,7 +48,7 @@ private[atom] trait AtomLike extends ElementWrapper {
 
   def withRights(rights: TextConstruct) = copy(removeChildren("rights").copy(children = wrapped.children ++ List(rights.toXML("rights"))))
 
-  def withUpdated(updated: DateTime) = copy(removeChildren("updated").copy(children = wrapped.children ++ List(simple("updated", dateTimeFormat.print(updated)))))
+  def withUpdated(updated: DateTime) = copy(removeChildren("updated").copy(children = wrapped.children ++ List(simple("updated", dateTimeToString(updated)))))
 
   def addAuthor(author: Person) = copy(wrapped.copy(children = wrapped.children ++ List(author.wrapped)))
 
@@ -62,4 +62,17 @@ private[atom] trait AtomLike extends ElementWrapper {
     val zipper = (wrapped \ atomSelector(name)).take(0)
     zipper.unselect.headOption.map(_.asInstanceOf[Elem]).getOrElse(wrapped)
   }
+  
+  def linkByRel(rel: String) = links.find(_.rel == Some(rel))
+
+  def linksByType(mt: MediaType) = links.filter(_.mediaType == Some(mt))
+
+  def authorByName(name: String) = authors.find(_.name == name)
+
+  def contributorByName(name: String) = contributors.find(_.name == name)
+
+  def categoriesByScheme(scheme: String) = categories.filter(_.scheme == Some(scheme))
+
+  def categoryBySchemeAndTerm(scheme: String, term: String) = categories.find(x => x.scheme == Some(scheme) && x.term == term)
+
 }
