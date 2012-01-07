@@ -36,9 +36,12 @@ trait ElementWrapper {
     val applied = updateAttributes(ext.toAttributes(value))
     addChildren(ext.toChildren(value, applied))
   }
+
+  def extract[A >: T, B](ext: AtomExtension[A, B]): B = ext.fromLike(self)
+
   private def updateAttributes(attrs: Seq[NamespacedAttribute]): T = {
     val fold = attrs.foldLeft((Map[String, String](), Map[QName, String]())){
-      case ((x,y),z) => (x ++ z.ns.toMap) -> (y + (z.ns.toQName -> z.value))
+      case ((x,y),z) => (x ++ z.ns.toMap) -> (y + (z.ns.qName -> z.value))
     }
     copy(wrapped.copy(scope = wrapped.scope ++ fold._1, attrs = wrapped.attrs ++ fold._2))
   }
