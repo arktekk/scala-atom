@@ -19,7 +19,7 @@ package no.arktekk.atom
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-class MediaType private(val major: String, val minor: String, val params: Map[String, String]) {
+case class MediaType private(major: String, minor: String, params: Map[String, String] = Map.empty) {
   override def toString = "%s/%s".format(major, minor) + params.mkString(";")
 }
 
@@ -27,6 +27,9 @@ object MediaType {
   val ALL = MediaType("*/*")
   val IMAGE_JPEG = MediaType("image/jpeg")
   val IMAGE_PNG = MediaType("image/png")
+  val ATOM = MediaType("application/atom+xml")
+  val CATEGORY = MediaType("application/atomcat+xml")
+  val SERVICE = MediaType("application/atomsvc+xml")
 
   def apply(mt: String): Option[MediaType] = {
     import javax.activation.MimeType
@@ -41,6 +44,4 @@ object MediaType {
       case _ => None
     }
   }
-
-  def unapply(mediaType: MediaType) = Some((mediaType.major, mediaType.minor, mediaType.params))
 }
