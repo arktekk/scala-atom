@@ -42,7 +42,7 @@ trait AtomExtension[Like, A] {
 }
 
 object AtomExtension {
-  def apply[Like <: ElementWrapper, A, B](a: AtomExtension[Like, A], b: AtomExtension[Like, B]): AtomExtension[Like, (A, B)] = new AtomExtension[Like, (A, B)] {
+  def apply[Like, A, B](a: AtomExtension[Like, A], b: AtomExtension[Like, B]): AtomExtension[Like, (A, B)] = new AtomExtension[Like, (A, B)] {
     def fromLike(like: Like) = (a.fromLike(like), b.fromLike(like))
 
     def toChildren(t: (A, B), parent: ElementWrapper): Seq[ElementWrapper] = a.toChildren(t._1, parent) ++ b.toChildren(t._2, parent)
@@ -50,7 +50,7 @@ object AtomExtension {
     override def toAttributes(t: (A, B)) = a.toAttributes(t._1) ++ b.toAttributes(t._2)
   }
 
-  def apply[Like <: ElementWrapper, A, B, C](a: AtomExtension[Like, A], b: AtomExtension[Like, B], c: AtomExtension[Like, C]): AtomExtension[Like, (A, B, C)] = new AtomExtension[Like, (A, B, C)] {
+  def apply[Like, A, B, C](a: AtomExtension[Like, A], b: AtomExtension[Like, B], c: AtomExtension[Like, C]): AtomExtension[Like, (A, B, C)] = new AtomExtension[Like, (A, B, C)] {
     def fromLike(like: Like) = (a.fromLike(like), b.fromLike(like), c.fromLike(like))
     
     def toChildren(t: (A, B, C), parent: ElementWrapper): Seq[ElementWrapper] = a.toChildren(t._1, parent) ++ b.toChildren(t._2, parent) ++ c.toChildren(t._3, parent)
@@ -58,7 +58,7 @@ object AtomExtension {
     override def toAttributes(t: (A, B, C)) = a.toAttributes(t._1) ++ b.toAttributes(t._2) ++ c.toAttributes(t._3)
   }
 
-  def apply[Like <: ElementWrapper, A, B, C, D](a: AtomExtension[Like, A], b: AtomExtension[Like, B], c: AtomExtension[Like, C], d: AtomExtension[Like, D]): AtomExtension[Like, (A, B, C, D)] = new AtomExtension[Like, (A, B, C, D)] {
+  def apply[Like, A, B, C, D](a: AtomExtension[Like, A], b: AtomExtension[Like, B], c: AtomExtension[Like, C], d: AtomExtension[Like, D]): AtomExtension[Like, (A, B, C, D)] = new AtomExtension[Like, (A, B, C, D)] {
     def fromLike(like: Like) = (a.fromLike(like), b.fromLike(like), c.fromLike(like), d.fromLike(like))
 
     def toChildren(t: (A, B, C, D), parent: ElementWrapper): Seq[ElementWrapper] = a.toChildren(t._1, parent) ++ b.toChildren(t._2, parent) ++ c.toChildren(t._3, parent) ++ d.toChildren (t._4, parent)
@@ -66,7 +66,7 @@ object AtomExtension {
     override def toAttributes(t: (A, B, C, D)) = a.toAttributes(t._1) ++ b.toAttributes(t._2) ++ c.toAttributes(t._3) ++ d.toAttributes(t._4)
   }
 
-  def apply[Like <: ElementWrapper, A, B, C, D, E](a: AtomExtension[Like, A], b: AtomExtension[Like, B], c: AtomExtension[Like, C], d: AtomExtension[Like, D], e: AtomExtension[Like, E]): AtomExtension[Like, (A, B, C, D, E)] = new AtomExtension[Like, (A, B, C, D, E)] {
+  def apply[Like, A, B, C, D, E](a: AtomExtension[Like, A], b: AtomExtension[Like, B], c: AtomExtension[Like, C], d: AtomExtension[Like, D], e: AtomExtension[Like, E]): AtomExtension[Like, (A, B, C, D, E)] = new AtomExtension[Like, (A, B, C, D, E)] {
     def fromLike(like: Like) = (a.fromLike(like), b.fromLike(like), c.fromLike(like), d.fromLike(like), e.fromLike(like))
 
     def toChildren(t: (A, B, C, D, E), parent: ElementWrapper): Seq[ElementWrapper] = a.toChildren(t._1, parent) ++ b.toChildren(t._2, parent) ++ c.toChildren(t._3, parent) ++ d.toChildren(t._4, parent) ++ e.toChildren(t._5, parent)
