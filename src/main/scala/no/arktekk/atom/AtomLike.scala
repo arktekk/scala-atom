@@ -56,7 +56,9 @@ private[atom] trait AtomLike extends ElementWrapper {
 
   def addCategory(category: Category) = copy(wrapped.copy(children = wrapped.children ++ List(category.wrapped)))
 
-  def addLink(link: Link) = copy(wrapped.copy(children = wrapped.children ++ List(link.wrapped)))
+  def addLink(link: Link) = addLinks(Seq(link))
+
+  def addLinks(toAdd: Seq[Link]) = copy(wrapped.copy(children = wrapped.children ++ toAdd.map(_.wrapped)))
 
   protected def removeChildren(name: String): Elem = {
     val zipper = (wrapped \ atomSelector(name)).take(0)
