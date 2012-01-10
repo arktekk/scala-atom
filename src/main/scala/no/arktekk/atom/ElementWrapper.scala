@@ -50,18 +50,32 @@ trait ElementWrapper {
     if (children.isEmpty) self
     else copy(wrapped.copy(children = wrapped.children ++ children.map(_.wrapped)))
   }
+
+  def withAttribute(name: String, value: Any): T = withAttribute(QName(None, name), value)
+
+  def withAttribute(name: QName, value: Any): T = copy(wrapped.copy(attrs = wrapped.attrs + (name -> value.toString)))
 }
 
 object ElementWrapper {
   def apply(elem: Elem): ElementWrapper = new BasicElementWrapper(elem)
-  
-  class BasicElementWrapper(elem: Elem) extends ElementWrapper {
-    type T = ElementWrapper
+}
 
-    protected val self = this
+case class BasicElementWrapper(elem: Elem) extends ElementWrapper {
+  type T = ElementWrapper
 
-    def wrapped = elem
+  protected val self = this
 
-    def copy(elem: Elem) = new BasicElementWrapper(elem)
+  def wrapped = elem
+
+  def copy(elem: Elem) = new BasicElementWrapper(elem)
+}
+
+object BasicElementWrapper {
+  def withName(name: NamespacedName): BasicElementWrapper = {
+    apply(Elem(name.prefix, name.name, Attributes(), name.toMap, Group.empty))
+  }
+
+  def withNameAndAttributes(name: NamespacedName, attr: Attributes = Attributes()): BasicElementWrapper = {
+    apply(Elem(name.prefix, name.name, Attributes(), name.toMap, Group.empty))
   }
 }
