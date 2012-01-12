@@ -31,7 +31,7 @@ class SimpleTextElementWrapper(elem: Elem) extends ElementWrapper {
 
   def copy(elem: Elem) = new SimpleTextElementWrapper(elem)
 
-  def value = (wrapped \ text).head
+  def value: String = (wrapped \ text).head
 
   def addAttribute(name: QName, value: String) = copy(elem.copy(attrs = elem.attrs + (name -> value)))
 
