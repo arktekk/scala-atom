@@ -23,7 +23,7 @@ import no.arktekk.atom.Atom._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-class MediaContentAtomExtension extends SeqSelectableElementWrapperAtomExtension[FeedLike, MediaContent] {
+object MediaContentAtomExtension extends SeqSelectableElementWrapperAtomExtension[FeedLike, MediaContent] {
   protected def selector = namespaceSelector(MediaRSSConstants.ns, "content")
 
   protected def function = (e) => MediaContent(e)
