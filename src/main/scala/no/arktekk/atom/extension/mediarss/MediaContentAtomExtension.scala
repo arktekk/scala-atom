@@ -17,13 +17,13 @@
 package no.arktekk.atom.extension.mediarss
 
 import no.arktekk.atom.extension.SeqSelectableElementWrapperAtomExtension
-import no.arktekk.atom.{ElementWrapper, FeedLike}
 import no.arktekk.atom.Atom._
+import no.arktekk.atom.{AtomLike, ElementWrapper}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-object MediaContentAtomExtension extends SeqSelectableElementWrapperAtomExtension[FeedLike, MediaContent] {
+object MediaContentAtomExtension extends SeqSelectableElementWrapperAtomExtension[AtomLike, MediaContent] {
   protected def selector = namespaceSelector(MediaRSSConstants.ns, "content")
 
   protected def function = (e) => MediaContent(e)
