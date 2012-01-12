@@ -26,7 +26,7 @@ import no.arktekk.atom.{NamespacedName, ElementWrapper, EntryLike}
 class PointAtomExtension(format: String = "###.#####") extends OptionSelectableElementWrapperAtomExtension[EntryLike, Point] {
   protected def selector = namespaceSelector(GeorssConstants.ns, "point")
 
-  protected def function = (e) => Point(new SimpleTextElementWrapper(e).value).get
+  protected def function = (e) => Point(new SimpleTextElementWrapper(e).value.get).get
 
   def toChildren(a: Option[Point], parent: ElementWrapper) = a.map( p =>
     SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "point"), p.toValue(format))
