@@ -75,7 +75,7 @@ object BasicElementWrapper {
     apply(Elem(name.prefix, name.name, Attributes(), name.toMap, Group.empty))
   }
 
-  def withNameAndAttributes(name: NamespacedName, attr: Attributes = Attributes()): BasicElementWrapper = {
-    apply(Elem(name.prefix, name.name, Attributes(), name.toMap, Group.empty))
+  def withNameAndAttributes(name: NamespacedName, attrs: Attributes = Attributes()): BasicElementWrapper = {
+    apply(Elem(name.prefix, name.name, attrs, name.toMap, Group.empty))
   }
 }

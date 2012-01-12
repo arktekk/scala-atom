@@ -97,10 +97,14 @@ case class MediaContent(wrapped: Elem) extends ElementWrapper {
 }
 
 object MediaContent {
+  def apply(): MediaContent = {
+    val wrapper = BasicElementWrapper.withName(NamespacedName(MediaRSSConstants.ns, MediaRSSConstants.prefix, "content"))
+    MediaContent(wrapper.wrapped)
+  }
+
   def image(href: URI, mediaType: Option[MediaType]): MediaContent = {
-    val attrs = Map((QName(None, "url") -> href.toString)) ++
-      mediaType.map((QName(None, "type") -> _.toString)).toSeq +
-      (QName(None, "medium") -> Medium.IMAGE.toString)
+    val attrs = Map((QName(None, "url") -> href.toString), (QName(None, "medium") -> Medium.IMAGE.toString)) ++
+      mediaType.map((QName(None, "type") -> _.toString)).toSeq
     val wrapper = BasicElementWrapper.withNameAndAttributes(
       NamespacedName(MediaRSSConstants.ns, MediaRSSConstants.prefix, "content"),
       new Attributes(attrs))
