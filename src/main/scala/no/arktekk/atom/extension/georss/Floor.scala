@@ -1,3 +1,5 @@
+package no.arktekk.atom.extension.georss
+
 /*
  * Copyright 2012 Arktekk AS
  *
@@ -14,31 +16,12 @@
  * limitations under the License.
  */
 
-package no.arktekk.atom.extension.georss
-
-import java.text.DecimalFormat
-import no.arktekk.atom.NamespacedName
 import no.arktekk.atom.extension.SimpleTextElementWrapper
+import no.arktekk.atom.NamespacedName
 
 /**
- * http://georss.org/simple
- *
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Point(lat: Double, lon: Double) {
-
-  def toValue(format: String) = {
-    val formatter = new DecimalFormat(format)
-    "%s %s".format(formatter.format(lat), formatter.format(lon))
-  }
-
-  def toXML(format: String) = {
-    SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "point"), p.toValue(format))
-  }
-}
-
-object Point {
-  def apply(input: String): Option[Point] = {
-    Some(input).map(_.split(" ", 2)).filter(_.length == 2).map{case Array(x, y) => Point(x.toDouble, y.toDouble)}
-  }
+case class Floor(num: Int) {
+  def toXML = SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "floor"), num.toString)
 }
