@@ -16,23 +16,22 @@
 
 package no.arktekk.atom.extension.georss
 
-import java.text.DecimalFormat
+import org.specs2.mutable.Specification
 
 /**
- * http://georss.org/simple
- *
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Point(lat: Double, lon: Double) {
-
-  def toValue(format: String) = {
-    val formatter = new DecimalFormat(format)
-    "%s %s".format(formatter.format(lat), formatter.format(lon))
-  }
-}
-
-object Point {
-  def apply(input: String): Option[Point] = {
-    Some(input).map(_.split(" ", 2)).filter(_.length == 2).map{case Array(x, y) => Point(x.toDouble, y.toDouble)}
-  }
+class LineSpec extends Specification {
+  "A line" should {
+    "be generated correctly" in {
+      val expected = "45.256 -110.45 46.46 -109.48 43.84 -109.86"
+      val line = Line(Point(45.256, -110.45), Point(46.46, -109.48), Point(43.84, -109.86))
+      line.toValue("##.#####") must beEqualTo(expected)
+    }
+    "be parsed correctly" in {
+      val input = "45.256 -110.45 46.46 -109.48 43.84 -109.86"
+      val expected = Line(Point(45.256, -110.45), Point(46.46, -109.48), Point(43.84, -109.86))
+      Line(input) should beEqualTo(Some(expected))
+    }
+  } 
 }

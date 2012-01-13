@@ -16,23 +16,25 @@
 
 package no.arktekk.atom.extension.georss
 
-import java.text.DecimalFormat
-
 /**
  * http://georss.org/simple
  *
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Point(lat: Double, lon: Double) {
-
-  def toValue(format: String) = {
-    val formatter = new DecimalFormat(format)
-    "%s %s".format(formatter.format(lat), formatter.format(lon))
-  }
+case class Line private[georss](points: Seq[Point]) {
+  def toValue(format: String) = points.map(_.toValue(format)).mkString(" ")
 }
 
-object Point {
-  def apply(input: String): Option[Point] = {
-    Some(input).map(_.split(" ", 2)).filter(_.length == 2).map{case Array(x, y) => Point(x.toDouble, y.toDouble)}
+object Line {
+  def apply(first: Point, second: Point, rest: Point*): Line = {
+    apply(List(first, second) ++ rest)
+  }
+
+  def apply(value: String): Option[Line] = {
+    val seq = value.trim.split(" ").grouped(2).map{
+      case Array(x, y) => Point(x.toDouble, y.toDouble)
+      case x => sys.error("Unexpected length of array, expected 2 but was: " + x.length)
+    }.toList
+    if (seq.length >= 2) Some(Line(seq)) else None
   }
 }

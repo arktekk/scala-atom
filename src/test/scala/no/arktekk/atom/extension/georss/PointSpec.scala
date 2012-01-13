@@ -31,12 +31,12 @@ class PointSpec extends Specification {
       val entry = Entry(URI.create("1"), "hei", new DateTime()).
         addChild(SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, "foo", "point"), "23.23 0"))
       val point = entry.extract(PointAtomExtension()).head
-      point.toValue() must beEqualTo("23.23 0")
+      point.toValue("##.####") must beEqualTo("23.23 0")
     }
     "be serialized correctly" in {
       val point = Point(23.234567, 76.123546)
       val serialized = PointAtomExtension().toChildren(Some(point), null).head
-      serialized.value.get must beEqualTo(point.toValue())
+      serialized.value.get must beEqualTo(point.toValue("##.#####"))
     }
   }
 }
