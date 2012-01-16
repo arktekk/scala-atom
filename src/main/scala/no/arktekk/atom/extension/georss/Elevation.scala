@@ -23,5 +23,5 @@ import no.arktekk.atom.extension.SimpleTextElementWrapper
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Elevation(elev: Int) {
-  def toXML = SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "elev"), num.toString)
+  def toXML = SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "elev"), elev.toString)
 }

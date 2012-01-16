@@ -33,7 +33,7 @@ case class Point(lat: Double, lon: Double) {
   }
 
   def toXML(format: String) = {
-    SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "point"), p.toValue(format))
+    SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "point"), toValue(format))
   }
 }
 
