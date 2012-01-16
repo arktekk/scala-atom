@@ -66,7 +66,7 @@ case class Query(role: Role, attributes: Attributes = Attributes(), namespaces: 
   
   def addNamespace(prefix: String,  namespace: String) = copy(namespaces = namespaces + (prefix -> namespace))
   
-  def toElem = Elem(Some(defaultPrefix), "query", attributes + ("role" -> role.name), namespaces, Group.empty)
+  def toElem = Elem(Some(defaultPrefix), "Query", attributes + ("role" -> role.name), namespaces, Group.empty)
 }
 
 object Query {
