@@ -49,6 +49,8 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
   
   def withCategories(cats: Seq[Categories]) = withChildren(namespaceSelector(Atom.namespace, "category"), cats)
 
+  def withFixed(fixed: Boolean) = withAttribute("fixed", if (fixed) "yes" else "no")
+
   type T = Categories
 
   protected def self = this
