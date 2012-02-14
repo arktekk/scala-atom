@@ -38,3 +38,9 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
 
   def copy(elem: Elem) = new Workspace(elem)
 }
+
+object Workspace {
+  def apply(): Workspace = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "workspace")).wrapped)
+
+  def apply(title: TextConstruct) = apply().withTitle(title)
+}

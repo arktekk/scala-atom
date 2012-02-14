@@ -57,3 +57,7 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
 
   def copy(elem: Elem) = new Categories(elem)
 }
+
+object Categories {
+  def apply(): Categories = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "categories")).wrapped)
+}

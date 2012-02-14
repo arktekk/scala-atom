@@ -36,3 +36,7 @@ case class Service(wrapped: Elem) extends ElementWrapper {
 
   def copy(elem: Elem) = new Service(elem)
 }
+
+object Service {
+  def apply(): Service = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "service")).wrapped)
+}
