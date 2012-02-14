@@ -44,6 +44,7 @@ import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
  */
 object Atom {
   val namespace = "http://www.w3.org/2005/Atom"
+  val atompubNamespace = "http://www.w3.org/2007/app"
   val namespaces: Map[String, String] = Map(("", namespace))
   private val dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC()
   private val dateTimeFormatNoMillis = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC()
@@ -78,7 +79,7 @@ object Atom {
     withChildren(name, attr, Seq(Text(value)))
   }
 
-  private[atom] def withChildren(name: String, attr: Attributes = Attributes(), children: Seq[Node]) = {
+  private[atom] def withChildren(name: String, attr: Attributes = Attributes(), children: Seq[Node], prefix: Option[String] = None) = {
     Elem(None, name, attr, namespaces, Group.empty ++ children)
   }
 
@@ -92,6 +93,21 @@ object Atom {
         case e@Elem(_, "entry", _, _, _) if (e.scope.find {
           case (_, ns) => ns == namespace
         }.isDefined) => Right(Entry(e).asInstanceOf[A])
+        case e => Left(new IllegalArgumentException("unknown XML here: %s".format(e)))
+      }
+    }
+    catch {
+      case e: Exception => Left(e)
+    }
+  }
+
+  def parseService(src: IOSource): Either[Exception, Service] = {
+    try {
+      val elem = XML.fromSource(src)
+      elem match {
+        case e@Elem(_, "service", _, _, _) if (e.scope.find {
+          case (_, ns) => ns == atompubNamespace
+        }.isDefined) => Right(Service(e))
         case e => Left(new IllegalArgumentException("unknown XML here: %s".format(e)))
       }
     }

@@ -46,14 +46,24 @@ trait ElementWrapper {
     copy(wrapped.copy(scope = wrapped.scope ++ fold._1, attrs = wrapped.attrs ++ fold._2))
   }
 
-  def addChildren[B](children: Seq[ElementWrapper]) : T = {
+  def addChildren(children: Seq[ElementWrapper]) : T = {
     if (children.isEmpty) self
     else copy(wrapped.copy(children = wrapped.children ++ children.map(_.wrapped)))
+  }
+
+  def withChildren(selector: Selector[Elem], children: Seq[ElementWrapper]) : T = {
+    if (children.isEmpty) self
+    else copy(removeChildren(selector).copy(children = children.map(_.wrapped)))
   }
 
   def withAttribute(name: String, value: Any): T = withAttribute(QName(None, name), value)
 
   def withAttribute(name: QName, value: Any): T = copy(wrapped.copy(attrs = wrapped.attrs + (name -> value.toString)))
+
+  protected def removeChildren(selector: Selector[Elem]): Elem = {
+    val zipper = (wrapped \ selector).take(0)
+    zipper.unselect.headOption.map(_.asInstanceOf[Elem]).getOrElse(wrapped)
+  }
 }
 
 object ElementWrapper {

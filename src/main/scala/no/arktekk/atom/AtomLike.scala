@@ -61,8 +61,7 @@ private[atom] trait AtomLike extends ElementWrapper {
   def addLinks(toAdd: Seq[Link]) = copy(wrapped.copy(children = wrapped.children ++ toAdd.map(_.wrapped)))
 
   protected def removeChildren(name: String): Elem = {
-    val zipper = (wrapped \ atomSelector(name)).take(0)
-    zipper.unselect.headOption.map(_.asInstanceOf[Elem]).getOrElse(wrapped)
+    super.removeChildren(atomSelector(name))
   }
   
   def linkByRel(rel: String) = links.find(_.rel == Some(rel))

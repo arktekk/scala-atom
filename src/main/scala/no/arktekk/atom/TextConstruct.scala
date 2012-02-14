@@ -31,7 +31,7 @@ sealed trait TextConstruct {
 
   def toString: String
 
-  def toXML(name: String) = Atom.withChildren(name, Attributes(("type", textType.value)), Group(value))
+  def toXML(name: String, prefix: Option[String] = None) = Atom.withChildren(name, Attributes(("type", textType.value)), Group(value), prefix)
 }
 
 object TextConstruct {
