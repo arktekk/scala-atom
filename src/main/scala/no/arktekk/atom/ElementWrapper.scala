@@ -17,6 +17,8 @@ package no.arktekk.atom
 
 import com.codecommit.antixml._
 import extension.{AtomExtension}
+import java.nio.charset.Charset
+import java.io._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -51,9 +53,14 @@ trait ElementWrapper {
     else copy(wrapped.copy(children = wrapped.children ++ children.map(_.wrapped)))
   }
 
-  def withChildren(selector: Selector[Elem], children: Seq[ElementWrapper]) : T = {
+  def replaceChildren(selector: Selector[Elem], children: Seq[ElementWrapper]) : T = {
     if (children.isEmpty) self
-    else copy(removeChildren(selector).copy(children = children.map(_.wrapped)))
+    else copy(removeChildren(selector).copy(children = wrapped.children ++ children.map(_.wrapped)))
+  }
+
+  def withChildren(children: Seq[ElementWrapper]) : T = {
+    if (children.isEmpty) self
+    else copy(wrapped.copy(children = children.map(_.wrapped)))
   }
 
   def withAttribute(name: String, value: Any): T = withAttribute(QName(None, name), value)
@@ -63,6 +70,48 @@ trait ElementWrapper {
   protected def removeChildren(selector: Selector[Elem]): Elem = {
     val zipper = (wrapped \ selector).take(0)
     zipper.unselect.headOption.map(_.asInstanceOf[Elem]).getOrElse(wrapped)
+  }
+
+  def addNamespaces(namespaces: Map[String, String]): T  = {
+    if (namespaces.isEmpty) self
+    else {
+      def nextValidPrefix = {
+        var i = 1
+        while (wrapped.scope.contains("ns" + i)) {
+          i = i + 1
+        }
+        "ns" + i
+      }
+      var currentNS = wrapped.scope
+
+      namespaces.foreach{
+        case (x, y) if (!currentNS.filter{case (_, z) => z == y}.isEmpty) =>
+        case ("", y) => {
+          val p = nextValidPrefix
+          currentNS = currentNS + (p -> y)
+        }
+        case (x, y) => currentNS = currentNS + (x -> y)
+      }
+      if (currentNS == wrapped.scope) self else copy(wrapped.copy(scope = currentNS))
+    }
+  }
+
+  def addNamespace(prefix: Option[String], namespace: String): T  = addNamespace((prefix.getOrElse("").trim(), namespace.trim()))
+
+  def addNamespace(prefixNS: (String, String)): T = {
+    addNamespaces(Map(prefixNS))
+  }
+
+  def writeTo(writer: Writer)(implicit charset: Charset) {
+    XMLSerializer(charset.name(), true).serializeDocument(wrapped, writer)
+  }
+
+  def writeTo(stream: OutputStream)(implicit charset: Charset) {
+    writeTo(new OutputStreamWriter(stream, charset))(charset)
+  }
+
+  def writeTo(file: File)(implicit charset: Charset) {
+    writeTo(new FileWriter(file))(charset)
   }
 }
 

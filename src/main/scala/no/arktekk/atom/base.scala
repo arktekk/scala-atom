@@ -41,48 +41,6 @@ sealed trait Base extends AtomLike {
     case Elem(Some(ns),`name`, _, scope, _) if (!scope.isEmpty) => scope(ns) == namespace
     case _ => false
   }
-
-  def addNamespaces(namespaces: Map[String, String]): T  = {
-    if (namespaces.isEmpty) self
-    else {
-      def nextValidPrefix = {
-        var i = 1
-        while (wrapped.scope.contains("ns" + i)) {
-          i = i + 1
-        }
-        "ns" + i
-      }
-      var currentNS = wrapped.scope
-
-      namespaces.foreach{
-        case (x, y) if (!currentNS.filter{case (_, z) => z == y}.isEmpty) =>
-        case ("", y) => {
-          val p = nextValidPrefix
-          currentNS = currentNS + (p -> y)
-        }
-        case (x, y) => currentNS = currentNS + (x -> y)
-      }
-      if (currentNS == wrapped.scope) self else copy(wrapped.copy(scope = currentNS))
-    }
-  }
-
-  def addNamespace(prefix: String, namespace: String): T  = addNamespace((prefix.trim(), namespace.trim()))
-
-  def addNamespace(prefixNS: (String, String)): T = {
-    addNamespaces(Map(prefixNS))
-  }
-
-  def writeTo(writer: Writer)(implicit charset: Charset) {
-    XMLSerializer(charset.name(), true).serializeDocument(wrapped, writer)
-  }
-
-  def writeTo(stream: OutputStream)(implicit charset: Charset) {
-    writeTo(new OutputStreamWriter(stream, charset))(charset)
-  }
-
-  def writeTo(file: File)(implicit charset: Charset) {
-    writeTo(new FileWriter(file))(charset)
-  }
 }
 
 case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {

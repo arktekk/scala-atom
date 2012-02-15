@@ -28,7 +28,7 @@ case class Service(wrapped: Elem) extends ElementWrapper {
 
   def addWorkspace(workspace: Workspace) = addChild(workspace)
 
-  def withWorkspaces(workspaces: Seq[Workspace]) = withChildren(namespaceSelector(Atom.atompubNamespace, "workspace"), workspaces)
+  def withWorkspaces(workspaces: Seq[Workspace]) = replaceChildren(namespaceSelector(Atom.atompubNamespace, "workspace"), workspaces)
 
   type T = Service
 

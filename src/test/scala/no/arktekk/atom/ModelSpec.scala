@@ -17,14 +17,14 @@ class ModelSpec extends Specification {
   "A model" should {
     "autogenerate prefix for default prefix" in {
       val entry = Entry(URI.create("hei"), "Title", new DateTime())
-      val entryWithNamespace = entry.addNamespace("", "urn:foo:bar")
+      val entryWithNamespace = entry.addNamespace(Some(""), "urn:foo:bar")
       val scope = entryWithNamespace.wrapped.scope
       scope.get("ns1") mustEqual Some("urn:foo:bar")
     }
     "return self when we already have the namespace registered" in {
       val entry = Entry(URI.create("hei"), "Title", new DateTime())
-      val entryWithNamespace = entry.addNamespace("", "urn:foo:bar")
-      val entryWitchShouldBeTheSame = entryWithNamespace.addNamespace("ns2", "urn:foo:bar")
+      val entryWithNamespace = entry.addNamespace(Some(""), "urn:foo:bar")
+      val entryWitchShouldBeTheSame = entryWithNamespace.addNamespace(Some("ns2"), "urn:foo:bar")
       val scope1 = entryWithNamespace.wrapped.scope
       val scope2 = entryWitchShouldBeTheSame.wrapped.scope
 

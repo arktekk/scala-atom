@@ -29,12 +29,12 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
   def collections: Seq[Collection] = (wrapped \ namespaceSelector(Atom.atompubNamespace, "collection")).map(Collection(_))
 
   def withTitle(text: TextConstruct) = {
-    withChildren(namespaceSelector(Atom.namespace, "title"), Seq(new BasicElementWrapper(text.toXML("title", Some("atom")))))
+    replaceChildren(namespaceSelector(Atom.namespace, "title"), Seq(new BasicElementWrapper(text.toXML("title", Some("atom")))))
   }
 
   def addCollection(collection: Collection) = addChild(collection)
 
-  def withCollections(collections: Seq[Collection]) = withChildren(namespaceSelector(Atom.atompubNamespace, "collection"), collections)
+  def withCollections(collections: Seq[Collection]) = replaceChildren(namespaceSelector(Atom.atompubNamespace, "collection"), collections)
 
   type T = Workspace
 
