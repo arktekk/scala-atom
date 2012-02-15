@@ -85,7 +85,7 @@ trait ElementWrapper {
       var currentNS = wrapped.scope
 
       namespaces.foreach{
-        case (x, y) if (!currentNS.filter{case (_, z) => z == y}.isEmpty) =>
+        case (x, y) if (currentNS.find{case (_, z) => z == y}.isDefined) => //already registered.
         case ("", y) => {
           val p = nextValidPrefix
           currentNS = currentNS + (p -> y)
