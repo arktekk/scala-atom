@@ -36,17 +36,21 @@ import com.codecommit.antixml._
 import java.net.URI
 import Atom._
 
+
+/**
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
+ */
 case class Categories(wrapped: Elem) extends ElementWrapper {
   def href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
 
   def withHref(uri: URI) = withAttribute("href", uri.toString)
-  
+
   def fixed: Boolean = wrapped.attrs.get("fixed").map(f => f == "yes").getOrElse(false)
-  
+
   def categories: Seq[Category] = (wrapped \ namespaceSelector(Atom.namespace, "category")).map(Category(_))
-  
+
   def addCategory(cat: Category) = addChild(cat)
-  
+
   def withCategories(cats: Seq[Categories]) = withChildren(namespaceSelector(Atom.namespace, "category"), cats)
 
   def withFixed(fixed: Boolean) = withAttribute("fixed", if (fixed) "yes" else "no")
@@ -60,4 +64,6 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
 
 object Categories {
   def apply(): Categories = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "categories")).wrapped)
+
+  def apply(href: URI): Categories = apply().withHref(href)
 }

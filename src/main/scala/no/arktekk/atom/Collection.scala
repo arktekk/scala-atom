@@ -21,6 +21,10 @@ import extension.SimpleTextElementWrapper
 import java.net.URI
 import Atom._
 
+
+/**
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
+ */
 case class Collection(wrapped: Elem) extends ElementWrapper {
   def href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
 
@@ -51,4 +55,10 @@ case class Collection(wrapped: Elem) extends ElementWrapper {
   protected def self = this
 
   def copy(elem: Elem) = new Collection(elem)
+}
+
+object Collection {
+  def apply(): Collection = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "collection")).wrapped)
+
+  def apply(href: URI): Collection = apply().withHref(href)
 }

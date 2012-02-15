@@ -19,6 +19,10 @@ package no.arktekk.atom
 import com.codecommit.antixml._
 import Atom._
 
+
+/**
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
+ */
 case class Workspace(wrapped: Elem) extends ElementWrapper {
   def title: Option[TextConstruct] = (wrapped \ namespaceSelector(Atom.namespace, "title")).headOption.flatMap(TextConstruct(_))
 
@@ -42,5 +46,5 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
 object Workspace {
   def apply(): Workspace = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "workspace")).wrapped)
 
-  def apply(title: TextConstruct) = apply().withTitle(title)
+  def apply(title: TextConstruct): Workspace = apply().withTitle(title)
 }
