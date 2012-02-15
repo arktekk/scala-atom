@@ -82,16 +82,16 @@ trait ElementWrapper {
         }
         "ns" + i
       }
-      var currentNS = wrapped.scope
-
-      namespaces.foreach{
-        case (x, y) if (currentNS.find{case (_, z) => z == y}.isDefined) => //already registered.
+      def mapit(namespaces: Map[String, String], tuple: (String, String)) = tuple match {
+        case (x, y) if (namespaces.find{case (_, z) => z == y}.isDefined) => namespaces
         case ("", y) => {
           val p = nextValidPrefix
-          currentNS = currentNS + (p -> y)
+          namespaces + (p -> y)
         }
-        case (x, y) => currentNS = currentNS + (x -> y)
+        case (x, y) => namespaces + (x -> y)
       }
+      val currentNS = namespaces.foldLeft(wrapped.scope){case (map, t) => mapit(map, t)}
+
       if (currentNS == wrapped.scope) self else copy(wrapped.copy(scope = currentNS))
     }
   }
