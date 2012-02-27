@@ -16,9 +16,8 @@
 
 package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.Atom._
 import no.arktekk.atom.extension.{SimpleTextElementWrapper, OptionSelectableElementWrapperAtomExtension}
-import no.arktekk.atom.{NamespacedName, ElementWrapper, EntryLike}
+import no.arktekk.atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>

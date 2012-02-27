@@ -19,14 +19,14 @@ package no.arktekk.atom.extension.thr
 import com.codecommit.antixml.Elem
 import no.arktekk.atom.extension.OptionSelectableElementWrapperAtomExtension
 import java.net.URI
-import no.arktekk.atom.{Atom, Entry, ElementWrapper, MediaType}
+import no.arktekk.atom._
 
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
  */
 
 object InReplyToAtomExtension extends OptionSelectableElementWrapperAtomExtension[Entry, InReplyTo] {
-  protected def selector = Atom.namespaceSelector(ThreadingConstants.ns, "in-reply-to")
+  protected def selector = namespaceSelector(ThreadingConstants.ns, "in-reply-to")
 
   protected def function = (e) => InReplyTo(e)
 

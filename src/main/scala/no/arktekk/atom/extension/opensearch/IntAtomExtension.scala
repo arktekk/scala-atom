@@ -15,11 +15,10 @@
  */
 package no.arktekk.atom.extension.opensearch
 
-import no.arktekk.atom.Atom._
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 import no.arktekk.atom.extension.{OptionSelectableElementWrapperAtomExtension, SimpleTextElementWrapper}
 import com.codecommit.antixml.text
-import no.arktekk.atom.{ElementWrapper, FeedLike, NamespacedName}
+import no.arktekk.atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>

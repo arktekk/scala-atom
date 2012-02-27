@@ -16,7 +16,6 @@
 package no.arktekk.atom
 
 
-import Atom._
 import com.codecommit.antixml.Selector._
 import com.codecommit.antixml._
 

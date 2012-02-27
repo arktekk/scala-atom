@@ -19,7 +19,6 @@ package no.arktekk.atom
 import com.codecommit.antixml._
 import extension.SimpleTextElementWrapper
 import java.net.URI
-import Atom._
 
 
 /**

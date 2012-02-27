@@ -19,10 +19,6 @@ package no.arktekk.atom
 import java.net.URI
 import org.joda.time.DateTime
 import java.util.UUID
-import Atom._
-import com.codecommit.antixml.Selector._
-import java.io._
-import java.nio.charset.Charset
 import com.codecommit.antixml._
 
 /**
@@ -37,8 +33,8 @@ sealed trait Base extends AtomLike {
   override def toString = wrapped.toString()
 
   protected def isValid(elem: Elem, name: String) = elem match {
-    case Elem(None, `name`, _, scope, _) if (!scope.isEmpty) => scope("") == namespace
-    case Elem(Some(ns),`name`, _, scope, _) if (!scope.isEmpty) => scope(ns) == namespace
+    case Elem(None, `name`, _, scope, _) if (!scope.isEmpty) => scope("") == Atom.namespace
+    case Elem(Some(ns),`name`, _, scope, _) if (!scope.isEmpty) => scope(ns) == Atom.namespace
     case _ => false
   }
 }
@@ -64,7 +60,7 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
 
 object Feed {
   def apply(id: URI, title: TextConstruct, updated: DateTime, author: Person): Feed = {
-    val elem = Elem(None, "feed", Attributes(), namespaces, children = Group(
+    val elem = withChildren("feed", children = Group(
       simple("id", id.toString), title.toXML("title"), simple("updated", dateTimeToString(updated))
     ))
     Feed(elem).addAuthor(author)

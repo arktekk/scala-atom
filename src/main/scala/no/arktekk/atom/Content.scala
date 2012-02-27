@@ -16,7 +16,6 @@
 package no.arktekk.atom
 
 import java.net.URI
-import no.arktekk.atom.Atom._
 import com.codecommit.antixml.QName._
 import com.codecommit.antixml.{QName, Elem, Attributes}
 

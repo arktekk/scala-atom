@@ -19,7 +19,7 @@ package no.arktekk.atom.extension.thr
 import org.specs2.mutable.Specification
 import io.Source
 import java.net.URI
-import no.arktekk.atom.{MediaType, Entry, Atom, Feed}
+import no.arktekk.atom._
 
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
@@ -31,7 +31,7 @@ class ThreadingSpec extends Specification {
       val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/extensions/thr-count-updated.xml"))).right.get
       val link = entry.linkByRel("replies").get
       val thr = link.extract(AtomLinkThreadingExtension)
-      thr should be equalTo(AtomThreading(Some(10), Some(Atom.parseDateTime("2005-07-28T12:10:00Z"))))
+      thr should be equalTo(AtomThreading(Some(10), Some(parseDateTime("2005-07-28T12:10:00Z"))))
     }
 
     "extract inreply-to correctly" in {

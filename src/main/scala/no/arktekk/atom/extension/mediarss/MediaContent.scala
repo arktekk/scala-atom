@@ -17,11 +17,10 @@
 package no.arktekk.atom.extension.mediarss
 
 import com.codecommit.antixml._
-import no.arktekk.atom.Atom._
 import java.net.URI
 import java.util.Locale
 import org.joda.time.Seconds
-import no.arktekk.atom.{NamespacedName, BasicElementWrapper, MediaType, ElementWrapper}
+import no.arktekk.atom._
 import no.arktekk.atom.extension.SimpleTextElementWrapper
 
 /**

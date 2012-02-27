@@ -17,9 +17,8 @@
 package no.arktekk.atom.extension.thr
 
 import org.joda.time.DateTime
+import no.arktekk.atom.extension.AtomExtension
 import no.arktekk.atom._
-import extension.AtomExtension
-import no.arktekk.atom.Atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>

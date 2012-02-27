@@ -17,8 +17,7 @@
 package no.arktekk.atom.extension.mediarss
 
 import no.arktekk.atom.extension.SeqSelectableElementWrapperAtomExtension
-import no.arktekk.atom.Atom._
-import no.arktekk.atom.{AtomLike, ElementWrapper}
+import no.arktekk.atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>

@@ -16,7 +16,6 @@
 package no.arktekk.atom
 
 import java.net.URI
-import Atom._
 import com.codecommit.antixml._
 
 /**

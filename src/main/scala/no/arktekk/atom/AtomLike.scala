@@ -17,7 +17,6 @@ package no.arktekk.atom
 
 import java.net.URI
 import org.joda.time.DateTime
-import no.arktekk.atom.Atom._
 import com.codecommit.antixml._
 
 /**

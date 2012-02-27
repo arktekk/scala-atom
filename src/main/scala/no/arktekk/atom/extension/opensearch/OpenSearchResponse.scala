@@ -17,7 +17,7 @@
 package no.arktekk.atom.extension.opensearch
 
 import no.arktekk.atom.extension.AtomExtension
-import no.arktekk.atom.{Atom, ElementWrapper, FeedLike}
+import no.arktekk.atom._
 import com.codecommit.antixml.Elem
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 
@@ -59,7 +59,7 @@ object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearc
 
   def fromLike(like: FeedLike) = {
     val numbers = numberExt.fromLike(like)
-    val queries = (like.wrapped \ Atom.namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
+    val queries = (like.wrapped \ namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
     OpenSearchResponse(queries, numbers._1, numbers._2, numbers._3)
   }
 

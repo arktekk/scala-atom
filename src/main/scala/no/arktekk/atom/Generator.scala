@@ -17,7 +17,6 @@ package no.arktekk.atom
 
 import java.net.URI
 import collection.immutable.Map
-import Atom._
 import com.codecommit.antixml._
 
 /**
