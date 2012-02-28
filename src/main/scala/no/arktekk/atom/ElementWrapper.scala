@@ -34,6 +34,8 @@ trait ElementWrapper {
   
   def addChild(w: ElementWrapper) = copy(wrapped.copy(children = wrapped.children ++ List(w.wrapped)))
   
+  def addChild(text: String) = copy(wrapped.copy(children = wrapped.children ++ List(Text(text))))
+  
   def apply[A >: T, B](ext: AtomExtension[A, B], value: B) : T = {
     val applied = updateAttributes(ext.toAttributes(value))
     addChildren(ext.toChildren(value, applied))
