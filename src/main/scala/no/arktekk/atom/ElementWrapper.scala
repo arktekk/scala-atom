@@ -105,7 +105,7 @@ trait ElementWrapper {
   }
 
   /**
-   * Serializes the ElementWrapper to the given writer. Note that this will not be closed, but will be flushed.
+   * Serializes the ElementWrapper to the given writer. Note that the writer will be flushed. but not closed,
    * @param writer the writer to use
    * @param charset requires a charset to be used.
    */
