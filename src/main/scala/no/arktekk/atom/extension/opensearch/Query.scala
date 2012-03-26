@@ -17,15 +17,13 @@ package no.arktekk.atom.extension.opensearch
 
 import java.util.Locale
 import java.nio.charset.Charset
-import no.arktekk.atom.extension.AtomExtension
 import com.codecommit.antixml.{Group, Attributes, Elem}
-import no.arktekk.atom.{FeedLike, Atom, ElementWrapper}
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Query(role: Role, attributes: Attributes = Attributes(), namespaces: Map[String, String] = Map((defaultPrefix -> openSearchNamespace))) {
+case class Query(role: Role, attributes: Attributes = Attributes(), namespaces: Map[String, String] = Map((prefix -> ns))) {
   def title = attributes.get("title")
 
   def searchTerms = attributes.get("searchTerms")
@@ -66,7 +64,7 @@ case class Query(role: Role, attributes: Attributes = Attributes(), namespaces: 
   
   def addNamespace(prefix: String,  namespace: String) = copy(namespaces = namespaces + (prefix -> namespace))
   
-  def toElem = Elem(Some(defaultPrefix), "Query", attributes + ("role" -> role.name), namespaces, Group.empty)
+  def toElem = Elem(Some(prefix), "Query", attributes + ("role" -> role.name), namespaces, Group.empty)
 }
 
 object Query {
