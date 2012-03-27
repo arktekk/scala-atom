@@ -15,6 +15,8 @@
  */
 package no.arktekk.atom.extension.opensearch
 
+import no.arktekk.atom.MediaType
+
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
@@ -23,4 +25,5 @@ object OpensearchConstants {
 
   val prefix = "os"
 
+  val mediaType = MediaType("application", "opensearchdescription+xml")
 }
