@@ -24,11 +24,11 @@ import no.arktekk.atom._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 private[opensearch] class IntAtomExtension(name:String) extends OptionSelectableElementWrapperAtomExtension[FeedLike, Int] {
-  protected val selector = namespaceSelector(openSearchNamespace, name)
+  protected val selector = namespaceSelector(ns, name)
 
   protected def function = (e) => (e \ text).headOption.map(_.toInt).get
 
   def toChildren(a: Option[Int], w: ElementWrapper) = {
-    a.map(x => SimpleTextElementWrapper(NamespacedName(openSearchNamespace, defaultPrefix, name), x.toString)).toSeq
+    a.map(x => SimpleTextElementWrapper(NamespacedName(ns, prefix, name), x.toString)).toSeq
   }
 }

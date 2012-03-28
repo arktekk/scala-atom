@@ -59,7 +59,7 @@ object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearc
 
   def fromLike(like: FeedLike) = {
     val numbers = numberExt.fromLike(like)
-    val queries = (like.wrapped \ namespaceSelector(openSearchNamespace, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
+    val queries = (like.wrapped \ namespaceSelector(ns, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
     OpenSearchResponse(queries, numbers._1, numbers._2, numbers._3)
   }
 

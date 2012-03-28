@@ -1,24 +1,31 @@
+import aether._
+import AetherKeys._
 import sbt._
 import sbt.Keys._
-import sbtrelease.Release._
-import sbtrelease.ReleasePart
-import sbtrelease.ReleaseKeys._
 import xml.Group
 
-object ScalaAtom extends Build {
+object Build extends sbt.Build {
 
   val antiXMLversion = "0.3"
 
   lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "no.arktekk.atom",
     scalaVersion := "2.9.1",
-    crossScalaVersions := Seq("2.9.1") // Seq("2.9.0", "2.9.1"),
-  )
+    crossScalaVersions := Seq("2.9.1"),
+    deployRepository <<= (version) apply {
+      (v: String) => if (v.trim().endsWith("SNAPSHOT")) Resolvers.sonatypeNexusSnapshots else Resolvers.sonatypeNexusStaging
+    },
+    pomIncludeRepository := { x => false },
+    aetherCredentials := {
+      val cred = Path.userHome / ".sbt" / "arktekk.credentials"
+      if (cred.exists()) Some(Credentials(cred)) else None
+    }
+  ) ++ Aether.aetherSettings
 
   lazy val root = Project(
     id = "scala-atom",
     base = file("."),
-    settings = buildSettings ++ releaseSettings ++ Seq(
+    settings = buildSettings ++ Seq(
       description := "Scala Atom",
       name := "scala-atom", 
       libraryDependencies := Seq(
@@ -27,26 +34,8 @@ object ScalaAtom extends Build {
 		    "com.codecommit" %% "anti-xml" % antiXMLversion,
         "org.specs2" %% "specs2" % "1.6.1" % "test"
       ),
-
-      releaseProcess <<= thisProjectRef apply { ref =>
-        import sbtrelease.ReleaseStateTransformations._
-        Seq[ReleasePart](
-          initialGitChecks,
-          checkSnapshotDependencies,
-          inquireVersions,
-          runTest,
-          setReleaseVersion,
-          commitReleaseVersion,
-          tagRelease,
-        // Enable when we're deploying to Sonatype
-  //        releaseTask(publish in Global in ref),
-          setNextVersion,
-          commitNextVersion
-        )
-      },
-    manifestSetting,
-    publishSetting,
-    credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+    publish <<= Aether.deployTask.init,
+    manifestSetting
     ) ++ mavenCentralFrouFrou
   )
 
@@ -69,13 +58,6 @@ object ScalaAtom extends Build {
         "Implementation-Vendor-Id" -> vendor,
         "Implementation-Vendor" -> vendor
       )
-  }
-
-  lazy val publishSetting = publishTo <<= (version) { version: String =>
-    if (version.trim.endsWith("SNAPSHOT"))
-      Some(Resolvers.sonatypeNexusSnapshots)
-    else
-      Some(Resolvers.sonatypeNexusStaging)
   }
 
   // Things we care about primarily because Maven Central demands them

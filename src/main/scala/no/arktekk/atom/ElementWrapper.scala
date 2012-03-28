@@ -104,14 +104,25 @@ trait ElementWrapper {
     addNamespaces(Map(prefixNS))
   }
 
+  /**
+   * Serializes the ElementWrapper to the given writer. Note that the writer will be flushed. but not closed,
+   * @param writer the writer to use
+   * @param charset requires a charset to be used.
+   */
   def writeTo(writer: Writer)(implicit charset: Charset) {
     XMLSerializer(charset.name(), true).serializeDocument(wrapped, writer)
   }
 
+  /**
+   * @see #writeTo(Writer)
+   */
   def writeTo(stream: OutputStream)(implicit charset: Charset) {
     writeTo(new OutputStreamWriter(stream, charset))(charset)
   }
 
+  /**
+   * @see #writeTo(Writer)
+   */
   def writeTo(file: File)(implicit charset: Charset) {
     writeTo(new FileWriter(file))(charset)
   }

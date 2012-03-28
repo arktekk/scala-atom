@@ -15,12 +15,15 @@
  */
 package no.arktekk.atom.extension.opensearch
 
+import no.arktekk.atom.MediaType
+
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 object OpensearchConstants {
-  val openSearchNamespace = "http://a9.com/-/spec/opensearch/1.1/"
+  val ns = "http://a9.com/-/spec/opensearch/1.1/"
 
-  val defaultPrefix = "os"
+  val prefix = "os"
 
+  val mediaType = MediaType("application", "opensearchdescription+xml")
 }

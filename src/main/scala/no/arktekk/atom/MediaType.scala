@@ -19,25 +19,25 @@ package no.arktekk.atom
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class MediaType private(major: String, minor: String, params: Map[String, String] = Map.empty) {
-  override def toString = "%s/%s".format(major, minor) + params.mkString(";")
+case class MediaType(major: String, minor: String, params: Map[String, String] = Map.empty) {
+  override def toString = "%s/%s".format(major, minor) + params.map{case (a, b) => "; %s=%s".format(a, b)}.mkString("")
 }
 
 object MediaType {
-  val ALL = MediaType("*/*")
-  val IMAGE_JPEG = MediaType("image/jpeg")
-  val IMAGE_PNG = MediaType("image/png")
-  val ATOM = MediaType("application/atom+xml")
-  val CATEGORY = MediaType("application/atomcat+xml")
-  val SERVICE = MediaType("application/atomsvc+xml")
+  val ALL = MediaType("*", "*")
+  val IMAGE_JPEG = MediaType("image", "jpeg")
+  val IMAGE_PNG = MediaType("image", "png")
+  val ATOM = MediaType("application", "atom+xml")
+  val CATEGORY = MediaType("application", "atomcat+xml")
+  val SERVICE = MediaType("application", "atomsvc+xml")
 
   def apply(mt: String): Option[MediaType] = {
     import javax.activation.MimeType
-    import scala.collection.JavaConversions._
-    val mimeType = new MimeType(mt)
-    val names = mimeType.getParameters.getNames.asInstanceOf[java.util.Enumeration[String]]
-    val params = names.foldLeft(Map[String, String]())((acc, p) => acc + (p -> mimeType.getParameter(p)))
+    import scala.collection.JavaConverters._
     try {
+      val mimeType = new MimeType(mt)
+      val names = mimeType.getParameters.getNames.asInstanceOf[java.util.Enumeration[String]].asScala
+      val params = names.foldLeft(Map[String, String]())((acc, p) => acc + (p -> mimeType.getParameter(p)))
       Some(new MediaType(mimeType.getPrimaryType, mimeType.getSubType, params))
     }
     catch {
