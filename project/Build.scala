@@ -17,7 +17,7 @@ object Build extends sbt.Build {
     },
     pomIncludeRepository := { x => false },
     aetherCredentials := {
-      val cred = Path.userHome / ".sbt" / "arktekk.credentials"
+      val cred = Path.userHome / ".sbt" / "arktekk-credentials"
       if (cred.exists()) Some(Credentials(cred)) else None
     }
   ) ++ Aether.aetherSettings
