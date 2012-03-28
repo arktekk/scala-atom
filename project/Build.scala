@@ -8,7 +8,7 @@ object Build extends sbt.Build {
 
   val antiXMLversion = "0.3"
 
-  lazy val buildSettings = Defaults.defaultSettings ++ Seq(
+  lazy val buildSettings = Defaults.defaultSettings ++ Aether.aetherSettings ++ Seq(
     organization := "no.arktekk.atom",
     scalaVersion := "2.9.1",
     crossScalaVersions := Seq("2.9.1"),
@@ -20,7 +20,7 @@ object Build extends sbt.Build {
       val cred = Path.userHome / ".sbt" / "arktekk-credentials"
       if (cred.exists()) Some(Credentials(cred)) else None
     }
-  ) ++ Aether.aetherSettings
+  )
 
   lazy val root = Project(
     id = "scala-atom",
