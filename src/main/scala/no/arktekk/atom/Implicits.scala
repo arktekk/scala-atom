@@ -33,19 +33,12 @@ trait Implicits {
   def parseDateTime(input: String): DateTime = {
     val formatters = List(dateTimeFormat, dateTimeFormatNoMillis)
 
-    def format(formatter: DateTimeFormatter): Either[Exception, DateTime] = {
-      try {
-        Right(formatter.parseDateTime(input))
-      }
-      catch {
-        case e: Exception => Left(e)
-      }
-    }
+    def format(formatter: DateTimeFormatter): Option[DateTime] = try {Some(formatter.parseDateTime(input))} catch {case _ => None}
 
     val parser = formatters.map(format(_))
-    val right = parser.find(_.isRight)
+    val right = parser.find(_.isDefined).flatMap(identity)
 
-    right.getOrElse(throw new IllegalArgumentException(input + " is not a valid Atom date")).right.get
+    right.getOrElse(throw new IllegalArgumentException(input + " is not a valid Atom date"))
   }
 
   def dateTimeToString(dateTime: DateTime) = dateTimeFormat.print(dateTime)
