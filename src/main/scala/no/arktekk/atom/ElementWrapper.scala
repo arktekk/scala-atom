@@ -124,7 +124,13 @@ trait ElementWrapper {
    * @see #writeTo(Writer)
    */
   def writeTo(file: File)(implicit charset: Charset) {
-    writeTo(new FileWriter(file))(charset)
+    val writer = new FileWriter(file)
+    try {
+      writeTo(writer)(charset)
+    }
+    finally {
+      writer.close()
+    }
   }
 }
 
