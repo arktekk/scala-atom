@@ -130,6 +130,18 @@ trait ElementWrapper {
 
 object ElementWrapper {
   def apply(elem: Elem): ElementWrapper = new BasicElementWrapper(elem)
+
+  def withName(name: NamespacedName): ElementWrapper = {
+    withNameAndAttributes(name)
+  }
+
+  def withNameAndAttributes(name: NamespacedName, attrs: Attributes = Attributes()): ElementWrapper = {
+    apply(Elem(name.prefix, name.name, attrs, name.toMap, Group.empty))
+  }
+
+  def withNameAndText(name: NamespacedName, text: String): ElementWrapper = {
+    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes, name.toMap, Group(Text(text))))
+  }
 }
 
 case class BasicElementWrapper(elem: Elem) extends ElementWrapper {
