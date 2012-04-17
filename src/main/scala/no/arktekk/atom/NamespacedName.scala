@@ -45,4 +45,6 @@ object NamespacedName {
   def apply(namespace: String, name: String): NamespacedName = apply(Some(namespace), None, name)
   
   def apply(name: String): NamespacedName = apply(None, None, name)
+
+  implicit def toNamespacedName(name: String): NamespacedName = apply(name)
 }

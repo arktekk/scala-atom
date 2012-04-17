@@ -16,7 +16,7 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml._
-import extension.{AtomExtension}
+import extension.AtomExtension
 import java.nio.charset.Charset
 import java.io._
 
@@ -140,7 +140,7 @@ object ElementWrapper {
   }
 
   def withNameAndText(name: NamespacedName, text: String): ElementWrapper = {
-    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes, name.toMap, Group(Text(text))))
+    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes(), name.toMap, Group(Text(text))))
   }
 }
 
