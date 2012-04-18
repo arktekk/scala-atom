@@ -16,22 +16,32 @@
 
 package no.arktekk.atom
 
-import org.specs2.mutable.Specification
-import java.io.File
-import io.Codec
-
-
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
  */
 
-class WritingSpec extends Specification {
-  "An elementWrapper" should {
-    "be able to write with a default encoding" in {
-      val tempFile = File.createTempFile("foo", ".xml")
-      ElementWrapper.withName("hello").writeTo(tempFile)
-      tempFile should beAFile
-      tempFile.length() should beGreaterThan(0L)
-    }
+sealed trait TextType {
+  def value: String
+}
+
+object TextType {
+  def apply(name: String): Option[TextType] = name match {
+    case HTML.value => Some(HTML)
+    case XHTML.value => Some(XHTML)
+    case TEXT.value => Some(TEXT)
+    case _ => None
   }
+
+  case object HTML extends TextType {
+    val value = "html"
+  }
+
+  case object XHTML extends TextType {
+    val value = "xhtml"
+  }
+
+  case object TEXT extends TextType {
+    val value = "text"
+  }
+
 }

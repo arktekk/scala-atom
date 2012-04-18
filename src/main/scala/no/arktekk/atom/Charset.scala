@@ -16,22 +16,22 @@
 
 package no.arktekk.atom
 
-import org.specs2.mutable.Specification
-import java.io.File
+import java.nio.charset.{Charset => JCharset}
 import io.Codec
-
 
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
  */
 
-class WritingSpec extends Specification {
-  "An elementWrapper" should {
-    "be able to write with a default encoding" in {
-      val tempFile = File.createTempFile("foo", ".xml")
-      ElementWrapper.withName("hello").writeTo(tempFile)
-      tempFile should beAFile
-      tempFile.length() should beGreaterThan(0L)
-    }
-  }
+case class Charset(wrapped: JCharset) {
+  def name = wrapped.name()
+}
+
+object Charset {
+  implicit val defaultCharset = Charset(Codec.UTF8)
+
+  def forName(name: String) = Charset(JCharset.forName(name))
+
+  implicit def toCharset(name: String): Charset = forName(name)
+  implicit def toCharset(charset: JCharset): Charset = Charset(charset)
 }

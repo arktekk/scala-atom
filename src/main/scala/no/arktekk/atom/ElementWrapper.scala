@@ -17,7 +17,6 @@ package no.arktekk.atom
 
 import com.codecommit.antixml._
 import extension.AtomExtension
-import java.nio.charset.Charset
 import java.io._
 
 /**
@@ -110,14 +109,14 @@ trait ElementWrapper {
    * @param charset requires a charset to be used.
    */
   def writeTo(writer: Writer)(implicit charset: Charset) {
-    XMLSerializer(charset.name(), true).serializeDocument(wrapped, writer)
+    XMLSerializer(charset.name, true).serializeDocument(wrapped, writer)
   }
 
   /**
    * @see #writeTo(Writer)
    */
   def writeTo(stream: OutputStream)(implicit charset: Charset) {
-    writeTo(new OutputStreamWriter(stream, charset))(charset)
+    writeTo(new OutputStreamWriter(stream, charset.wrapped))(charset)
   }
 
   /**
