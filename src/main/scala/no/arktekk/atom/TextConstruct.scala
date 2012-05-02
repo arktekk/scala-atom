@@ -37,11 +37,14 @@ sealed trait TextConstruct {
 object TextConstruct {
   def apply(elem: Elem): Option[TextConstruct] = {
     val textType = elem.attrs.get("type")
-    textType.flatMap(TextType(_)).map{
-      case TextType.HTML => HTML((elem \ text).head)
-      case TextType.XHTML => XHTML(Div((elem \ "div").head))
-      case TextType.TEXT => Textual((elem \ text).head)
-    }.orElse(Some(Textual((elem \ text).head)))
+    textType.map(
+      tt => TextType(tt) match {
+        case Some(TextType.HTML) => HTML((elem \ text).head)
+        case Some(TextType.XHTML) => XHTML(Div((elem \ "div").head))
+        case Some(TextType.TEXT) => Textual((elem \ text).head)
+        case _ => Textual((elem \ text).head)
+      }
+    ).orElse(Some(Textual((elem \ text).head)))
   }
 
   def unapply(construct: TextConstruct) = Some((construct.textType, construct.value))
