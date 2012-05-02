@@ -34,8 +34,6 @@ package no.arktekk.atom
 
 import com.codecommit.antixml._
 import java.net.URI
-import Atom._
-
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -67,7 +65,8 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
 }
 
 object Categories {
-  def apply(): Categories = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "categories")).wrapped)
+  def apply(): Categories = apply(ElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "categories")).wrapped).
+    addNamespace(Some(""), Atom.namespace)
 
   def apply(href: URI): Categories = apply().withHref(href)
 }
