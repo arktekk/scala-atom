@@ -16,7 +16,7 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml._
-import extension.{AtomExtension}
+import extension.AtomExtension
 import java.nio.charset.Charset
 import java.io._
 
@@ -124,12 +124,30 @@ trait ElementWrapper {
    * @see #writeTo(Writer)
    */
   def writeTo(file: File)(implicit charset: Charset) {
-    writeTo(new FileWriter(file))(charset)
+    val writer = new FileWriter(file)
+    try {
+      writeTo(writer)(charset)
+    }
+    finally {
+      writer.close()
+    }
   }
 }
 
 object ElementWrapper {
   def apply(elem: Elem): ElementWrapper = new BasicElementWrapper(elem)
+
+  def withName(name: NamespacedName): ElementWrapper = {
+    withNameAndAttributes(name)
+  }
+
+  def withNameAndAttributes(name: NamespacedName, attrs: Attributes = Attributes()): ElementWrapper = {
+    apply(Elem(name.prefix, name.name, attrs, name.toMap, Group.empty))
+  }
+
+  def withNameAndText(name: NamespacedName, text: String): ElementWrapper = {
+    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes(), name.toMap, Group(Text(text))))
+  }
 }
 
 case class BasicElementWrapper(elem: Elem) extends ElementWrapper {
