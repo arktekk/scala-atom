@@ -85,6 +85,9 @@ trait ElementWrapper {
       }
       def mapit(namespaces: Map[String, String], tuple: (String, String)) = tuple match {
         case (x, y) if (namespaces.find{case (_, z) => z == y}.isDefined) => namespaces
+        case ("", y) if (namespaces.get("").isEmpty) => { //if the empty namespace has not been defined already
+          namespaces + ("" -> y)
+        }
         case ("", y) => {
           val p = nextValidPrefix
           namespaces + (p -> y)
