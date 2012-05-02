@@ -47,6 +47,8 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
 
   def fixed: Boolean = wrapped.attrs.get("fixed").map(f => f == "yes").getOrElse(false)
 
+  def scheme: Option[String] = wrapped.attrs.get("scheme")
+
   def categories: Seq[Category] = (wrapped \ namespaceSelector(Atom.namespace, "category")).map(Category(_))
 
   def addCategory(cat: Category) = addChild(cat)
@@ -54,6 +56,8 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
   def withCategories(cats: Seq[Category]) = replaceChildren(namespaceSelector(Atom.namespace, "category"), cats)
 
   def withFixed(fixed: Boolean) = withAttribute("fixed", if (fixed) "yes" else "no")
+
+  def withScheme(scheme: String) = withAttribute("scheme", scheme)
 
   type T = Categories
 
