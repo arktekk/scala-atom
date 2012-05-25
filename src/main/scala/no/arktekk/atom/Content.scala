@@ -16,8 +16,7 @@
 package no.arktekk.atom
 
 import java.net.URI
-import com.codecommit.antixml.QName._
-import com.codecommit.antixml.{QName, Elem, Attributes}
+import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -38,15 +37,20 @@ object Content {
   }
 
   case class Text(text: TextConstruct) extends Content {
-    private[atom] def toXML(name: String) = withChildren(name, Attributes((QName(None, "type"), text.textType.value)), Seq(text.value))
+    private[atom] def toXML(name: String) = text.toXML(name)
   }
 
   case class Inline(mediaType: MediaType, elem: Elem) extends Content {
-    private[atom] def toXML(name: String) = withChildren(name, Attributes((QName(None, "type"), mediaType.toString)), Seq(elem))
+    private[atom] def toXML(name: String) = ElementWrapper.
+          withNameAndAttributes(NamespacedName(Atom.namespace, name), Attributes("type" -> mediaType.toString)).
+          addChild(ElementWrapper(elem)).wrapped
   }
 
   case class External(href: URI, mediaType: Option[MediaType]) extends Content {
-    private[atom] def toXML(name: String) = onlyElementName(name).copy(attrs = Attributes(("href" -> href.toString)) ++ mediaType.foldLeft(Map[QName, String]())((acc, mt) => acc + ("type" -> mt.toString)))
+    private[atom] def toXML(name: String) = {
+      val elem = ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, name), Attributes("href" -> href.toString))
+      if (mediaType.isDefined) elem.withAttribute("type", mediaType.get.toString).wrapped else elem.wrapped
+    }
   }
 
 }

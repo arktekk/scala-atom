@@ -18,6 +18,7 @@ package no.arktekk.atom
 
 import com.codecommit.antixml.Selector._
 import com.codecommit.antixml._
+import extension.SimpleTextElementWrapper
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -39,10 +40,12 @@ case class Person private[atom](wrapped: Elem) extends ElementWrapper {
 
 object Person {
   def author(name: String): Person = Person(
-    onlyElementName("author").copy(children = Group(simple("name", name)))
+    ElementWrapper.withName(NamespacedName(Atom.namespace, "author")).
+      addChild(SimpleTextElementWrapper(NamespacedName(Atom.namespace, "name"), name)).wrapped
   )
 
   def contributor(name: String): Person = Person(
-    onlyElementName("contributor").copy(children = Group(simple("name", name)))
+    ElementWrapper.withName(NamespacedName(Atom.namespace, "contributor")).
+       addChild(SimpleTextElementWrapper(NamespacedName(Atom.namespace, "name"), name)).wrapped
   )
 }

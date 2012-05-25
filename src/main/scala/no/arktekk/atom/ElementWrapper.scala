@@ -30,11 +30,22 @@ trait ElementWrapper {
   def wrapped: Elem
 
   def copy(elem: Elem): T
-  
-  def addChild(w: ElementWrapper) = copy(wrapped.copy(children = wrapped.children ++ List(w.wrapped)))
-  
-  def addChild(text: String) = copy(wrapped.copy(children = wrapped.children ++ List(Text(text))))
-  
+
+  def addChild(text: String):T = addChild(Text(text))
+
+  def addChild(name: String, text: String):T = {
+    val ns = wrapped.scope.get(wrapped.prefix.getOrElse("")).getOrElse("")
+    addChild(NamespacedName(ns, QName(wrapped.prefix, name)), text)
+  }
+
+  def addChild(name: NamespacedName, text: String):T = addChild(name, Text(text))
+
+  def addChild(name: NamespacedName, node: Node):T = addChild(ElementWrapper.withNameAndChildren(name, Group(node)))
+
+  def addChild(w: ElementWrapper):T = addChild(w.wrapped)
+
+  def addChild(node: Node):T = copy(wrapped.copy(children = wrapped.children ++ Group(node)))
+
   def apply[A >: T, B](ext: AtomExtension[A, B], value: B) : T = {
     val applied = updateAttributes(ext.toAttributes(value))
     addChildren(ext.toChildren(value, applied))
@@ -50,18 +61,30 @@ trait ElementWrapper {
   }
 
   def addChildren(children: Seq[ElementWrapper]) : T = {
+    addChildren(Group.fromSeq(children.map(_.wrapped)))
+  }
+
+  def addChildren(children: Group[Node]) : T = {
     if (children.isEmpty) self
-    else copy(wrapped.copy(children = wrapped.children ++ children.map(_.wrapped)))
+    else copy(wrapped.copy(children = wrapped.children ++ children))
   }
 
   def replaceChildren(selector: Selector[Elem], children: Seq[ElementWrapper]) : T = {
+    replaceChildren(selector, Group.fromSeq(children.map(_.wrapped)))
+  }
+
+  def replaceChildren(selector: Selector[Elem], children: Group[Node]) : T = {
     if (children.isEmpty) self
-    else copy(removeChildren(selector).copy(children = wrapped.children ++ children.map(_.wrapped)))
+    else copy(removeChildren(selector).copy(children = wrapped.children ++ children))
   }
 
   def withChildren(children: Seq[ElementWrapper]) : T = {
+    withChildren(Group.fromSeq(children.map(_.wrapped)))
+  }
+
+  def withChildren(children: Group[Node]) : T = {
     if (children.isEmpty) self
-    else copy(wrapped.copy(children = children.map(_.wrapped)))
+    else copy(wrapped.copy(children = children))
   }
 
   def withAttribute(name: String, value: Any): T = withAttribute(QName(None, name), value)
@@ -149,6 +172,10 @@ object ElementWrapper {
 
   def withNameAndText(name: NamespacedName, text: String): ElementWrapper = {
     new BasicElementWrapper(Elem(name.prefix, name.name, Attributes(), name.toMap, Group(Text(text))))
+  }
+
+  def withNameAndChildren(name: NamespacedName, children: Group[Node]): ElementWrapper = {
+    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes(), name.toMap, children))
   }
 }
 

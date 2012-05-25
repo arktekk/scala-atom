@@ -34,7 +34,7 @@ case class Collection(wrapped: Elem) extends ElementWrapper {
   def withHref(uri: URI) = withAttribute("href", uri.toString)
 
   def withTitle(text: TextConstruct) = {
-    replaceChildren(namespaceSelector(Atom.namespace, "title"), Seq(new BasicElementWrapper(text.toXML("title", Some("atom")))))
+    replaceChildren(namespaceSelector(Atom.namespace, "title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
   }
 
   def addAccept(mt: MediaType) = addChild(SimpleTextElementWrapper(

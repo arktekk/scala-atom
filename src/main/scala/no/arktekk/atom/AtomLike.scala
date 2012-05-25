@@ -15,6 +15,7 @@
  */
 package no.arktekk.atom
 
+import extension.SimpleTextElementWrapper
 import java.net.URI
 import org.joda.time.DateTime
 import com.codecommit.antixml._
@@ -25,39 +26,42 @@ import com.codecommit.antixml._
 private[atom] trait AtomLike extends ElementWrapper {
   protected val atomSelector = namespaceSelector(Atom.namespace, _ : String)
 
-  def id: URI = (wrapped \ atomSelector("id") \ text).headOption.map(URI.create(_)).get
+  protected def element(name: String) = (wrapped \ atomSelector(name))
+  protected def elementText(name: String) = element(name) \ text
 
-  def title: TextConstruct = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_)).get
+  def id: URI = elementText("id").headOption.map(URI.create(_)).get
 
-  def rights: Option[TextConstruct] = (wrapped \ atomSelector("rights")).headOption.flatMap(TextConstruct(_))
+  def title: TextConstruct = element("title").headOption.flatMap(TextConstruct(_)).get
 
-  def updated: DateTime = (wrapped \ atomSelector("updated") \ text).headOption.map(parseDateTime(_)).get
+  def rights: Option[TextConstruct] = element("rights").headOption.flatMap(TextConstruct(_))
 
-  def authors: List[Person] = (wrapped \ atomSelector("author")).map(Person(_)).toList
+  def updated: DateTime = elementText("updated").headOption.map(parseDateTime(_)).get
 
-  def contributors: List[Person] = (wrapped \ atomSelector("contributor")).map(Person(_)).toList
+  def authors: List[Person] = element("author").map(Person(_)).toList
 
-  def categories: List[Category] = (wrapped \ atomSelector("category")).map(Category(_)).toList
+  def contributors: List[Person] = element("contributor").map(Person(_)).toList
 
-  def links: List[Link] = (wrapped \ atomSelector("link")).map(Link(_)).toList
+  def categories: List[Category] = element("category").map(Category(_)).toList
 
-  def withId(id: URI) = copy(removeChildren("id").copy(children = wrapped.children ++ List(simple("id", id.toString))))
+  def links: List[Link] = element("link").map(Link(_)).toList
 
-  def withTitle(title: TextConstruct) = copy(removeChildren("title").copy(children = wrapped.children ++ List(title.toXML("title"))))
+  def withId(id: URI) = copy(removeChildren("id")).addChild("id", id.toString)
 
-  def withRights(rights: TextConstruct) = copy(removeChildren("rights").copy(children = wrapped.children ++ List(rights.toXML("rights"))))
+  def withTitle(title: TextConstruct) = replaceChildren(atomSelector("title"), title.toXML("title").toGroup)
 
-  def withUpdated(updated: DateTime) = copy(removeChildren("updated").copy(children = wrapped.children ++ List(simple("updated", dateTimeToString(updated)))))
+  def withRights(rights: TextConstruct) = replaceChildren(atomSelector("rights"), rights.toXML("rights").toGroup)
 
-  def addAuthor(author: Person) = copy(wrapped.copy(children = wrapped.children ++ List(author.wrapped)))
+  def withUpdated(updated: DateTime) = copy(removeChildren("updated")).addChild("updated", dateTimeToString(updated))
 
-  def addContributor(contrib: Person) = copy(wrapped.copy(children = wrapped.children ++ List(contrib.wrapped)))
+  def addAuthor(author: Person) = addChild(author)
 
-  def addCategory(category: Category) = copy(wrapped.copy(children = wrapped.children ++ List(category.wrapped)))
+  def addContributor(contrib: Person) = addChild(contrib)
+
+  def addCategory(category: Category) = addChild(category)
 
   def addLink(link: Link) = addLinks(Seq(link))
 
-  def addLinks(toAdd: Seq[Link]) = copy(wrapped.copy(children = wrapped.children ++ toAdd.map(_.wrapped)))
+  def addLinks(links: Seq[Link]) = addChildren(links)
 
   protected def removeChildren(name: String): Elem = {
     super.removeChildren(atomSelector(name))

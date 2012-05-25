@@ -22,17 +22,17 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 trait FeedLike extends AtomLike {
-  def subtitle: Option[TextConstruct] = (wrapped \ atomSelector("subtitle")).headOption.flatMap(TextConstruct(_))
+  def subtitle: Option[TextConstruct] = element("subtitle").headOption.flatMap(TextConstruct(_))
 
-  def entries: List[Entry] = (wrapped \ atomSelector("entry")).map(Entry(_)).toList
+  def entries: List[Entry] = element("entry").map(Entry(_)).toList
 
-  def logo = (wrapped \ atomSelector("logo") \ text).headOption.map(URI.create(_))
+  def logo = elementText("logo").headOption.map(URI.create(_))
 
-  def icon = (wrapped \ atomSelector("icon") \ text).headOption.map(URI.create(_))
+  def icon = elementText("icon").headOption.map(URI.create(_))
 
   def withSubtitle(title: TextConstruct) = copy(removeChildren("subtitle").copy(children = wrapped.children ++ List(title.toXML("subtitle"))))
 
-  def withLogo(logo: URI) = copy(removeChildren("logo").copy(children = wrapped.children ++ List(simple("logo", logo.toString))))
+  def withLogo(logo: URI) = copy(removeChildren("logo")).addChild("logo", logo.toString)
 
-  def withIcon(icon: URI) = copy(removeChildren("icon").copy(children = wrapped.children ++ List(simple("icon", icon.toString))))
+  def withIcon(icon: URI) = copy(removeChildren("icon")).addChild("icon", icon.toString)
 }

@@ -18,16 +18,7 @@ package no.arktekk.atom
 
 import com.codecommit.antixml.QName
 
-/**
- * Created by IntelliJ IDEA.
- * User: maedhros
- * Date: 1/2/12
- * Time: 12:15 PM
- * To change this template use File | Settings | File Templates.
- */
-
-case class NamespacedName private(namespace: Option[String], prefix: Option[String], name: String) {
-  require(namespace != null, "Null namespace not allowed")
+final class NamespacedName private(val namespace: Option[String], val prefix: Option[String], val name: String) {
   require(name != null, "Null name not allowed")
 
   lazy val qName = QName(prefix, name)
@@ -35,9 +26,20 @@ case class NamespacedName private(namespace: Option[String], prefix: Option[Stri
   def toMap = {
     if (!namespace.isDefined) Map[String, String]() else Map((prefix.getOrElse("") -> namespace.get))
   }
+
+  override def equals(obj: Any) = obj match {
+    case NamespacedName(ns, p, n) => ns == namespace && p == prefix && name == name
+    case _ => false
+  }
+
+  override def hashCode() = 31 * (namespace.hashCode() + prefix.hashCode() + name.hashCode)
 }
 
 object NamespacedName {
+  private def apply(ns: Option[String], prefix: Option[String], name: String): NamespacedName = {
+    new NamespacedName(ns.filterNot(_.trim.isEmpty), prefix, name)
+  }
+
   def apply(namespace: String, prefix: String, name: String): NamespacedName = apply(Some(namespace), Some(prefix), name)
 
   def apply(namespace: String, qname: QName): NamespacedName = apply(Some(namespace), qname.prefix, qname.name)
@@ -47,4 +49,6 @@ object NamespacedName {
   def apply(name: String): NamespacedName = apply(None, None, name)
 
   implicit def toNamespacedName(name: String): NamespacedName = apply(name)
+
+  def unapply(nn: NamespacedName) = Some((nn.namespace, nn.prefix, nn.name))
 }

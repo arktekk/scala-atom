@@ -20,6 +20,7 @@ import com.codecommit.antixml.Group._
 import com.codecommit.antixml._
 import com.codecommit.antixml.QName._
 import com.codecommit.antixml.Selector._
+import extension.SimpleTextElementWrapper
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -31,7 +32,12 @@ sealed trait TextConstruct {
 
   def toString: String
 
-  def toXML(name: String, prefix: Option[String] = None) = withChildren(name, Attributes(("type", textType.value)), Group(value), prefix)
+  def toXML(name: String, prefix: Option[String] = None) = {
+    ElementWrapper.withNameAndChildren(
+      NamespacedName(Atom.namespace, QName(prefix, name)),
+      Group(value)
+    ).withAttribute("type", textType.value).wrapped
+  }
 }
 
 object TextConstruct {

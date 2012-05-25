@@ -36,6 +36,6 @@ case class Generator private[atom](wrapped: Elem) {
 object Generator {
   def apply(uri: Option[URI], version: Option[String], value: String): Generator = {
     val attr = new Attributes(Map[QName, String]() ++ uri.map((QName(None, "uri") -> _.toString)) ++ version.map((QName(None, "version") -> _)))
-    Generator(simple("generator", value, attr))
+    Generator(ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, "generator"), attr).addChild(value).wrapped)
   }
 }

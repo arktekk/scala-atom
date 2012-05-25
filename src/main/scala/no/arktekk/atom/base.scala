@@ -39,6 +39,16 @@ sealed trait Base extends AtomLike {
   }
 }
 
+private [atom] object BaseBuilder {
+  def apply(name:String, id: URI, title: TextConstruct, updated: DateTime, author: Option[Person] = None): Elem = {
+    ElementWrapper.withName(NamespacedName(Atom.namespace, name)).
+      addChild("id", id.toString).
+      addChild(title.toXML("title")).
+      addChild("updated", dateTimeToString(updated)).
+      addChildren(author.toSeq).wrapped
+  }
+}
+
 case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
   require(isValid(wrapped, "feed"))
 
@@ -60,10 +70,7 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
 
 object Feed {
   def apply(id: URI, title: TextConstruct, updated: DateTime, author: Person): Feed = {
-    val elem = withChildren("feed", children = Group(
-      simple("id", id.toString), title.toXML("title"), simple("updated", dateTimeToString(updated))
-    ))
-    Feed(elem).addAuthor(author)
+    Feed(BaseBuilder("feed", id, title, updated, Some(author)))
   }
 
   def apply(title: String, updated: DateTime, author: Person): Feed = {
@@ -83,7 +90,11 @@ case class Entry private[atom](wrapped: Elem) extends Base with EntryLike {
 }
 
 object Entry {
+  def apply(id: URI, title: TextConstruct, updated: DateTime, author: Option[Person] = None): Entry = {
+    Entry(BaseBuilder("entry", id, title, updated, author))
+  }
+
   def apply(id: URI, title: String, updated: DateTime): Entry = {
-    Entry(onlyElementName("entry").copy(children = Group(simple("id", id.toString), simple("title", title), simple("updated", dateTimeToString(updated)))))
+    apply(id, TextConstruct.Textual(title), updated)
   }
 }

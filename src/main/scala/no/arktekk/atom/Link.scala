@@ -37,24 +37,24 @@ case class Link private[atom](wrapped: Elem) extends ElementWrapper {
   def mediaType: Option[MediaType] = wrapped.attrs.get("type").flatMap(MediaType(_))
 
   def title = wrapped.attrs.get("title")
-  
-  def withTitle(title: String) = copy(wrapped.copy(attrs = wrapped.attrs + ("title" -> title)))
 
-  def withHref(href: URI) = copy(wrapped.copy(attrs = wrapped.attrs + ("href" -> href.toString)))
+  def withTitle(title: String) = withAttribute("title", title)
 
-  def withRel(rel: String) = copy(wrapped.copy(attrs = wrapped.attrs + ("rel" -> rel)))
+  def withHref(href: URI) = withAttribute("href", href.toString)
 
-  def withMediaType(mt: MediaType) = copy(wrapped.copy(attrs = wrapped.attrs + ("type" -> mt.toString)))
+  def withRel(rel: String) = withAttribute("rel", rel)
+
+  def withMediaType(mt: MediaType) = withAttribute("type", mt.toString)
 }
 
 
 object Link {
   private def toAttributes[A](name: String, option: Option[A]) = {
-    option.map(x => (QName(None, name) -> x.toString)).toList
+    option.map(x => (QName(None, name) -> x.toString))
   }
 
   def apply(href: URI, rel: String, mediaType: Option[MediaType] = None, title: Option[String] = None): Link = {
     val attrs = List[(QName, String)](("href" -> href.toString), ("rel" -> rel)) ++ toAttributes("type", mediaType) ++ toAttributes("title", title)
-    Link(onlyElementName("link").copy(attrs = Attributes() ++ attrs))
+    Link(ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, "link"), Attributes() ++ attrs).wrapped)
   }
 }

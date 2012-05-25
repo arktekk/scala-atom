@@ -39,18 +39,6 @@ trait Implicits {
 
   def dateTimeToString(dateTime: DateTime) = dateTimeFormat.print(dateTime)
 
-  private[atom] def onlyElementName(name: String) = {
-    Elem(None, name, Attributes(), namespaces, Group.empty)
-  }
-
-  private[atom] def simple(name: String, value: String, attr: Attributes = Attributes()) = {
-    withChildren(name, attr, Seq(Text(value)))
-  }
-
-  private[atom] def withChildren(name: String, attr: Attributes = Attributes(), children: Seq[Node], prefix: Option[String] = None) = {
-    Elem(None, name, attr, namespaces, Group.empty ++ children)
-  }
-
   implicit def string2URI(iri: String): URI = URI.create(iri)
 
   implicit def string2TextConstruct(text: String): TextConstruct = TextConstruct.Textual(text)

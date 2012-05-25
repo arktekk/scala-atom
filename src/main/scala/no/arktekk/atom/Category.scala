@@ -43,6 +43,6 @@ object Category {
         ("term" -> term) ++
         label.map((QName(None, "label") -> _))
     )
-    Category(onlyElementName("category").copy(attrs = attrs))
+    Category(ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, "category"), attrs).wrapped)
   }
 }
