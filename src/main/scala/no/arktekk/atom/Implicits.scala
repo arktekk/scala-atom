@@ -16,9 +16,10 @@
 
 package no.arktekk.atom
 
-import org.joda.time.format.{DateTimeFormatter, DateTimeFormat}
+import org.joda.time.format.DateTimeFormat
 import org.joda.time.DateTime
 import java.net.URI
+import scala.util.control.Exception._
 import com.codecommit.antixml._
 import Atom._
 
@@ -31,14 +32,9 @@ trait Implicits {
   private val dateTimeFormatNoMillis = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC()
 
   def parseDateTime(input: String): DateTime = {
-    val formatters = List(dateTimeFormat, dateTimeFormatNoMillis)
-
-    def format(formatter: DateTimeFormatter): Option[DateTime] = try {Some(formatter.parseDateTime(input))} catch {case _ => None}
-
-    val parser = formatters.map(format(_))
-    val right = parser.find(_.isDefined).flatMap(identity)
-
-    right.getOrElse(throw new IllegalArgumentException(input + " is not a valid Atom date"))
+    val dt = allCatch.opt(dateTimeFormat.parseDateTime(input)) orElse
+      allCatch.opt(dateTimeFormatNoMillis.parseDateTime(input))
+    dt.getOrElse(throw new IllegalArgumentException(input + " is not a valid Atom date"))
   }
 
   def dateTimeToString(dateTime: DateTime) = dateTimeFormat.print(dateTime)
@@ -68,7 +64,7 @@ trait Implicits {
     def isDefinedAt(node: Node) = node match {
       case e@Elem(prefix, `element`, _, scopes, _) =>
         val x = scopes.find({
-          case (_, `namespace`) => true;
+          case (_, `namespace`) => true
           case _ => false
         }).map(_._1)
         prefix.orElse(Some("")).equals(x)
