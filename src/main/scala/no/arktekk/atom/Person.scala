@@ -16,36 +16,28 @@
 package no.arktekk.atom
 
 
-import com.codecommit.antixml.Selector._
 import com.codecommit.antixml._
-import extension.SimpleTextElementWrapper
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Person private[atom](wrapped: Elem) extends ElementWrapper {
+case class Person private[atom](wrapped: Elem) extends PersonLike {
 
   type T = Person
 
   val self = this
 
   def copy(elem: Elem) = new Person(elem)
-
-  def name = (wrapped \ "name" \ text).head
-
-  def email = (wrapped \ "email" \ text).headOption
-
-  def url = (wrapped \ "url" \ text).headOption
 }
 
 object Person {
-  def author(name: String): Person = Person(
-    ElementWrapper.withName(NamespacedName(Atom.namespace, "author")).
-      addChild(SimpleTextElementWrapper(NamespacedName(Atom.namespace, "name"), name)).wrapped
-  )
 
-  def contributor(name: String): Person = Person(
-    ElementWrapper.withName(NamespacedName(Atom.namespace, "contributor")).
-       addChild(SimpleTextElementWrapper(NamespacedName(Atom.namespace, "name"), name)).wrapped
-  )
+  def apply(name: NamespacedName): Person = {
+    apply(ElementWrapper.withName(name).wrapped)
+  }
+
+  def author(name: String): Person = apply(NamespacedName(Atom.namespace, "author")).withName(name)
+
+
+  def contributor(name: String): Person = apply(NamespacedName(Atom.namespace, "contributor")).withName(name)
 }
