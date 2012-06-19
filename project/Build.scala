@@ -12,6 +12,7 @@ object Build extends sbt.Build {
     organization := "no.arktekk.atom",
     scalaVersion := "2.9.1",
     crossScalaVersions := Seq("2.9.1"),
+    scalacOptions := Seq("-deprecation"),
     deployRepository <<= (version) apply {
       (v: String) => if (v.trim().endsWith("SNAPSHOT")) Resolvers.sonatypeNexusSnapshots else Resolvers.sonatypeNexusStaging
     },
