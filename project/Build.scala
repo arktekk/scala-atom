@@ -11,7 +11,6 @@ object Build extends sbt.Build {
   lazy val buildSettings = Defaults.defaultSettings ++ Aether.aetherSettings ++ Seq(
     organization := "no.arktekk.atom",
     scalaVersion := "2.9.1",
-    crossScalaVersions := Seq("2.9.1"),
     scalacOptions := Seq("-deprecation"),
     deployRepository <<= (version) apply {
       (v: String) => if (v.trim().endsWith("SNAPSHOT")) Resolvers.sonatypeNexusSnapshots else Resolvers.sonatypeNexusStaging
@@ -33,7 +32,7 @@ object Build extends sbt.Build {
         "joda-time" % "joda-time" % "2.0",
 	    	"org.joda" % "joda-convert" % "1.1",
 		    "com.codecommit" %% "anti-xml" % antiXMLversion,
-        "org.specs2" %% "specs2" % "1.6.1" % "test"
+        "org.specs2" %% "specs2" % "1.11" % "test"
       ),
     publish <<= Aether.deployTask.init,
     manifestSetting
