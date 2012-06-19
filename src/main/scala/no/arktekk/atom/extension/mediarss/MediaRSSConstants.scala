@@ -22,5 +22,4 @@ package no.arktekk.atom.extension.mediarss
 object MediaRSSConstants {
   val ns = "http://search.yahoo.com/mrss/"
   val prefix = "media"
-  val nsMap = Map((ns -> prefix))
 }
