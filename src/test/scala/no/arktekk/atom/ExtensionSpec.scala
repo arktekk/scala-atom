@@ -29,11 +29,11 @@ import Atom._
 class ExtensionSpec extends Specification {
   "A parser that handles extensions" should {
     "parse correctly" in {
-      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml"))).right.get
+      val entry = Atom.parseEntry(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml"))).right.get
       entry must not be null
     }
     "find extension in parsed" in {
-      val entry : Entry = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml"))).right.get
+      val entry = Atom.parseEntry(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-extension.xml"))).right.get
       val simple = HelloExtension.fromLike(entry)
       simple.value mustEqual "Hi!"
     }

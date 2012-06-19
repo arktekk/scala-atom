@@ -28,14 +28,14 @@ import no.arktekk.atom._
 class ThreadingSpec extends Specification {
   "Atom threading extension" should {
     "extract attributes correctly" in {
-      val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/extensions/thr-count-updated.xml"))).right.get
+      val entry = Atom.parseEntry(Source.fromInputStream(getClass.getResourceAsStream("/extensions/thr-count-updated.xml"))).right.get
       val link = entry.linkByRel("replies").get
       val thr = link.extract(AtomLinkThreadingExtension)
       thr should be equalTo(AtomThreading(Some(10), Some(parseDateTime("2005-07-28T12:10:00Z"))))
     }
 
     "extract inreply-to correctly" in {
-      val entry : Entry = Atom.parse(Source.fromInputStream(getClass.getResourceAsStream("/extensions/in-reply-to.xml"))).right.get
+      val entry = Atom.parseEntry(Source.fromInputStream(getClass.getResourceAsStream("/extensions/in-reply-to.xml"))).right.get
       val inReplyTo = entry.extract(InReplyToAtomExtension)
       inReplyTo.get.ref should be equalTo(URI.create("tag:example.org,2005:1"))
       inReplyTo.get.mediaType should be equalTo(MediaType("application/xhtml+xml"))

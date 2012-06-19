@@ -43,32 +43,21 @@ object Atom {
   val atompubNamespace = "http://www.w3.org/2007/app"
   val namespaces: Map[String, String] = Map(("", Atom.namespace))
 
+  def parseFeed(src: IOSource): Either[Exception, Feed] = parseDocument(src, "feed", namespace, Feed(_))
 
-  def parse[A <: Base](src: IOSource): Either[Exception, A] = {
+  def parseEntry(src: IOSource): Either[Exception, Entry] = parseDocument(src, "entry", namespace, Entry(_))
+
+  def parseService(src: IOSource): Either[Exception, Service] = parseDocument(src, "service", atompubNamespace, Service(_))
+
+  def parseCategories(src: IOSource): Either[Exception, Categories] = parseDocument(src, "categories", atompubNamespace, Categories(_))
+
+  def parseDocument[A](src: IOSource, root: String, namespace: String, f: (Elem) => A) = {
     try {
       val elem = XML.fromSource(src)
       elem match {
-        case e@Elem(_, "feed", _, _, _) if (e.scope.find {
+        case e@Elem(_, `root`, _, _, _) if (e.scope.find {
           case (_, ns) => ns == namespace
-        }.isDefined) => Right(Feed(e).asInstanceOf[A])
-        case e@Elem(_, "entry", _, _, _) if (e.scope.find {
-          case (_, ns) => ns == namespace
-        }.isDefined) => Right(Entry(e).asInstanceOf[A])
-        case e => Left(new IllegalArgumentException("unexpected XML here:\n%s".format(e)))
-      }
-    }
-    catch {
-      case e: Exception => Left(e)
-    }
-  }
-
-  def parseService(src: IOSource): Either[Exception, Service] = {
-    try {
-      val elem = XML.fromSource(src)
-      elem match {
-        case e@Elem(_, "service", _, _, _) if (e.scope.find {
-          case (_, ns) => ns == atompubNamespace
-        }.isDefined) => Right(Service(e))
+        }.isDefined) => Right(f(e))
         case e => Left(new IllegalArgumentException("unexpected XML here:\n%s".format(e)))
       }
     }

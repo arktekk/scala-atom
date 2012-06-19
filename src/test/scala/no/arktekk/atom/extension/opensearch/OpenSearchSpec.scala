@@ -16,12 +16,12 @@ import org.joda.time.DateTime
 class OpenSearchSpec extends Specification {
   "A parser that supports opensearch" should {
     "parse correctly" in {
-      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/extensions/opensearch.xml"))).right.get
+      val feed = Atom.parseFeed(IOSource.fromInputStream(getClass.getResourceAsStream("/extensions/opensearch.xml"))).right.get
       feed must not be null
     }
 
     "Find correct extensions" in {
-      val feed : Feed = Atom.parse(IOSource.fromInputStream(getClass.getResourceAsStream("/extensions/opensearch.xml"))).right.get
+      val feed = Atom.parseFeed(IOSource.fromInputStream(getClass.getResourceAsStream("/extensions/opensearch.xml"))).right.get
       OpenSearchResponseAtomExtension.fromLike(feed).itemsPerPage must be equalTo(Some(10))
     }
     "Add extensions" in {
