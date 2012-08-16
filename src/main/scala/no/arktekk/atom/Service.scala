@@ -34,6 +34,8 @@ case class Service(wrapped: Elem) extends ElementWrapper {
   protected def self = this
 
   def copy(elem: Elem) = new Service(elem)
+
+  def findWorkspace(title: String): Option[Workspace] = workspaces.find(_.title.filter(_.toString == title).isDefined)
 }
 
 object Service {

@@ -40,6 +40,8 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
   protected def self = this
 
   def copy(elem: Elem) = new Workspace(elem)
+
+  def findCollection(title: String): Option[Collection] = collections.find(_.title.filter(_.toString == title).isDefined)
 }
 
 object Workspace {
