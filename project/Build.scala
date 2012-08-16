@@ -1,5 +1,4 @@
 import aether._
-import AetherKeys._
 import sbt._
 import sbt.Keys._
 import xml.Group
@@ -8,19 +7,16 @@ object Build extends sbt.Build {
 
   val antiXMLversion = "0.3"
 
-  lazy val buildSettings = Defaults.defaultSettings ++ Aether.aetherSettings ++ Seq(
+  lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "no.arktekk.atom",
     scalaVersion := "2.9.1",
     scalacOptions := Seq("-deprecation"),
-    deployRepository <<= (version) apply {
-      (v: String) => if (v.trim().endsWith("SNAPSHOT")) Resolvers.sonatypeNexusSnapshots else Resolvers.sonatypeNexusStaging
+    publishTo <<= (version) apply {
+      (v: String) => if (v.trim().endsWith("SNAPSHOT")) Some(Resolvers.sonatypeNexusSnapshots) else Some(Resolvers.sonatypeNexusStaging)
     },
     pomIncludeRepository := { x => false },
-    aetherCredentials := {
-      val cred = Path.userHome / ".sbt" / "arktekk-credentials"
-      if (cred.exists()) Some(Credentials(cred)) else None
-    }
-  )
+    credentials += Credentials(Path.userHome / ".sbt" / "arktekk-credentials")
+  ) ++ Aether.aetherPublishSettings
 
   lazy val root = Project(
     id = "scala-atom",
@@ -29,12 +25,11 @@ object Build extends sbt.Build {
       description := "Scala Atom",
       name := "scala-atom", 
       libraryDependencies := Seq(
-        "joda-time" % "joda-time" % "2.0",
+        "joda-time" % "joda-time" % "2.1",
 	    	"org.joda" % "joda-convert" % "1.1",
 		    "com.codecommit" %% "anti-xml" % antiXMLversion,
         "org.specs2" %% "specs2" % "1.11" % "test"
       ),
-    publish <<= Aether.deployTask.init,
     manifestSetting
     ) ++ mavenCentralFrouFrou
   )
