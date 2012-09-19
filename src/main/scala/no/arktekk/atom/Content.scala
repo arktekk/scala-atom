@@ -26,12 +26,20 @@ sealed trait Content {
 }
 
 object Content {
+  private val elementSelector = new Selector[Elem] {
+    def apply(v1: Node) = v1.asInstanceOf[Elem]
+
+    def isDefinedAt(x: Node) = x match {
+      case x: Elem => true
+      case _ => false
+    }
+  }
 
   def apply(elem: Elem): Option[Content] = {
     val mediaType = elem.attrs.get("type").flatMap(MediaType(_))
     mediaType match {
       case mt@Some(_) if (elem.attrs.contains("href")) => Some(External(URI.create(elem.attrs("href")), mt))
-      case Some(mt) => Some(Inline(mt, elem.children.head.asInstanceOf[Elem]))
+      case Some(mt) => (elem \ elementSelector).headOption.map(Inline(mt, _))
       case None => TextConstruct(elem).map(Text(_))
     }
   }
@@ -52,5 +60,6 @@ object Content {
       if (mediaType.isDefined) elem.withAttribute("type", mediaType.get.toString).wrapped else elem.wrapped
     }
   }
+
 
 }

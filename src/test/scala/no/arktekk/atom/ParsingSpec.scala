@@ -19,6 +19,7 @@ package no.arktekk.atom
 import org.specs2.mutable.Specification
 import io.{Source => IOSource}
 import java.net.URI
+import com.codecommit.antixml.{Group, Attributes, Elem}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -54,6 +55,19 @@ class ParsingSpec extends Specification {
       person.email mustEqual Some("test@example.com")
       person.url mustEqual Some("http://www.example.org")
       entry.summary.get.asInstanceOf[Content.Text].text.toString mustEqual "summary"
+    }
+
+    "Verify that parsing content with lots of whitespace works" in {
+      val entry = Atom.parseEntry(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-with-content.xml"))).right.get
+      entry.id mustEqual URI.create("urn:id:1")
+      entry.updated mustEqual parseDateTime("2011-01-01T08:00:00.00Z")
+      entry.authors.length mustEqual 1
+      val person: Person = entry.authors.head
+      person.name mustEqual "Someone"
+      person.email mustEqual Some("test@example.com")
+      person.url mustEqual Some("http://www.example.org")
+      entry.summary.get.asInstanceOf[Content.Text].text.toString mustEqual "summary"
+      entry.content.get.asInstanceOf[Content.Inline].elem must beEqualTo(Elem(None, "node", Attributes(), Map("" -> "foo:bar"), Group.empty))
     }
 
     "fail with parsing entry-without-namespace-def.xml" in {
