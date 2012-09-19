@@ -70,6 +70,11 @@ class ParsingSpec extends Specification {
       entry.content.get.asInstanceOf[Content.Inline].elem must beEqualTo(Elem(None, "node", Attributes(), Map("" -> "foo:bar"), Group.empty))
     }
 
+    "Verify that parsing a datetime with timezone works" in {
+      val entry = Atom.parseEntry(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-datetime-timezone.xml"))).right.get
+      entry.updated mustEqual parseDateTime("2011-01-01T08:00:00.00+02:00")
+    }
+
     "fail with parsing entry-without-namespace-def.xml" in {
       val ex = Atom.parseEntry(IOSource.fromInputStream(getClass.getResourceAsStream("/entry-without-namespace-def.xml"))).left.get
       ex must not be null
