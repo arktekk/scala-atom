@@ -30,10 +30,14 @@ trait Implicits {
 
   private val dateTimeFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC()
   private val dateTimeFormatNoMillis = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC()
+  private val dateTimeFormatWithZone = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+  private val dateTimeFormatWithZoneNoMillis = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ")
 
   def parseDateTime(input: String): DateTime = {
     val dt = allCatch.opt(dateTimeFormat.parseDateTime(input)) orElse
-      allCatch.opt(dateTimeFormatNoMillis.parseDateTime(input))
+      allCatch.opt(dateTimeFormatNoMillis.parseDateTime(input)) orElse
+      allCatch.opt(dateTimeFormatWithZone.parseDateTime(input)) orElse
+      allCatch.opt(dateTimeFormatWithZoneNoMillis.parseDateTime(input))
     dt.getOrElse(throw new IllegalArgumentException(input + " is not a valid Atom date"))
   }
 
