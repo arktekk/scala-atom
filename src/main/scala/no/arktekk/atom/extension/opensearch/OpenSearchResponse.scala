@@ -59,11 +59,20 @@ object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearc
 
   def fromLike(like: FeedLike) = {
     val numbers = numberExt.fromLike(like)
-    val queries = (like.wrapped \ namespaceSelector(ns, "query")).map(_.asInstanceOf[Elem]).map(Query(_))
+    val queries = QueriesAtomExtension.fromLike(like)
     OpenSearchResponse(queries, numbers._1, numbers._2, numbers._3)
   }
 
   def toChildren(a: OpenSearchResponse, wrapper: ElementWrapper) = {
-    a.queries ++ numberExt.toChildren((a.totalResults, a.itemsPerPage, a.startIndex), wrapper)
+    QueriesAtomExtension.toChildren(a.queries, wrapper) ++ numberExt.toChildren((a.totalResults, a.itemsPerPage, a.startIndex), wrapper)
   }
+}
+
+object QueriesAtomExtension extends AtomExtension[ElementWrapper, Seq[Query]] {
+
+  def fromLike(like: ElementWrapper) = {
+    (like.wrapped \ Query.selector).map(Query(_))
+  }
+
+  def toChildren(a: Seq[Query], wrapper: ElementWrapper) = a
 }
