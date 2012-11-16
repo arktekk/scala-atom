@@ -19,58 +19,67 @@ import java.util.Locale
 import java.nio.charset.Charset
 import com.codecommit.antixml.{Group, Attributes, Elem}
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
+import no.arktekk.atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Query(role: Role, attributes: Attributes = Attributes(), namespaces: Map[String, String] = Map((prefix -> ns))) {
-  def title = attributes.get("title")
+case class Query private[opensearch](wrapped: Elem) extends ElementWrapper{
 
-  def searchTerms = attributes.get("searchTerms")
+  type T = Query
 
-  def count = attributes.get("count").map(_.toInt)
+  protected def self = this
 
-  def totalResults = attributes.get("totalResults").map(_.toInt)
+  def copy(elem: Elem) = new Query(elem)
 
-  def startIndex = attributes.get("startIndex").map(_.toInt)
+  def role = getAttribute("role").map(Role(_)).get
 
-  def startPage = attributes.get("startPage").map(_.toInt)
+  def title = getAttribute("title")
 
-  def inputEncoding = attributes.get("inputEncoding").map(Charset.forName(_))
+  def searchTerms = getAttribute("searchTerms")
 
-  def outputEncoding = attributes.get("outputEncoding").map(Charset.forName(_))
+  def count = getAttribute("count").map(_.toInt)
 
-  def getAttribute(name: String) = attributes.get(name)
+  def totalResults = getAttribute("totalResults").map(_.toInt)
 
-  def withRole(role: Role) = copy(role)
+  def startIndex = getAttribute("startIndex").map(_.toInt)
+
+  def startPage = getAttribute("startPage").map(_.toInt)
+
+  def inputEncoding = getAttribute("inputEncoding").map(Charset.forName(_))
+
+  def outputEncoding = getAttribute("outputEncoding").map(Charset.forName(_))
+
+  def withRole(role: Role) = withAttribute("role", role.name)
 
   def withTitle(title: String) = withAttribute("title", title)
 
   def withSearchTerms(terms: String) = withAttribute("searchTerms", terms)
-  
+
   def withCount(count: Int) = withAttribute("count", count.toString)
-  
+
   def withTotalResults(results: Int) = withAttribute("totalResults", results.toString)
-  
+
   def withStartIndex(index: Int) = withAttribute("startIndex", index.toString)
-  
+
   def withStartPage(page: Int) = withAttribute("startPage", page.toString)
-  
+
   def withInputEncoding(encoding: Charset) = withAttribute("inputEncoding", encoding.name())
-  
+
   def withOutputEncoding(encoding: Charset) = withAttribute("outputEncoding", encoding.name())
-  
-  def withAttribute(name: String, value: String) = copy(attributes = attributes + (name -> value))
-  
-  def addNamespace(prefix: String,  namespace: String) = copy(namespaces = namespaces + (prefix -> namespace))
-  
-  def toElem = Elem(Some(prefix), "Query", attributes + ("role" -> role.name), namespaces, Group.empty)
+
+  def getAttribute(name: String) = wrapped.attrs.get(name)
 }
 
 object Query {
-  def apply(elem: Elem): Query = {
-    val role = elem.attrs.get("role").map(Role(_)).getOrElse(Role.REQUEST)
-    Query(role, elem.attrs)
+  val selector = namespaceSelector(ns, "Query")
+
+  def apply(role: Role): Query = {
+    Query(ElementWrapper.withNameAndAttributes(NamespacedName(ns, prefix, "Query"), Attributes("role" -> role.name)).wrapped)
+  }
+
+  def apply(): Query = {
+    apply(Role.REQUEST)
   }
 }
 
