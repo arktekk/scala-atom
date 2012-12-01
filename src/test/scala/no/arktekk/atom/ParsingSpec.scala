@@ -19,7 +19,8 @@ package no.arktekk.atom
 import org.specs2.mutable.Specification
 import io.{Source => IOSource}
 import java.net.URI
-import com.codecommit.antixml.{Group, Attributes, Elem}
+import com.codecommit.antixml._
+import scala.Some
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -67,7 +68,7 @@ class ParsingSpec extends Specification {
       person.email mustEqual Some("test@example.com")
       person.url mustEqual Some("http://www.example.org")
       entry.summary.get.asInstanceOf[Content.Text].text.toString mustEqual "summary"
-      entry.content.get.asInstanceOf[Content.Inline].elem must beEqualTo(Elem(None, "node", Attributes(), Map("" -> "foo:bar"), Group.empty))
+      entry.content.get.asInstanceOf[Content.Inline].elem must beEqualTo(Elem(NamespaceBinding("foo:bar"), "node"))
     }
 
     "Verify that parsing a datetime with timezone works" in {

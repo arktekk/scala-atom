@@ -38,7 +38,10 @@ import java.net.URI
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Categories(wrapped: Elem) extends ElementWrapper {
+case class Categories private[atom] (wrapped: Elem) extends ElementWrapper {
+  require(Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong namespace defined")
+  require(wrapped.name == "categories", "Wrong name of element")
+
   def href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
 
   def withHref(uri: URI) = withAttribute("href", uri.toString)
@@ -47,11 +50,11 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
 
   def scheme: Option[String] = wrapped.attrs.get("scheme")
 
-  def categories: Seq[Category] = (wrapped \ namespaceSelector(Atom.namespace, "category")).map(Category(_))
+  def categories: Seq[Category] = (wrapped \ atomSelector("category")).map(Category(_))
 
   def addCategory(cat: Category) = addChild(cat)
 
-  def withCategories(cats: Seq[Category]) = replaceChildren(namespaceSelector(Atom.namespace, "category"), cats)
+  def withCategories(cats: Seq[Category]) = replaceChildren(atomSelector("category"), cats)
 
   def withFixed(fixed: Boolean) = withAttribute("fixed", if (fixed) "yes" else "no")
 
@@ -65,7 +68,7 @@ case class Categories(wrapped: Elem) extends ElementWrapper {
 }
 
 object Categories {
-  def apply(): Categories = apply(ElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "categories")).wrapped).
+  def apply(): Categories = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "categories")).
     addNamespace(Some(""), Atom.namespace)
 
   def apply(href: URI): Categories = apply().withHref(href)

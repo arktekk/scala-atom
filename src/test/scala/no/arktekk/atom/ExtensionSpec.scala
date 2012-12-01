@@ -15,13 +15,12 @@
  */
 package no.arktekk.atom
 
-import extension.{SimpleTextElementWrapper, AtomExtension}
+import extension.AtomExtension
 import org.specs2.mutable.Specification
 import io.{Source => IOSource}
 import com.codecommit.antixml._
 import java.net.URI
 import org.joda.time.DateTime
-import Atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -51,7 +50,7 @@ class ExtensionSpec extends Specification {
 case class Hello(value: String)
 
 object HelloExtension extends AtomExtension[Entry, Hello] {
-  def fromLike(like: Entry) = new Hello((like.wrapped \ namespaceSelector("urn:ext:ext", "hello") \ text).head)
+  def fromLike(like: Entry) = new Hello((like.wrapped \ (NSRepr("urn:ext:ext"), "hello") \ text).head)
 
-  def toChildren(a: Hello, w: ElementWrapper) = Seq(SimpleTextElementWrapper(NamespacedName("urn:ext:ext", "ext", "hello"), a.value))
+  def toChildren(a: Hello, w: ElementWrapper) = Seq(ElementWrapper.withNameAndText(NamespaceBinding("ext", "urn:ext:ext"), "hello", a.value))
 }

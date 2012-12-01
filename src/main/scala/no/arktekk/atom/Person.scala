@@ -31,13 +31,7 @@ case class Person private[atom](wrapped: Elem) extends PersonLike {
 }
 
 object Person {
+  def author(name: String): Person = apply(Elem(Atom.atom, "author")).withName(name)
 
-  def apply(name: NamespacedName): Person = {
-    apply(ElementWrapper.withName(name).wrapped)
-  }
-
-  def author(name: String): Person = apply(NamespacedName(Atom.namespace, "author")).withName(name)
-
-
-  def contributor(name: String): Person = apply(NamespacedName(Atom.namespace, "contributor")).withName(name)
+  def contributor(name: String): Person = apply(Elem(Atom.atom, "author")).withName(name)
 }

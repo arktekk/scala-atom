@@ -17,7 +17,7 @@
 package no.arktekk.atom
 
 import org.specs2.mutable.Specification
-import com.codecommit.antixml.QName
+import com.codecommit.antixml.{NamespaceBinding, PrefixedNamespaceBinding, QName}
 
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
@@ -26,14 +26,14 @@ import com.codecommit.antixml.QName
 class ElementWrapperSpec extends Specification {
   "an element wrapper" should {
     "register namespace correctly" in {
-      val elem = ElementWrapper.withName(NamespacedName("hello", "hello", "hello"))
-      val addedNamespace = elem.addNamespace(Some(""), Atom.namespace)
-      addedNamespace.wrapped.scope should beEqualTo(Map("hello" -> "hello", "" -> Atom.namespace))
+      val elem = ElementWrapper.withName(NamespaceBinding("hello", "hello"), "hello")
+      val addedNamespace = elem.addNamespace(None, Atom.namespace)
+      addedNamespace.wrapped.namespaces.toList should beEqualTo(NamespaceBinding(Atom.namespace, NamespaceBinding("hello", "hello")).toList)
     }
     "generate namespace correctly" in {
-      val elem = ElementWrapper.withName(NamespacedName("hello", QName(None, "hello")))
+      val elem = ElementWrapper.withName(NamespaceBinding("hello"), "hello")
       val addedNamespace = elem.addNamespace(Some(""), Atom.namespace)
-      addedNamespace.wrapped.scope should beEqualTo(Map("" -> "hello", "ns1" -> Atom.namespace))
+      addedNamespace.wrapped.namespaces.toList should beEqualTo(NamespaceBinding("ns1", Atom.namespace, NamespaceBinding("hello")).toList)
     }
   }
 }

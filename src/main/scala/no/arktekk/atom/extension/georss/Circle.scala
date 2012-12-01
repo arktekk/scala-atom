@@ -16,8 +16,8 @@
 
 package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.extension.SimpleTextElementWrapper
-import no.arktekk.atom.{ElementWrapper, NamespacedName}
+import no.arktekk.atom.ElementWrapper
+import com.codecommit.antixml.{NamespaceBinding, QName}
 
 /**
  * http://georss.org/simple
@@ -27,11 +27,11 @@ import no.arktekk.atom.{ElementWrapper, NamespacedName}
 case class Circle(point: Point, radius: Int) {
   def toValue(format: String) = point.toValue(format) + " " + radius
 
-  def toXML(format: String) = SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "circle"), toValue(format))
+  def toXML(format: String) = ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "circle", toValue(format))
 
   def toPointAndRadiusXML(format: String): Seq[ElementWrapper] = Seq(
     point.toXML(format),
-    SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "radius"), radius.toString)
+    ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "radius", radius.toString)
   )
 }
 

@@ -22,6 +22,7 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Link private[atom](wrapped: Elem) extends ElementWrapper {
+  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
   require(wrapped.name == "link")
 
   type T = Link
@@ -50,11 +51,11 @@ case class Link private[atom](wrapped: Elem) extends ElementWrapper {
 
 object Link {
   private def toAttributes[A](name: String, option: Option[A]) = {
-    option.map(x => (QName(None, name) -> x.toString))
+    option.map(x => (QName(name) -> x.toString))
   }
 
   def apply(href: URI, rel: String, mediaType: Option[MediaType] = None, title: Option[String] = None): Link = {
     val attrs = List[(QName, String)](("href" -> href.toString), ("rel" -> rel)) ++ toAttributes("type", mediaType) ++ toAttributes("title", title)
-    Link(ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, "link"), Attributes() ++ attrs).wrapped)
+    Link(Elem(Atom.atom, "link", Attributes(attrs : _*)))
   }
 }

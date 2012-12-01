@@ -17,8 +17,8 @@
 package no.arktekk.atom.extension.georss
 
 import java.text.DecimalFormat
-import no.arktekk.atom.NamespacedName
-import no.arktekk.atom.extension.SimpleTextElementWrapper
+import com.codecommit.antixml.{NamespaceBinding, QName}
+import no.arktekk.atom.ElementWrapper
 
 /**
  * http://georss.org/simple
@@ -33,7 +33,7 @@ case class Point(lat: Double, lon: Double) {
   }
 
   def toXML(format: String) = {
-    SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "point"), toValue(format))
+    ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "point", toValue(format))
   }
 }
 

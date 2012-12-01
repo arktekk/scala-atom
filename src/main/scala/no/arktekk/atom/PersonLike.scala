@@ -17,7 +17,6 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml._
-import extension.SimpleTextElementWrapper
 import java.net.URI
 
 /**
@@ -25,11 +24,11 @@ import java.net.URI
  */
 trait PersonLike extends ElementWrapper {
 
-  def name = (wrapped \ namespaceSelector(Atom.namespace, "name") \ text).head
+  def name = (wrapped \ atomSelector("name") \ text).head
 
-  def email = (wrapped \ namespaceSelector(Atom.namespace, "email") \ text).headOption
+  def email = (wrapped \ atomSelector("email") \ text).headOption
 
-  def url = (wrapped \ namespaceSelector(Atom.namespace, "url") \ text).headOption
+  def url = (wrapped \ atomSelector("url") \ text).headOption
 
   def withName(name: String) = replace("name", name)
 
@@ -38,8 +37,8 @@ trait PersonLike extends ElementWrapper {
   def withUrl(url: URI) = replace("url", url.toString)
 
   private def replace(name: String, value: String) = {
-    replaceChildren(namespaceSelector(Atom.namespace, name),
-      Seq(SimpleTextElementWrapper(NamespacedName(Atom.namespace, name), value))
+    replaceChildren(atomSelector(name),
+      Seq(ElementWrapper.withNameAndText(Atom.atom, name, value))
     )
   }
 }

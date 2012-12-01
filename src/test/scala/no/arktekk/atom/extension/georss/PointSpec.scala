@@ -19,8 +19,8 @@ package no.arktekk.atom.extension.georss
 import org.specs2.mutable.Specification
 import java.net.URI
 import org.joda.time.DateTime
-import no.arktekk.atom.extension.SimpleTextElementWrapper
-import no.arktekk.atom.{NamespacedName, Entry}
+import no.arktekk.atom.{ElementWrapper, Entry}
+import com.codecommit.antixml.{text => TextSelector, NamespaceBinding, QName}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -29,14 +29,14 @@ class PointSpec extends Specification {
   "A Point" should {
     "be deserialized correctly" in {
       val entry = Entry(URI.create("1"), "hei", new DateTime()).
-        addChild(SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, "foo", "point"), "23.23 0"))
+        addChild(ElementWrapper.withNameAndText(NamespaceBinding("foo", GeorssConstants.ns), "point", "23.23 0"))
       val point = entry.extract(PointAtomExtension()).head
       point.toValue("##.####") must beEqualTo("23.23 0")
     }
     "be serialized correctly" in {
       val point = Point(23.234567, 76.123546)
       val serialized = PointAtomExtension().toChildren(Some(point), null).head
-      serialized.value.get must beEqualTo(point.toValue("##.#####"))
+      (serialized.wrapped \ TextSelector).head must beEqualTo(point.toValue("##.#####"))
     }
   }
 }

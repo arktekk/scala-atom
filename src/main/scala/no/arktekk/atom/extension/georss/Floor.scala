@@ -1,5 +1,3 @@
-package no.arktekk.atom.extension.georss
-
 /*
  * Copyright 2012 Arktekk AS
  *
@@ -15,13 +13,15 @@ package no.arktekk.atom.extension.georss
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.extension.SimpleTextElementWrapper
-import no.arktekk.atom.NamespacedName
+import no.arktekk.atom.ElementWrapper
+import com.codecommit.antixml.{NamespaceBinding, QName}
+
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Floor(num: Int) {
-  def toXML = SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "floor"), num.toString)
+  def toXML = ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "floor", num.toString)
 }

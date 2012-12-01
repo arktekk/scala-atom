@@ -36,6 +36,8 @@ object Content {
   }
 
   def apply(elem: Elem): Option[Content] = {
+    require(Elem.validateNamespace(elem, Atom.namespace), "Wrong namespace defined")
+    require(Set("content", "summary").contains(elem.name), "Wrong name of element, Was: " + elem.name)
     val mediaType = elem.attrs.get("type").flatMap(MediaType(_))
     mediaType match {
       case mt@Some(_) if (elem.attrs.contains("href")) => Some(External(URI.create(elem.attrs("href")), mt))
@@ -49,15 +51,14 @@ object Content {
   }
 
   case class Inline(mediaType: MediaType, elem: Elem) extends Content {
-    private[atom] def toXML(name: String) = ElementWrapper.
-          withNameAndAttributes(NamespacedName(Atom.namespace, name), Attributes("type" -> mediaType.toString)).
-          addChild(ElementWrapper(elem)).wrapped
+    private[atom] def toXML(name: String) = Elem(Atom.atom, name, Attributes("type" -> mediaType.toString)).
+          addChild(elem)
   }
 
   case class External(href: URI, mediaType: Option[MediaType]) extends Content {
     private[atom] def toXML(name: String) = {
-      val elem = ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, name), Attributes("href" -> href.toString))
-      if (mediaType.isDefined) elem.withAttribute("type", mediaType.get.toString).wrapped else elem.wrapped
+      val elem = Elem(Atom.atom, name, Attributes("href" -> href.toString))
+      if (mediaType.isDefined) elem.withAttribute("type", mediaType.get.toString) else elem
     }
   }
 

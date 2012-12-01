@@ -22,12 +22,12 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Service(wrapped: Elem) extends ElementWrapper {
-  require(wrapped.name == "service" && wrapped.scope.find{case (_,y) => y == Atom.atompubNamespace}.isDefined, "Wrong name or namespace of wrapped element")
-  def workspaces : Seq[Workspace] = (wrapped \ namespaceSelector(Atom.atompubNamespace, "workspace")).map(Workspace(_))
+  require(wrapped.name == "service" && Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong name or namespace of wrapped element")
+  def workspaces : Seq[Workspace] = (wrapped \ atomPubSelector("workspace")).map(Workspace(_))
 
   def addWorkspace(workspace: Workspace) = addChild(workspace)
 
-  def withWorkspaces(workspaces: Seq[Workspace]) = replaceChildren(namespaceSelector(Atom.atompubNamespace, "workspace"), workspaces)
+  def withWorkspaces(workspaces: Seq[Workspace]) = replaceChildren(NSRepr(Atom.atompubNamespace) -> "workspace", workspaces)
 
   type T = Service
 
@@ -39,5 +39,5 @@ case class Service(wrapped: Elem) extends ElementWrapper {
 }
 
 object Service {
-  def apply(): Service = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "service")).wrapped)
+  def apply(): Service = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "service"))
 }

@@ -16,20 +16,19 @@
 
 package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.extension.{SimpleTextElementWrapper, OptionSelectableElementWrapperAtomExtension}
+import no.arktekk.atom.extension.OptionSelectableElementWrapperAtomExtension
 import no.arktekk.atom._
+import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 class PointAtomExtension(format: String = "###.#####") extends OptionSelectableElementWrapperAtomExtension[EntryLike, Point] {
-  protected def selector = namespaceSelector(GeorssConstants.ns, "point")
+  protected def selector = (NSRepr(GeorssConstants.ns), "point")
 
-  protected def function = (e) => Point(new SimpleTextElementWrapper(e).value.get).get
+  protected def function = (e) => Point((e \ text).head).getOrElse(throw new IllegalArgumentException("Wrong format"))
 
-  def toChildren(a: Option[Point], parent: ElementWrapper) = a.map( p =>
-    SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "point"), p.toValue(format))
-  ).toSeq
+  def toChildren(a: Option[Point], parent: ElementWrapper) = a.map(_.toXML(format)).toSeq
 }
 
 object PointAtomExtension {

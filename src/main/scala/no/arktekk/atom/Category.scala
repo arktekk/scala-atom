@@ -15,7 +15,6 @@
  */
 package no.arktekk.atom
 
-import collection.immutable.Map
 import com.codecommit.antixml._
 
 /**
@@ -26,23 +25,18 @@ case class Category private[atom](wrapped: Elem) extends ElementWrapper {
 
   protected val self = this
 
-  def scheme = wrapped.attrs.get("scheme")
+  def scheme = wrapped.attr("scheme")
 
-  def term = wrapped.attrs.get("term").get
+  def term = wrapped.attr("term").get
 
-  def label = wrapped.attrs.get("label")
+  def label = wrapped.attr("label")
 
   def copy(elem: Elem) = new Category(elem)
 }
 
 object Category {
   def apply(scheme: Option[String], term: String, label: Option[String]): Category = {
-    val attrs = new Attributes(
-      Map[QName, String]() ++
-        scheme.map((QName(None, "scheme") -> _.toString)) +
-        ("term" -> term) ++
-        label.map((QName(None, "label") -> _))
-    )
-    Category(ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, "category"), attrs).wrapped)
+    val attrs = Attributes() ++ scheme.map((QName("scheme") -> _.toString)) + ("term" -> term) ++ label.map((QName("label") -> _))
+    Category(Elem(NamespaceBinding(Atom.namespace), "category", attrs))
   }
 }

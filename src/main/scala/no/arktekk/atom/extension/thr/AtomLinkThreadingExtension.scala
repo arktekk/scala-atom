@@ -19,24 +19,25 @@ package no.arktekk.atom.extension.thr
 import org.joda.time.DateTime
 import no.arktekk.atom.extension.AtomExtension
 import no.arktekk.atom._
+import com.codecommit.antixml.QName
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 object AtomLinkThreadingExtension extends AtomExtension[Link, AtomThreading] {
-  val count = NamespacedName(ThreadingConstants.ns, ThreadingConstants.prefix, "count")
-  val updated = NamespacedName(ThreadingConstants.ns, ThreadingConstants.prefix, "updated")
+  val count = QName(Some(ThreadingConstants.prefix), "count")
+  val updated = QName(Some(ThreadingConstants.prefix), "updated")
 
   def fromLike(like: Link) = {
-    val c = like.wrapped.attrs.get(count.qName).map(_.toInt)
-    val u = like.wrapped.attrs.get(updated.qName).map(parseDateTime(_))
+    val c = like.attr(count).map(_.toInt)
+    val u = like.attr(updated).map(parseDateTime(_))
     AtomThreading(c, u)
   }
 
 
   override def toAttributes(a: AtomThreading) = {
-    a.count.map(x => NamespacedAttribute(count, x.toString)).toSeq ++
-      a.updated.map(x => NamespacedAttribute(updated, dateTimeToString(x))).toSeq
+    a.count.map(x => count -> x.toString).toSeq ++
+      a.updated.map(x => updated -> dateTimeToString(x)).toSeq
   }
 
   def toChildren(a: AtomThreading, wrapper: ElementWrapper) = Nil

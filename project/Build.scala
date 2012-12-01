@@ -5,7 +5,7 @@ import xml.Group
 
 object Build extends sbt.Build {
 
-  val antiXMLversion = "0.3"
+  val antiXMLversion = "0.5-SNAPSHOT"
 
   lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "no.arktekk.atom",
@@ -27,7 +27,7 @@ object Build extends sbt.Build {
       libraryDependencies := Seq(
         "joda-time" % "joda-time" % "2.1",
 	    	"org.joda" % "joda-convert" % "1.1",
-		    "com.codecommit" %% "anti-xml" % antiXMLversion,
+		    "no.arktekk" %% "anti-xml" % antiXMLversion,
         "org.specs2" %% "specs2" % "1.11" % "test"
       ),
     manifestSetting

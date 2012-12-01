@@ -16,12 +16,11 @@
 
 package no.arktekk.atom.extension.mediarss
 
-import com.codecommit.antixml._
 import java.net.URI
 import java.util.Locale
 import org.joda.time.Seconds
 import no.arktekk.atom._
-import no.arktekk.atom.extension.SimpleTextElementWrapper
+import com.codecommit.antixml._
 
 /**
  * http://www.rssboard.org/media-rss#media-content
@@ -37,7 +36,7 @@ case class MediaContent(wrapped: Elem) extends ElementWrapper {
   def copy(elem: Elem) = new MediaContent(elem)
 
   //TODO: support type attribute
-  def description = (wrapped \ namespaceSelector(MediaRSSConstants.ns, "description") \ text)
+  def description = (wrapped \ (NSRepr(MediaRSSConstants.ns), "description") \ text)
 
   def url = wrapped.attrs.get("url").map(URI.create(_)).get
 
@@ -92,22 +91,22 @@ case class MediaContent(wrapped: Elem) extends ElementWrapper {
   def withLang(input: Locale) = withAttribute("lang", input.getLanguage)
 
   def withDescription(description: String) =
-    addChild(SimpleTextElementWrapper(NamespacedName(MediaRSSConstants.ns, MediaRSSConstants.prefix, "description"), description))
+    addChild(ElementWrapper.withNameAndText(NamespaceBinding(MediaRSSConstants.prefix, MediaRSSConstants.ns), "description", description))
 }
 
 object MediaContent {
   def apply(): MediaContent = {
-    val wrapper = BasicElementWrapper.withName(NamespacedName(MediaRSSConstants.ns, MediaRSSConstants.prefix, "content"))
-    MediaContent(wrapper.wrapped)
+    val elem = Elem(NamespaceBinding(MediaRSSConstants.prefix, MediaRSSConstants.ns), "content")
+    MediaContent(elem)
   }
 
   def image(href: URI, mediaType: Option[MediaType]): MediaContent = {
-    val attrs = Map((QName(None, "url") -> href.toString), (QName(None, "medium") -> Medium.IMAGE.toString)) ++
-      mediaType.map((QName(None, "type") -> _.toString)).toSeq
-    val wrapper = BasicElementWrapper.withNameAndAttributes(
-      NamespacedName(MediaRSSConstants.ns, MediaRSSConstants.prefix, "content"),
-      new Attributes(attrs))
-    MediaContent(wrapper.wrapped)
+    val attrs = Attributes(QName("url") -> href.toString, QName("medium") -> Medium.IMAGE.toString) ++
+      mediaType.map(QName("type") -> _.toString).toSeq
+    val wrapper = Elem(
+      NamespaceBinding(MediaRSSConstants.prefix, MediaRSSConstants.ns), "content",
+      attrs)
+    MediaContent(wrapper)
   }
 
   def image(href: URI, mediaType: Option[MediaType], width: Int, height: Int): MediaContent = {

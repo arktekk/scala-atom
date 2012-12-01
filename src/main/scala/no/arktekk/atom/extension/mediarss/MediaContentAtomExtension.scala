@@ -18,12 +18,13 @@ package no.arktekk.atom.extension.mediarss
 
 import no.arktekk.atom.extension.SeqSelectableElementWrapperAtomExtension
 import no.arktekk.atom._
+import com.codecommit.antixml.NSRepr
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 object MediaContentAtomExtension extends SeqSelectableElementWrapperAtomExtension[AtomLike, MediaContent] {
-  protected def selector = namespaceSelector(MediaRSSConstants.ns, "content")
+  protected def selector = NSRepr(MediaRSSConstants.ns) -> "content"
 
   protected def function = (e) => MediaContent(e)
 

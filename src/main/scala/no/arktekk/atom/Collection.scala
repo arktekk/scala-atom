@@ -17,34 +17,36 @@
 package no.arktekk.atom
 
 import com.codecommit.antixml._
-import extension.SimpleTextElementWrapper
 import java.net.URI
 
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Collection(wrapped: Elem) extends ElementWrapper {
+case class Collection private[atom] (wrapped: Elem) extends ElementWrapper {
+  require(Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong namespace defined")
+  require(wrapped.name == "collection", "Wrong name of element")
+
   def href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
 
-  def title: Option[TextConstruct] = (wrapped \ namespaceSelector(Atom.namespace, "title")).headOption.flatMap(TextConstruct(_))
+  def title: Option[TextConstruct] = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_))
 
-  def accepts: Seq[MediaType] = (wrapped \ namespaceSelector(Atom.atompubNamespace, "accept") \ text).flatMap(MediaType(_).toSeq)
+  def accepts: Seq[MediaType] = (wrapped \ atomPubSelector("accept") \ text).flatMap(MediaType(_).toSeq)
 
   def withHref(uri: URI) = withAttribute("href", uri.toString)
 
   def withTitle(text: TextConstruct) = {
-    replaceChildren(namespaceSelector(Atom.namespace, "title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
+    replaceChildren(atomSelector("title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
   }
 
-  def addAccept(mt: MediaType) = addChild(SimpleTextElementWrapper(
-    NamespacedName(Atom.atompubNamespace, "accept"), mt.toString
+  def addAccept(mt: MediaType) = addChild(ElementWrapper.withNameAndText(
+    NamespaceBinding("app", Atom.atompubNamespace), "accept", mt.toString
   ))
 
   def withAccepts(accepts: Seq[MediaType]) = {
-    replaceChildren(namespaceSelector(Atom.atompubNamespace, "accept"),
-      accepts.map(a => SimpleTextElementWrapper(
-        NamespacedName(Atom.atompubNamespace, "accept"), a.toString
+    replaceChildren(atomPubSelector("accept"),
+      accepts.map(a => ElementWrapper.withNameAndText(
+        NamespaceBinding("app", Atom.atompubNamespace), "accept", a.toString
       ))
     )
   }
@@ -57,7 +59,7 @@ case class Collection(wrapped: Elem) extends ElementWrapper {
 }
 
 object Collection {
-  def apply(): Collection = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "collection")).wrapped)
+  def apply(): Collection = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "collection"))
 
   def apply(href: URI): Collection = apply().withHref(href)
 }

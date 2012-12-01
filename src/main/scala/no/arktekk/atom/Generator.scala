@@ -22,9 +22,9 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-
-
 case class Generator private[atom](wrapped: Elem) {
+  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
+  require(wrapped.name == "generator")
 
   def uri = wrapped.attrs.get("uri").map(URI.create(_))
 
@@ -35,7 +35,7 @@ case class Generator private[atom](wrapped: Elem) {
 
 object Generator {
   def apply(uri: Option[URI], version: Option[String], value: String): Generator = {
-    val attr = new Attributes(Map[QName, String]() ++ uri.map((QName(None, "uri") -> _.toString)) ++ version.map((QName(None, "version") -> _)))
-    Generator(ElementWrapper.withNameAndAttributes(NamespacedName(Atom.namespace, "generator"), attr).addChild(value).wrapped)
+    val attr = Attributes() ++ uri.map((QName("uri") -> _.toString)) ++ version.map((QName("version") -> _))
+    Generator(Elem(Atom.atom, "generator", attr).addChild(Text(value)))
   }
 }

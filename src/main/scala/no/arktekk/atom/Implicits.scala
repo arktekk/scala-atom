@@ -47,26 +47,4 @@ trait Implicits {
 
   implicit def string2TextConstruct(text: String): TextConstruct = TextConstruct.Textual(text)
 
-  def namespaceSelector(namespace: String, element: String): Selector[Elem] = new Selector[Elem] {
-    def apply(node: Node) = node match {
-      case e: Elem => e
-      case _ => sys.error("woot?!")
-    }
-
-    def isDefinedAt(node: Node) = node match {
-      case e@Elem(prefix, `element`, _, scopes, _) =>
-        val x = scopes.find({
-          case (_, `namespace`) => true
-          case _ => false
-        }).map(_._1)
-        prefix.orElse(Some("")).equals(x)
-      case _ =>
-        false
-    }
-  }
-
-  //TODO: Remove this when AntiXML Fixes mapping based on namespaces.
-  def prefixAndElementSelector(prefix: String, element: String): Selector[Elem] = {
-    Selector({case e@Elem(Some(`prefix`), `element`, _, _, _) => e})
-  }
 }

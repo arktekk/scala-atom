@@ -16,7 +16,7 @@
 
 package no.arktekk.atom.extension.thr
 
-import com.codecommit.antixml.Elem
+import com.codecommit.antixml.{NSRepr, Elem}
 import no.arktekk.atom.extension.OptionSelectableElementWrapperAtomExtension
 import java.net.URI
 import no.arktekk.atom._
@@ -26,7 +26,7 @@ import no.arktekk.atom._
  */
 
 object InReplyToAtomExtension extends OptionSelectableElementWrapperAtomExtension[Entry, InReplyTo] {
-  protected def selector = namespaceSelector(ThreadingConstants.ns, "in-reply-to")
+  protected def selector = (NSRepr(ThreadingConstants.ns), "in-reply-to")
 
   protected def function = (e) => InReplyTo(e)
 

@@ -41,7 +41,8 @@ import com.codecommit.antixml._
 object Atom {
   val namespace = "http://www.w3.org/2005/Atom"
   val atompubNamespace = "http://www.w3.org/2007/app"
-  val namespaces: Map[String, String] = Map(("", Atom.namespace))
+  val atom = NamespaceBinding(namespace)
+  val atompub = NamespaceBinding(atompubNamespace)
 
   def parseFeed(src: IOSource): Either[Exception, Feed] = parseDocument(src, "feed", namespace, Feed(_))
 
@@ -55,9 +56,7 @@ object Atom {
     try {
       val elem = XML.fromSource(src)
       elem match {
-        case e@Elem(_, `root`, _, _, _) if (e.scope.find {
-          case (_, ns) => ns == namespace
-        }.isDefined) => Right(f(e))
+        case e@Elem(p, `root`, _, nb, _) if (Elem.validateNamespace(e, namespace)) => Right(f(e))
         case e => Left(new IllegalArgumentException("unexpected XML here:\n%s".format(e)))
       }
     }

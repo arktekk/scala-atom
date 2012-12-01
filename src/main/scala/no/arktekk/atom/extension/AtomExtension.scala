@@ -15,7 +15,8 @@
  */
 package no.arktekk.atom.extension
 
-import no.arktekk.atom.{NamespacedAttribute, ElementWrapper}
+import no.arktekk.atom.ElementWrapper
+import com.codecommit.antixml.QName
 
 
 /**
@@ -27,7 +28,7 @@ trait AtomExtension[Like, A] {
 
   def toChildren(a: A, parent: ElementWrapper): Seq[ElementWrapper]
 
-  def toAttributes(a: A): Seq[NamespacedAttribute] = Nil
+  def toAttributes(a: A): Seq[(QName, String)] = Nil
 
   lazy val asF: (Like => (Like, A)) = like => (like, fromLike(like))
 

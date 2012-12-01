@@ -16,6 +16,8 @@
 
 package no.arktekk.atom.extension.thr
 
+import com.codecommit.antixml.NamespaceBinding
+
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
  */
@@ -23,4 +25,5 @@ package no.arktekk.atom.extension.thr
 object ThreadingConstants {
   val ns = "http://purl.org/syndication/thread/1.0"
   val prefix = "thr"
+  val binding = NamespaceBinding(prefix, ns)
 }

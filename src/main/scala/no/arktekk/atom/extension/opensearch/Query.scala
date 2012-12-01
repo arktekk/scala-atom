@@ -17,9 +17,10 @@ package no.arktekk.atom.extension.opensearch
 
 import java.util.Locale
 import java.nio.charset.Charset
-import com.codecommit.antixml.{Group, Attributes, Elem}
+import com.codecommit.antixml._
 import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 import no.arktekk.atom._
+import scala.Some
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -32,23 +33,23 @@ case class Query private[opensearch](wrapped: Elem) extends ElementWrapper{
 
   def copy(elem: Elem) = new Query(elem)
 
-  def role = getAttribute("role").map(Role(_)).get
+  def role = attr("role").map(Role(_)).get
 
-  def title = getAttribute("title")
+  def title = attr("title")
 
-  def searchTerms = getAttribute("searchTerms")
+  def searchTerms = attr("searchTerms")
 
-  def count = getAttribute("count").map(_.toInt)
+  def count = attr("count").map(_.toInt)
 
-  def totalResults = getAttribute("totalResults").map(_.toInt)
+  def totalResults = attr("totalResults").map(_.toInt)
 
-  def startIndex = getAttribute("startIndex").map(_.toInt)
+  def startIndex = attr("startIndex").map(_.toInt)
 
-  def startPage = getAttribute("startPage").map(_.toInt)
+  def startPage = attr("startPage").map(_.toInt)
 
-  def inputEncoding = getAttribute("inputEncoding").map(Charset.forName(_))
+  def inputEncoding = attr("inputEncoding").map(Charset.forName(_))
 
-  def outputEncoding = getAttribute("outputEncoding").map(Charset.forName(_))
+  def outputEncoding = attr("outputEncoding").map(Charset.forName(_))
 
   def withRole(role: Role) = withAttribute("role", role.name)
 
@@ -68,14 +69,13 @@ case class Query private[opensearch](wrapped: Elem) extends ElementWrapper{
 
   def withOutputEncoding(encoding: Charset) = withAttribute("outputEncoding", encoding.name())
 
-  def getAttribute(name: String) = wrapped.attrs.get(name)
 }
 
 object Query {
-  val selector = namespaceSelector(ns, "Query")
+  val selector: Selector[Elem] = NSRepr(ns) -> "Query"
 
   def apply(role: Role): Query = {
-    Query(ElementWrapper.withNameAndAttributes(NamespacedName(ns, prefix, "Query"), Attributes("role" -> role.name)).wrapped)
+    Query(Elem(NamespaceBinding(prefix, ns), "Query", Attributes("role" -> role.name)))
   }
 
   def apply(): Query = {

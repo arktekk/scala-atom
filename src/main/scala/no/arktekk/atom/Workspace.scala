@@ -22,18 +22,18 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Workspace(wrapped: Elem) extends ElementWrapper {
-  def title: Option[TextConstruct] = (wrapped \ namespaceSelector(Atom.namespace, "title")).headOption.flatMap(TextConstruct(_))
+case class Workspace private[atom] (wrapped: Elem) extends ElementWrapper {
+  def title: Option[TextConstruct] = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_))
 
-  def collections: Seq[Collection] = (wrapped \ namespaceSelector(Atom.atompubNamespace, "collection")).map(Collection(_))
+  def collections: Seq[Collection] = (wrapped \ atomPubSelector("collection")).map(Collection(_))
 
   def withTitle(text: TextConstruct) = {
-    replaceChildren(namespaceSelector(Atom.namespace, "title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
+    replaceChildren(atomSelector("title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
   }
 
   def addCollection(collection: Collection) = addChild(collection)
 
-  def withCollections(collections: Seq[Collection]) = replaceChildren(namespaceSelector(Atom.atompubNamespace, "collection"), collections)
+  def withCollections(collections: Seq[Collection]) = replaceChildren(atomPubSelector("collection"), collections)
 
   type T = Workspace
 
@@ -45,7 +45,7 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
 }
 
 object Workspace {
-  def apply(): Workspace = apply(BasicElementWrapper.withName(NamespacedName(Atom.atompubNamespace, "app", "workspace")).wrapped)
+  def apply(): Workspace = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "workspace"))
 
   def apply(title: TextConstruct): Workspace = apply().withTitle(title)
 }

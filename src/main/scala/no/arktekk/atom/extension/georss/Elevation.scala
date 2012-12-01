@@ -16,12 +16,12 @@
 
 package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.NamespacedName
-import no.arktekk.atom.extension.SimpleTextElementWrapper
+import no.arktekk.atom.ElementWrapper
+import com.codecommit.antixml.{NamespaceBinding, QName}
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Elevation(elev: Int) {
-  def toXML = SimpleTextElementWrapper(NamespacedName(GeorssConstants.ns, GeorssConstants.prefix, "elev"), elev.toString)
+  def toXML = ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "elev", elev.toString)
 }

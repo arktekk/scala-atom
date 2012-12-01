@@ -15,7 +15,6 @@
  */
 package no.arktekk.atom
 
-import extension.SimpleTextElementWrapper
 import java.net.URI
 import org.joda.time.DateTime
 import com.codecommit.antixml._
@@ -24,8 +23,6 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 private[atom] trait AtomLike extends ElementWrapper {
-  protected val atomSelector = namespaceSelector(Atom.namespace, _ : String)
-
   protected def element(name: String) = (wrapped \ atomSelector(name))
   protected def elementText(name: String) = element(name) \ text
 

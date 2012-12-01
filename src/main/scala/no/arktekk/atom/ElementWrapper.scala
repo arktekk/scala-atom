@@ -34,13 +34,13 @@ trait ElementWrapper {
   def addChild(text: String):T = addChild(Text(text))
 
   def addChild(name: String, text: String):T = {
-    val ns = wrapped.scope.get(wrapped.prefix.getOrElse("")).getOrElse("")
-    addChild(NamespacedName(ns, QName(wrapped.prefix, name)), text)
+    val binding = wrapped.namespaces
+    addChild(binding, name, text)
   }
 
-  def addChild(name: NamespacedName, text: String):T = addChild(name, Text(text))
+  def addChild(ns: NamespaceBinding, name: String, text: String):T = addChild(ns, name, Text(text))
 
-  def addChild(name: NamespacedName, node: Node):T = addChild(ElementWrapper.withNameAndChildren(name, Group(node)))
+  def addChild(ns: NamespaceBinding, name: String, node: Node):T = addChild(ElementWrapper.withNameAndChildren(ns, name, Group(node)))
 
   def addChild(w: ElementWrapper):T = addChild(w.wrapped)
 
@@ -53,11 +53,8 @@ trait ElementWrapper {
 
   def extract[A >: T, B](ext: AtomExtension[A, B]): B = ext.fromLike(self)
 
-  private def updateAttributes(attrs: Seq[NamespacedAttribute]): T = {
-    val fold = attrs.foldLeft((Map[String, String](), Map[QName, String]())){
-      case ((x,y),z) => (x ++ z.ns.toMap) -> (y + (z.ns.qName -> z.value))
-    }
-    copy(wrapped.copy(scope = wrapped.scope ++ fold._1, attrs = wrapped.attrs ++ fold._2))
+  private def updateAttributes(attrs: Seq[(QName, String)]): T = {
+    copy(wrapped.withAttributes(Attributes(attrs : _*)))
   }
 
   def addChildren(children: Seq[ElementWrapper]) : T = {
@@ -87,9 +84,11 @@ trait ElementWrapper {
     else copy(wrapped.copy(children = children))
   }
 
-  def withAttribute(name: String, value: Any): T = withAttribute(QName(None, name), value)
+  def attr(name: QName) = wrapped.attrs.get(name)
 
-  def withAttribute(name: QName, value: Any): T = copy(wrapped.copy(attrs = wrapped.attrs + (name -> value.toString)))
+  def withAttribute(name: String, value: Any): T = withAttribute(QName(name), value)
+
+  def withAttribute(name: QName, value: Any): T = copy(wrapped.withAttribute(name, value.toString))
 
   protected def removeChildren(selector: Selector[Elem]): Elem = {
     val zipper = (wrapped \ selector).take(0)
@@ -99,27 +98,8 @@ trait ElementWrapper {
   def addNamespaces(namespaces: Map[String, String]): T  = {
     if (namespaces.isEmpty) self
     else {
-      def nextValidPrefix = {
-        var i = 1
-        while (wrapped.scope.contains("ns" + i)) {
-          i = i + 1
-        }
-        "ns" + i
-      }
-      def mapit(namespaces: Map[String, String], tuple: (String, String)) = tuple match {
-        case (x, y) if (namespaces.find{case (_, z) => z == y}.isDefined) => namespaces
-        case ("", y) if (namespaces.get("").isEmpty) => { //if the empty namespace has not been defined already
-          namespaces + ("" -> y)
-        }
-        case ("", y) => {
-          val p = nextValidPrefix
-          namespaces + (p -> y)
-        }
-        case (x, y) => namespaces + (x -> y)
-      }
-      val currentNS = namespaces.foldLeft(wrapped.scope){case (map, t) => mapit(map, t)}
-
-      if (currentNS == wrapped.scope) self else copy(wrapped.copy(scope = currentNS))
+      val copied = wrapped.addNamespaces(namespaces)
+      if (copied eq wrapped) self else copy(copied)
     }
   }
 
@@ -162,39 +142,31 @@ trait ElementWrapper {
 object ElementWrapper {
   def apply(elem: Elem): ElementWrapper = new BasicElementWrapper(elem)
 
-  def withName(name: NamespacedName): ElementWrapper = {
-    withNameAndAttributes(name)
+  def withName(name: String): ElementWrapper = {
+    withName(NamespaceBinding.empty, name)
   }
 
-  def withNameAndAttributes(name: NamespacedName, attrs: Attributes = Attributes()): ElementWrapper = {
-    apply(Elem(name.prefix, name.name, attrs, name.toMap, Group.empty))
+  def withName(ns: NamespaceBinding, name: String): ElementWrapper = {
+    withNameAndAttributes(ns, name)
   }
 
-  def withNameAndText(name: NamespacedName, text: String): ElementWrapper = {
-    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes(), name.toMap, Group(Text(text))))
+  def withNameAndAttributes(ns: NamespaceBinding, name: String, attrs: Attributes = Attributes()): ElementWrapper = {
+    apply(Elem(ns, name, attrs))
   }
 
-  def withNameAndChildren(name: NamespacedName, children: Group[Node]): ElementWrapper = {
-    new BasicElementWrapper(Elem(name.prefix, name.name, Attributes(), name.toMap, children))
+  def withNameAndText(ns: NamespaceBinding, name: String, text: String): ElementWrapper = {
+    new BasicElementWrapper(Elem(ns, name, Attributes(), Group(Text(text))))
+  }
+
+  def withNameAndChildren(ns: NamespaceBinding, name: String, children: Group[Node]): ElementWrapper = {
+    new BasicElementWrapper(Elem(ns, name, Attributes(), children))
   }
 }
 
-case class BasicElementWrapper(elem: Elem) extends ElementWrapper {
+case class BasicElementWrapper(wrapped: Elem) extends ElementWrapper {
   type T = ElementWrapper
 
   protected val self = this
 
-  def wrapped = elem
-
   def copy(elem: Elem) = new BasicElementWrapper(elem)
-}
-
-object BasicElementWrapper {
-  def withName(name: NamespacedName): BasicElementWrapper = {
-    apply(Elem(name.prefix, name.name, Attributes(), name.toMap, Group.empty))
-  }
-
-  def withNameAndAttributes(name: NamespacedName, attrs: Attributes = Attributes()): BasicElementWrapper = {
-    apply(Elem(name.prefix, name.name, attrs, name.toMap, Group.empty))
-  }
 }

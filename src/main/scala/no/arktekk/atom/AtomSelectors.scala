@@ -16,13 +16,12 @@
 
 package no.arktekk.atom
 
+import com.codecommit.antixml.NSRepr
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class NamespacedAttribute(ns: NamespacedName, value: String)
-
-object NamespacedAttribute {
-  def apply(name: String, value: String): NamespacedAttribute = apply(NamespacedName(name), value)
-  def apply(ns: String, prefix: String, name: String, value: String): NamespacedAttribute = apply(NamespacedName(ns, prefix, name), value)
+trait AtomSelectors {
+  val atomSelector: (String) => (NSRepr, String) = (NSRepr(Atom.namespace), _ : String)
+  val atomPubSelector: (String) => (NSRepr, String) = (NSRepr(Atom.atompubNamespace), _ : String)
 }

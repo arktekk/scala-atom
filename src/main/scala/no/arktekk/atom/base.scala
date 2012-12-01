@@ -32,16 +32,12 @@ sealed trait Base extends AtomLike {
 
   override def toString = wrapped.toString()
 
-  protected def isValid(elem: Elem, name: String) = elem match {
-    case Elem(None, `name`, _, scope, _) if (!scope.isEmpty) => scope("") == Atom.namespace
-    case Elem(Some(ns),`name`, _, scope, _) if (!scope.isEmpty) => scope(ns) == Atom.namespace
-    case _ => false
-  }
+  protected def isValid(elem: Elem, name: String) = Elem.validateNamespace(elem, Atom.namespace) && elem.name == name
 }
 
 private [atom] object BaseBuilder {
   def apply(name:String, id: URI, title: TextConstruct, updated: DateTime, author: Option[Person] = None): Elem = {
-    ElementWrapper.withName(NamespacedName(Atom.namespace, name)).
+    ElementWrapper.withName(NamespaceBinding(Atom.namespace), name).
       addChild("id", id.toString).
       addChild(title.toXML("title")).
       addChild("updated", dateTimeToString(updated)).
