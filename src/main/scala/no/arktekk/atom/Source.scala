@@ -21,6 +21,9 @@ import com.codecommit.antixml.Elem
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Source(wrapped: Elem) extends FeedLike {
+  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
+  require(wrapped.name == "source", "Wrong name of element")
+
   type T = Source
 
   protected val self = this

@@ -21,7 +21,7 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Link private[atom](wrapped: Elem) extends ElementWrapper {
+case class Link(wrapped: Elem) extends ElementWrapper {
   require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
   require(wrapped.name == "link")
 

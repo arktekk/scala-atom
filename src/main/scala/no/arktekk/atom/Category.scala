@@ -21,6 +21,9 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 case class Category private[atom](wrapped: Elem) extends ElementWrapper {
+  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
+  require(wrapped.name == "category", "Wrong name of element")
+
   type T = Category
 
   protected val self = this

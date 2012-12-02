@@ -23,7 +23,7 @@ import java.net.URI
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Collection private[atom] (wrapped: Elem) extends ElementWrapper {
+case class Collection(wrapped: Elem) extends ElementWrapper {
   require(Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong namespace defined")
   require(wrapped.name == "collection", "Wrong name of element")
 
