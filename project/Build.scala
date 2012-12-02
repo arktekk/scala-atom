@@ -5,7 +5,7 @@ import xml.Group
 
 object Build extends sbt.Build {
 
-  val antiXMLversion = "0.5-SNAPSHOT"
+  val antiXMLversion = "0.5"
 
   lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "no.arktekk.atom",
@@ -14,6 +14,7 @@ object Build extends sbt.Build {
     publishTo <<= (version) apply {
       (v: String) => if (v.trim().endsWith("SNAPSHOT")) Some(Resolvers.sonatypeNexusSnapshots) else Some(Resolvers.sonatypeNexusStaging)
     },
+    crossScalaVersions := Seq("2.9.2", "2.9.1"),
     pomIncludeRepository := { x => false },
     credentials += Credentials(Path.userHome / ".sbt" / "arktekk-credentials")
   ) ++ Aether.aetherPublishSettings
@@ -28,7 +29,7 @@ object Build extends sbt.Build {
         "joda-time" % "joda-time" % "2.1",
 	    	"org.joda" % "joda-convert" % "1.1",
 		    "no.arktekk" %% "anti-xml" % antiXMLversion,
-        "org.specs2" %% "specs2" % "1.11" % "test"
+        "org.specs2" %% "specs2" % "1.12.3" % "test"
       ),
     manifestSetting
     ) ++ mavenCentralFrouFrou
