@@ -29,6 +29,8 @@ trait ElementWrapper {
 
   def wrapped: Elem
 
+  def \[B](selector: Selector[B]) = wrapped \ selector
+
   def copy(elem: Elem): T
 
   def addChild(text: String):T = addChild(Text(text))
