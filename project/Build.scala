@@ -5,7 +5,7 @@ import xml.Group
 
 object Build extends sbt.Build {
 
-  val antiXMLversion = "0.5"
+  val antiXMLversion = "0.5.1"
 
   lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "no.arktekk.atom",
