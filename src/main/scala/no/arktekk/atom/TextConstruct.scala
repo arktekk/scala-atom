@@ -32,7 +32,8 @@ sealed trait TextConstruct {
   def toString: String
 
   def toXML(name: String, prefix: Option[String] = None) = {
-    Elem(prefix, name, Attributes("type" -> textType.value), Atom.atom, Group(value))
+    val binding = prefix.map(NamespaceBinding(_, Atom.namespace)).getOrElse(NamespaceBinding(Atom.namespace))
+    Elem(binding, name, Attributes("type" -> textType.value), Group(value))
   }
 }
 
