@@ -42,13 +42,13 @@ private[atom] trait AtomLike extends ElementWrapper {
 
   def links: IndexedSeq[Link] = element("link").map(Link(_))
 
-  def withId(id: URI): T = replaceChildren(atomSelector("id"), Elem(Atom.atom, "id", Attributes(), Group[Node](Text(id.toString))).toGroup)
+  def withId(id: URI): T = replaceChildren(atomSelector("id"), atomTextElem("id", id.toString).toGroup)
 
   def withTitle(title: TextConstruct): T = replaceChildren(atomSelector("title"), title.toXML("title").toGroup)
 
   def withRights(rights: TextConstruct): T = replaceChildren(atomSelector("rights"), rights.toXML("rights").toGroup)
 
-  def withUpdated(updated: DateTime): T = replaceChildren(atomSelector("updated"), Elem(Atom.atom, "updated", Attributes(), Group[Node](Text(dateTimeToString(updated)))).toGroup)
+  def withUpdated(updated: DateTime): T = replaceChildren(atomSelector("updated"), atomTextElem("updated", dateTimeToString(updated)).toGroup)
 
   def addAuthor(author: Person): T = addChild(author)
 

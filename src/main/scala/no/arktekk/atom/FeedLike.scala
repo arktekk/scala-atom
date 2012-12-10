@@ -16,7 +16,6 @@
 package no.arktekk.atom
 
 import java.net.URI
-import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -24,13 +23,11 @@ import com.codecommit.antixml._
 trait FeedLike extends AtomLike {
   def subtitle: Option[TextConstruct] = element("subtitle").headOption.flatMap(TextConstruct(_))
 
-  def entries: IndexedSeq[Entry] = element("entry").map(Entry(_))
-
   def logo: Option[URI] = elementText("logo").headOption.map(URI.create(_))
 
   def icon: Option[URI] = elementText("icon").headOption.map(URI.create(_))
 
-  def withEntries(entries: IndexedSeq[Entry]): T = replaceChildren(atomSelector("entry"), Group.fromSeq(entries.map(_.wrapped)))
+  def generator: Option[Generator] = element("generator").headOption.map(Generator(_))
 
   def addEntry(entry: Entry): T = {
     copy(wrapped.copy(children = wrapped.children ++ List(entry.wrapped)))
@@ -38,7 +35,9 @@ trait FeedLike extends AtomLike {
 
   def withSubtitle(title: TextConstruct): T = replaceChildren(atomSelector("subtitle"), title.toXML("subtitle").toGroup)
 
-  def withLogo(logo: URI): T = replaceChildren(atomSelector("logo"), Elem(Atom.atom, "logo", Attributes(), Group[Node](Text(logo.toString))).toGroup)
+  def withLogo(logo: URI): T = replaceChildren(atomSelector("logo"), atomTextElem("logo", logo.toString).toGroup)
 
-  def withIcon(icon: URI): T = replaceChildren(atomSelector("icon"), Elem(Atom.atom, "icon", Attributes(), Group[Node](Text(icon.toString))).toGroup)
+  def withIcon(icon: URI): T = replaceChildren(atomSelector("icon"), atomTextElem("icon", icon.toString).toGroup)
+
+  def withGenerator(generator: Generator): T = replaceChildren(atomSelector("generator"), generator.wrapped.toGroup)
 }

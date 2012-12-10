@@ -43,9 +43,6 @@ private [atom] object BaseBuilder {
       Elem(Atom.atom, "updated", Attributes(), Group[Node](Text(dateTimeToString(updated))))
     ) ++ author.map(_.wrapped)))
   }
-
-  def simpleTextElem(name: String, text: String) =
-    Elem(Atom.atom, name, Attributes(), Group[Node](Text(text)))
 }
 
 case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
@@ -65,8 +62,6 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
 
   override lazy val updated = super.updated
 
-  override lazy val entries = super.entries
-
   override lazy val logo = super.logo
 
   override lazy val icon = super.icon
@@ -80,6 +75,10 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
   override lazy val categories = super.categories
 
   override lazy val links = super.links
+
+  lazy val entries = element("entry").map(Entry(_))
+
+  def withEntries(entries: IndexedSeq[Entry]): T = replaceChildren(atomSelector("entry"), Group.fromSeq(entries.map(_.wrapped)))
 }
 
 object Feed {
@@ -104,10 +103,9 @@ object Feed {
              rights: Option[TextConstruct] = None,
              contributors: IndexedSeq[Person] = IndexedSeq.empty
              ): Feed = {
-    import BaseBuilder._
     val group = Group[Node](
-      simpleTextElem("id", id.toString),
-      simpleTextElem("updated", dateTimeToString(updated)),
+      atomTextElem("id", id.toString),
+      atomTextElem("updated", dateTimeToString(updated)),
       title.toXML("title")
     ) ++
       subtitle.map(_.toXML("subtitle")) ++
@@ -115,8 +113,8 @@ object Feed {
       contributors.map(_.wrapped) ++
       links.map(_.wrapped) ++
       entries.map(_.wrapped) ++
-      logo.map(u => simpleTextElem("logo", u.toString)) ++
-      icon.map(u => simpleTextElem("icon", u.toString)) ++
+      logo.map(u => atomTextElem("logo", u.toString)) ++
+      icon.map(u => atomTextElem("icon", u.toString)) ++
       rights.map(_.toXML("rights"))
 
     Feed(Elem(Atom.atom, "feed", Attributes(), group))
@@ -177,13 +175,11 @@ object Entry {
             contributors: IndexedSeq[Person] = IndexedSeq.empty
              ): Entry = {
 
-    import BaseBuilder._
-
     val group = Group[Node](
-      simpleTextElem("id", id.toString),
+      atomTextElem("id", id.toString),
       title.toXML("title"),
-      simpleTextElem("updated", dateTimeToString(updated)),
-      simpleTextElem("published", dateTimeToString(published))
+      atomTextElem("updated", dateTimeToString(updated)),
+      atomTextElem("published", dateTimeToString(published))
     ) ++
       authors.map(_.wrapped) ++
       contributors.map(_.wrapped) ++

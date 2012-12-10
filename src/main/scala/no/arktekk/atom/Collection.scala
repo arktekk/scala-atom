@@ -33,18 +33,16 @@ case class Collection(wrapped: Elem) extends ElementWrapper {
 
   def accepts: IndexedSeq[MediaType] = (wrapped \ atomPubSelector("accept") \ text).flatMap(MediaType(_).toSeq)
 
-  def withHref(uri: URI) = withAttribute("href", uri.toString)
+  def withHref(uri: URI): Collection = withAttribute("href", uri.toString)
 
-  def withTitle(text: TextConstruct) = {
+  def withTitle(text: TextConstruct): Collection = {
     replaceChildren(atomSelector("title"), text.toXML("title", Some("atom")).toGroup)
   }
 
-  def addAccept(mt: MediaType) = addChild(ElementWrapper.withNameAndText(
-    NamespaceBinding("app", Atom.atompubNamespace), "accept", mt.toString
-  ))
+  def addAccept(mt: MediaType): Collection = addChild(appTextElem("accept", mt.toString))
 
-  def withAccepts(accepts: IndexedSeq[MediaType]) = {
-    replaceChildren(atomPubSelector("accept"), Group.fromSeq(accepts.map(a => Elem(NamespaceBinding("app", Atom.atompubNamespace), "accept", Attributes(), Group[Node](Text(a.toString))))))
+  def withAccepts(accepts: IndexedSeq[MediaType]): Collection = {
+    replaceChildren(atomPubSelector("accept"), Group.fromSeq(accepts.map(a => appTextElem("accept", a.toString))))
   }
 
   type T = Collection
@@ -58,4 +56,17 @@ object Collection {
   def apply(): Collection = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "collection"))
 
   def apply(href: URI): Collection = apply().withHref(href)
+
+  def apply(href: URI, title: TextConstruct, accepts: IndexedSeq[MediaType]): Collection = {
+    Collection(
+      Elem(
+        NamespaceBinding("app", Atom.atompubNamespace),
+        "collection",
+        Attributes("href" -> href.toString),
+        Group[Node](
+          title.toXML("title")
+        ) ++ accepts.map(a => appTextElem("accept", a.toString))
+      )
+    )
+  }
 }

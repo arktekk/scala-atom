@@ -30,8 +30,7 @@ trait EntryLike extends AtomLike {
   def summary: Option[Content] = element("summary").headOption.flatMap(Content(_))
 
   def withPublished(published: DateTime): T = replaceChildren(
-    atomSelector("published"),
-    Elem(Atom.atom, "updated", Attributes(), Group[Node](Text(dateTimeToString(published)))).toGroup
+    atomSelector("published"), atomTextElem("published", dateTimeToString(published)).toGroup
   )
 
   def withSummary(summary: Content): T = replaceChildren(atomSelector("summary"), summary.toXML("summary").toGroup)

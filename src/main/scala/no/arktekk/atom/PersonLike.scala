@@ -37,8 +37,6 @@ trait PersonLike extends ElementWrapper {
   def withUrl(url: URI) = replace("url", url.toString)
 
   private def replace(name: String, value: String) = {
-    replaceChildren(atomSelector(name),
-      IndexedSeq(ElementWrapper.withNameAndText(Atom.atom, name, value))
-    )
+    replaceChildren(atomSelector(name), Group(atomTextElem(name, value)))
   }
 }

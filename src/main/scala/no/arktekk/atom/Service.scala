@@ -25,9 +25,9 @@ case class Service(wrapped: Elem) extends ElementWrapper {
   require(wrapped.name == "service" && Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong name or namespace of wrapped element")
   def workspaces : IndexedSeq[Workspace] = (wrapped \ atomPubSelector("workspace")).map(Workspace(_))
 
-  def addWorkspace(workspace: Workspace) = addChild(workspace)
+  def addWorkspace(workspace: Workspace): Service = addChild(workspace)
 
-  def withWorkspaces(workspaces: IndexedSeq[Workspace]) = replaceChildren(NSRepr(Atom.atompubNamespace) -> "workspace", workspaces)
+  def withWorkspaces(workspaces: IndexedSeq[Workspace]): Service = replaceChildren(NSRepr(Atom.atompubNamespace) -> "workspace", workspaces)
 
   type T = Service
 
@@ -40,4 +40,13 @@ case class Service(wrapped: Elem) extends ElementWrapper {
 
 object Service {
   def apply(): Service = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "service"))
+
+  def apply(workspaces: IndexedSeq[Workspace]): Service = {
+    Service(Elem(
+      NamespaceBinding("app", Atom.atompubNamespace),
+      "service",
+      Attributes(),
+      Group.fromSeq(workspaces.map(_.wrapped))
+    ))
+  }
 }

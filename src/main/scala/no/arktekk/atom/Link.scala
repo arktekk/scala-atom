@@ -31,21 +31,21 @@ case class Link(wrapped: Elem) extends ElementWrapper {
 
   def copy(wrapped: Elem) = new Link(wrapped)
 
-  def href = wrapped.attrs.get("href").map(URI.create(_)).get
+  def href: URI = wrapped.attrs.get("href").map(URI.create(_)).getOrElse(throw new IllegalStateException("href is required"))
 
-  def rel = wrapped.attrs.get("rel")
+  def rel: Option[String] = wrapped.attrs.get("rel")
 
   def mediaType: Option[MediaType] = wrapped.attrs.get("type").flatMap(MediaType(_))
 
-  def title = wrapped.attrs.get("title")
+  def title: Option[String] = wrapped.attrs.get("title")
 
-  def withTitle(title: String) = withAttribute("title", title)
+  def withTitle(title: String): Link = withAttribute("title", title)
 
-  def withHref(href: URI) = withAttribute("href", href.toString)
+  def withHref(href: URI): Link = withAttribute("href", href.toString)
 
-  def withRel(rel: String) = withAttribute("rel", rel)
+  def withRel(rel: String): Link = withAttribute("rel", rel)
 
-  def withMediaType(mt: MediaType) = withAttribute("type", mt.toString)
+  def withMediaType(mt: MediaType): Link = withAttribute("type", mt.toString)
 }
 
 

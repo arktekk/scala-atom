@@ -50,5 +50,14 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
 object Workspace {
   def apply(): Workspace = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "workspace"))
 
-  def apply(title: TextConstruct): Workspace = apply().withTitle(title)
+  def apply(title: TextConstruct): Workspace = apply(title, IndexedSeq.empty)
+
+  def apply(title: TextConstruct, collections: IndexedSeq[Collection]): Workspace = {
+    apply(Elem(
+      NamespaceBinding("app", Atom.atompubNamespace),
+      "workspace",
+      Attributes(),
+      Group.fromSeq(collections.map(_.wrapped))
+    ))
+  }
 }

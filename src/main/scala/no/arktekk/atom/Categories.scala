@@ -72,4 +72,13 @@ object Categories {
     addNamespace(Some(""), Atom.namespace)
 
   def apply(href: URI): Categories = apply().withHref(href)
+
+  def apply(href: URI, fixed: Boolean, scheme: String, categories: IndexedSeq[Category]): Categories = {
+    Categories(Elem(
+      NamespaceBinding("app", Atom.atompubNamespace),
+      "categories",
+      Attributes("href" -> href.toString, "fixed" -> (if(fixed) "yes" else "no"),  "scheme" -> scheme),
+      Group fromSeq(categories.map(_.wrapped))
+    ))
+  }
 }
