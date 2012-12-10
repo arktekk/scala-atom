@@ -22,7 +22,7 @@ import java.net.URI
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Categories extends Extensible[Categories] {
+trait Categories extends Extensible[Categories] with DocumentLike {
 
   def href: URI
 

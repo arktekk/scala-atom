@@ -38,4 +38,4 @@ sealed trait EntryLike extends AtomLike[EntryLike] {
   def removeSummary(): EntryLike
 }
 
-trait Entry extends EntryLike
+trait Entry extends EntryLike with DocumentLike

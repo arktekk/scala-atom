@@ -48,4 +48,4 @@ sealed trait FeedLike[T <: AtomLike[_]] extends AtomLike[T] { self: T =>
 
 trait Source extends FeedLike[Source]
 
-trait Feed extends FeedLike[Feed]
+trait Feed extends FeedLike[Feed] with DocumentLike

@@ -21,7 +21,7 @@ import extension.Extensible
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Service extends Extensible[Service] {
+trait Service extends Extensible[Service] with DocumentLike {
   def workspaces : Seq[Workspace]
 
   def addWorkspace(workspace: Workspace): Service
