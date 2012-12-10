@@ -39,7 +39,7 @@ class OpenSearchSpec extends Specification {
 
       feed must not beTheSameAs(other)
 
-      other = feed.apply(OpenSearchResponseAtomExtension, OpenSearchResponse(Seq(Query(Role.REQUEST))))
+      other = feed.apply(OpenSearchResponseAtomExtension, OpenSearchResponse(IndexedSeq(Query(Role.REQUEST))))
 
       feed must not beTheSameAs(other)
     }

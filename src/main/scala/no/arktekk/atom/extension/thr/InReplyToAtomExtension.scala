@@ -22,7 +22,7 @@ import java.net.URI
 import no.arktekk.atom._
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 
 object InReplyToAtomExtension extends OptionSelectableElementWrapperAtomExtension[Entry, InReplyTo] {
@@ -30,7 +30,7 @@ object InReplyToAtomExtension extends OptionSelectableElementWrapperAtomExtensio
 
   protected def function = (e) => InReplyTo(e)
 
-  def toChildren(a: Option[InReplyTo], parent: ElementWrapper) = a.toSeq
+  def toChildren(a: Option[InReplyTo]) = a.toIndexedSeq
 }
 
 case class InReplyTo(wrapped: Elem) extends ElementWrapper {
@@ -40,12 +40,12 @@ case class InReplyTo(wrapped: Elem) extends ElementWrapper {
 
   def copy(elem: Elem) = new InReplyTo(elem)
 
-  def ref = wrapped.attrs.get("ref").map(URI.create(_)).get
+  def ref: URI = wrapped.attrs.get("ref").map(URI.create(_)).get
 
-  def href = wrapped.attrs.get("href").map(URI.create(_))
+  def href: Option[URI] = wrapped.attrs.get("href").map(URI.create(_))
 
-  def source = wrapped.attrs.get("source").map(URI.create(_))
+  def source: Option[URI] = wrapped.attrs.get("source").map(URI.create(_))
 
-  def mediaType = wrapped.attrs.get("type").flatMap(MediaType(_))
+  def mediaType: Option[MediaType] = wrapped.attrs.get("type").flatMap(MediaType(_))
 
 }

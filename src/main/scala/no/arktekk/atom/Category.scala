@@ -28,13 +28,19 @@ case class Category private[atom](wrapped: Elem) extends ElementWrapper {
 
   protected val self = this
 
-  def scheme = wrapped.attr("scheme")
+  lazy val scheme: Option[String] = wrapped.attr("scheme")
 
-  def term = wrapped.attr("term").get
+  lazy val term: Option[String] = wrapped.attr("term")
 
-  def label = wrapped.attr("label")
+  lazy val label: Option[String] = wrapped.attr("label")
 
   def copy(elem: Elem) = new Category(elem)
+
+  def withScheme(scheme: String): Category = withAttribute("scheme", scheme)
+
+  def withTerm(term: String): Category = withAttribute("term", term)
+
+  def withLabel(label: String): Category = withAttribute("label", label)
 }
 
 object Category {

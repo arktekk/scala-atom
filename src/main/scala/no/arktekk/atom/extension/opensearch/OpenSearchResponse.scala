@@ -24,7 +24,7 @@ import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class OpenSearchResponse(queries: Seq[Query] = Nil, totalResults: Option[Int] = None, itemsPerPage: Option[Int] = None, startIndex: Option[Int] = None) {
+case class OpenSearchResponse(queries: IndexedSeq[Query] = IndexedSeq.empty, totalResults: Option[Int] = None, itemsPerPage: Option[Int] = None, startIndex: Option[Int] = None) {
   def filter(f: (Query) => Boolean) = queries.filter(f)
 
   def correctionQueries = filter((q) => q.role == Role.CORRECTION)
@@ -41,7 +41,7 @@ case class OpenSearchResponse(queries: Seq[Query] = Nil, totalResults: Option[In
 
   def addQuery(q: Query) = copy(queries = queries ++ Seq(q))
 
-  def withQueries(seq: Seq[Query]) = copy(queries = seq)
+  def withQueries(seq: IndexedSeq[Query]) = copy(queries = seq)
   
   def withTotalResults(n: Int) = copy(totalResults = Some(n))
 
@@ -51,7 +51,7 @@ case class OpenSearchResponse(queries: Seq[Query] = Nil, totalResults: Option[In
 }
 
 object OpenSearchResponse {
-  def apply(): OpenSearchResponse = apply(Nil, None, None, None)
+  def apply(): OpenSearchResponse = apply(IndexedSeq.empty, None, None, None)
 }
 
 object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearchResponse] {
@@ -63,16 +63,16 @@ object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearc
     OpenSearchResponse(queries, numbers._1, numbers._2, numbers._3)
   }
 
-  def toChildren(a: OpenSearchResponse, wrapper: ElementWrapper) = {
-    QueriesAtomExtension.toChildren(a.queries, wrapper) ++ numberExt.toChildren((a.totalResults, a.itemsPerPage, a.startIndex), wrapper)
+  def toChildren(a: OpenSearchResponse) = {
+    QueriesAtomExtension.toChildren(a.queries) ++ numberExt.toChildren((a.totalResults, a.itemsPerPage, a.startIndex))
   }
 }
 
-object QueriesAtomExtension extends AtomExtension[ElementWrapper, Seq[Query]] {
+object QueriesAtomExtension extends AtomExtension[ElementWrapper, IndexedSeq[Query]] {
 
   def fromLike(like: ElementWrapper) = {
     (like.wrapped \ Query.selector).map(Query(_))
   }
 
-  def toChildren(a: Seq[Query], wrapper: ElementWrapper) = a
+  def toChildren(a: IndexedSeq[Query]) = a
 }

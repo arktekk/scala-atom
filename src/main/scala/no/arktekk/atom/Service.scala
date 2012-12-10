@@ -23,11 +23,11 @@ import com.codecommit.antixml._
  */
 case class Service(wrapped: Elem) extends ElementWrapper {
   require(wrapped.name == "service" && Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong name or namespace of wrapped element")
-  def workspaces : Seq[Workspace] = (wrapped \ atomPubSelector("workspace")).map(Workspace(_))
+  def workspaces : IndexedSeq[Workspace] = (wrapped \ atomPubSelector("workspace")).map(Workspace(_))
 
   def addWorkspace(workspace: Workspace) = addChild(workspace)
 
-  def withWorkspaces(workspaces: Seq[Workspace]) = replaceChildren(NSRepr(Atom.atompubNamespace) -> "workspace", workspaces)
+  def withWorkspaces(workspaces: IndexedSeq[Workspace]) = replaceChildren(NSRepr(Atom.atompubNamespace) -> "workspace", workspaces)
 
   type T = Service
 

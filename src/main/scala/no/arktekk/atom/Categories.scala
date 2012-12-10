@@ -42,19 +42,19 @@ case class Categories private[atom] (wrapped: Elem) extends ElementWrapper {
   require(Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong namespace defined")
   require(wrapped.name == "categories", "Wrong name of element")
 
-  def href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
+  lazy val href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
+
+  lazy val fixed: Boolean = wrapped.attrs.get("fixed").map(f => f == "yes").getOrElse(false)
+
+  lazy val scheme: Option[String] = wrapped.attrs.get("scheme")
+
+  lazy val categories: IndexedSeq[Category] = (wrapped \ atomSelector("category")).map(Category(_))
 
   def withHref(uri: URI) = withAttribute("href", uri.toString)
 
-  def fixed: Boolean = wrapped.attrs.get("fixed").map(f => f == "yes").getOrElse(false)
-
-  def scheme: Option[String] = wrapped.attrs.get("scheme")
-
-  def categories: Seq[Category] = (wrapped \ atomSelector("category")).map(Category(_))
-
   def addCategory(cat: Category) = addChild(cat)
 
-  def withCategories(cats: Seq[Category]) = replaceChildren(atomSelector("category"), cats)
+  def withCategories(cats: IndexedSeq[Category]) = replaceChildren(atomSelector("category"), cats)
 
   def withFixed(fixed: Boolean) = withAttribute("fixed", if (fixed) "yes" else "no")
 

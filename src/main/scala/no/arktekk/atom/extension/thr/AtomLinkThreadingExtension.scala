@@ -40,7 +40,7 @@ object AtomLinkThreadingExtension extends AtomExtension[Link, AtomThreading] {
       a.updated.map(x => updated -> dateTimeToString(x)).toSeq
   }
 
-  def toChildren(a: AtomThreading, wrapper: ElementWrapper) = Nil
+  def toChildren(a: AtomThreading) = IndexedSeq.empty
 }
 
 case class AtomThreading(count: Option[Int] = None, updated: Option[DateTime] = None)

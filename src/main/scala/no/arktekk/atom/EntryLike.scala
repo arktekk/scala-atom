@@ -16,24 +16,26 @@
 package no.arktekk.atom
 
 import org.joda.time.DateTime
+import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 trait EntryLike extends AtomLike {
+
   def published: Option[DateTime] = elementText("published").headOption.map(parseDateTime(_))
 
   def content: Option[Content] = element("content").headOption.flatMap(Content(_))
 
   def summary: Option[Content] = element("summary").headOption.flatMap(Content(_))
 
-  def withPublished(published: DateTime) = copy(removeChildren("published")).addChild("published", dateTimeToString(published))
+  def withPublished(published: DateTime): T = replaceChildren(
+    atomSelector("published"),
+    Elem(Atom.atom, "updated", Attributes(), Group[Node](Text(dateTimeToString(published)))).toGroup
+  )
 
-  def withSummary(summary: Content) = removeSummary().addChild(summary.toXML("summary"))
+  def withSummary(summary: Content): T = replaceChildren(atomSelector("summary"), summary.toXML("summary").toGroup)
 
-  def withContent(content: Content) = removeContent().addChild(content.toXML("content"))
+  def withContent(content: Content): T = replaceChildren(atomSelector("content"), content.toXML("content").toGroup)
 
-  def removeContent() = copy(removeChildren("content"))
-
-  def removeSummary() = copy(removeChildren("summary"))
 }

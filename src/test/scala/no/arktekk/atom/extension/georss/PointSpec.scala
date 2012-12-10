@@ -35,7 +35,7 @@ class PointSpec extends Specification {
     }
     "be serialized correctly" in {
       val point = Point(23.234567, 76.123546)
-      val serialized = PointAtomExtension().toChildren(Some(point), null).head
+      val serialized = PointAtomExtension().toChildren(Some(point)).head
       (serialized.wrapped \ TextSelector).head must beEqualTo(point.toValue("##.#####"))
     }
   }

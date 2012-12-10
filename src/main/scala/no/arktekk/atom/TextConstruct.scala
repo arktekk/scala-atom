@@ -38,6 +38,8 @@ sealed trait TextConstruct {
 }
 
 object TextConstruct {
+  implicit def string2TextConstruct(text: String): TextConstruct = TextConstruct.Textual(text)
+
   def apply(elem: Elem): Option[TextConstruct] = {
     val textType = elem.attrs.get("type")
     textType.map(

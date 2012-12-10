@@ -28,5 +28,5 @@ object MediaContentAtomExtension extends SeqSelectableElementWrapperAtomExtensio
 
   protected def function = (e) => MediaContent(e)
 
-  def toChildren(a: Seq[MediaContent], parent: ElementWrapper) = a
+  def toChildren(a: IndexedSeq[MediaContent]) = a
 }

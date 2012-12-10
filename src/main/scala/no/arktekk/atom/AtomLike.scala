@@ -34,46 +34,42 @@ private[atom] trait AtomLike extends ElementWrapper {
 
   def updated: DateTime = elementText("updated").headOption.map(parseDateTime(_)).get
 
-  def authors: List[Person] = element("author").map(Person(_)).toList
+  def authors: IndexedSeq[Person] = element("author").map(Person(_))
 
-  def contributors: List[Person] = element("contributor").map(Person(_)).toList
+  def contributors: IndexedSeq[Person] = element("contributor").map(Person(_))
 
-  def categories: List[Category] = element("category").map(Category(_)).toList
+  def categories: IndexedSeq[Category] = element("category").map(Category(_))
 
-  def links: List[Link] = element("link").map(Link(_)).toList
+  def links: IndexedSeq[Link] = element("link").map(Link(_))
 
-  def withId(id: URI) = copy(removeChildren("id")).addChild("id", id.toString)
+  def withId(id: URI): T = replaceChildren(atomSelector("id"), Elem(Atom.atom, "id", Attributes(), Group[Node](Text(id.toString))).toGroup)
 
-  def withTitle(title: TextConstruct) = replaceChildren(atomSelector("title"), title.toXML("title").toGroup)
+  def withTitle(title: TextConstruct): T = replaceChildren(atomSelector("title"), title.toXML("title").toGroup)
 
-  def withRights(rights: TextConstruct) = replaceChildren(atomSelector("rights"), rights.toXML("rights").toGroup)
+  def withRights(rights: TextConstruct): T = replaceChildren(atomSelector("rights"), rights.toXML("rights").toGroup)
 
-  def withUpdated(updated: DateTime) = copy(removeChildren("updated")).addChild("updated", dateTimeToString(updated))
+  def withUpdated(updated: DateTime): T = replaceChildren(atomSelector("updated"), Elem(Atom.atom, "updated", Attributes(), Group[Node](Text(dateTimeToString(updated)))).toGroup)
 
-  def addAuthor(author: Person) = addChild(author)
+  def addAuthor(author: Person): T = addChild(author)
 
-  def addContributor(contrib: Person) = addChild(contrib)
+  def addContributor(contrib: Person): T = addChild(contrib)
 
-  def addCategory(category: Category) = addChild(category)
+  def addCategory(category: Category): T = addChild(category)
 
-  def addLink(link: Link) = addLinks(Seq(link))
+  def addLink(link: Link): T = addLinks(IndexedSeq(link))
 
-  def addLinks(links: Seq[Link]) = addChildren(links)
+  def addLinks(links: IndexedSeq[Link]): T = addChildren(links)
 
-  protected def removeChildren(name: String): Elem = {
-    super.removeChildren(atomSelector(name))
-  }
-  
-  def linkByRel(rel: String) = links.find(_.rel == Some(rel))
+  def linkByRel(rel: String): Option[Link] = links.find(_.rel == Some(rel))
 
-  def linksByType(mt: MediaType) = links.filter(_.mediaType == Some(mt))
+  def linksByType(mt: MediaType): IndexedSeq[Link] = links.filter(_.mediaType == Some(mt))
 
-  def authorByName(name: String) = authors.find(_.name == name)
+  def authorByName(name: String): Option[Person] = authors.find(_.name == name)
 
-  def contributorByName(name: String) = contributors.find(_.name == name)
+  def contributorByName(name: String): Option[Person] = contributors.find(_.name == name)
 
-  def categoriesByScheme(scheme: String) = categories.filter(_.scheme == Some(scheme))
+  def categoriesByScheme(scheme: String): IndexedSeq[Category] = categories.filter(_.scheme == Some(scheme))
 
-  def categoryBySchemeAndTerm(scheme: String, term: String) = categories.find(x => x.scheme == Some(scheme) && x.term == term)
+  def categoryBySchemeAndTerm(scheme: String, term: String): Option[Category] = categories.find(x => x.scheme == Some(scheme) && x.term == term)
 
 }

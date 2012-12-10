@@ -24,15 +24,21 @@ import com.codecommit.antixml._
 trait FeedLike extends AtomLike {
   def subtitle: Option[TextConstruct] = element("subtitle").headOption.flatMap(TextConstruct(_))
 
-  def entries: List[Entry] = element("entry").map(Entry(_)).toList
+  def entries: IndexedSeq[Entry] = element("entry").map(Entry(_))
 
-  def logo = elementText("logo").headOption.map(URI.create(_))
+  def logo: Option[URI] = elementText("logo").headOption.map(URI.create(_))
 
-  def icon = elementText("icon").headOption.map(URI.create(_))
+  def icon: Option[URI] = elementText("icon").headOption.map(URI.create(_))
 
-  def withSubtitle(title: TextConstruct) = copy(removeChildren("subtitle").copy(children = wrapped.children ++ List(title.toXML("subtitle"))))
+  def withEntries(entries: IndexedSeq[Entry]): T = replaceChildren(atomSelector("entry"), Group.fromSeq(entries.map(_.wrapped)))
 
-  def withLogo(logo: URI) = copy(removeChildren("logo")).addChild("logo", logo.toString)
+  def addEntry(entry: Entry): T = {
+    copy(wrapped.copy(children = wrapped.children ++ List(entry.wrapped)))
+  }
 
-  def withIcon(icon: URI) = copy(removeChildren("icon")).addChild("icon", icon.toString)
+  def withSubtitle(title: TextConstruct): T = replaceChildren(atomSelector("subtitle"), title.toXML("subtitle").toGroup)
+
+  def withLogo(logo: URI): T = replaceChildren(atomSelector("logo"), Elem(Atom.atom, "logo", Attributes(), Group[Node](Text(logo.toString))).toGroup)
+
+  def withIcon(icon: URI): T = replaceChildren(atomSelector("icon"), Elem(Atom.atom, "icon", Attributes(), Group[Node](Text(icon.toString))).toGroup)
 }

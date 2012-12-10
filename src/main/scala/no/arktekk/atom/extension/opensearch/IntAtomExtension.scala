@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ private[opensearch] class IntAtomExtension(name:String) extends OptionSelectable
 
   protected def function = (e) => (e \ text).headOption.map(_.toInt).get
 
-  def toChildren(a: Option[Int], w: ElementWrapper) = {
-    a.map(x => ElementWrapper.withNameAndText(NamespaceBinding(prefix, ns), name, x.toString)).toSeq
+  def toChildren(a: Option[Int]) = {
+    a.map(x => ElementWrapper.withNameAndText(NamespaceBinding(prefix, ns), name, x.toString)).toIndexedSeq
   }
 }

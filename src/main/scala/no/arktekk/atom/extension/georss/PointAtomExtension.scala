@@ -28,7 +28,7 @@ class PointAtomExtension(format: String = "###.#####") extends OptionSelectableE
 
   protected def function = (e) => Point((e \ text).head).getOrElse(throw new IllegalArgumentException("Wrong format"))
 
-  def toChildren(a: Option[Point], parent: ElementWrapper) = a.map(_.toXML(format)).toSeq
+  def toChildren(a: Option[Point]) = a.map(_.toXML(format)).toIndexedSeq
 }
 
 object PointAtomExtension {

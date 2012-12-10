@@ -49,14 +49,14 @@ trait ElementWrapper {
   def addChild(node: Node):T = copy(wrapped.copy(children = wrapped.children ++ Group(node)))
 
   def apply[A >: T, B](ext: AtomExtension[A, B], value: B) : T = {
-    val applied = updateAttributes(ext.toAttributes(value))
-    addChildren(ext.toChildren(value, applied))
+    val applied = updateAttributes(ext.toAttributes(value)).asInstanceOf[T]
+    applied.addChildren(ext.toChildren(value)).asInstanceOf[T]
   }
 
   def extract[A >: T, B](ext: AtomExtension[A, B]): B = ext.fromLike(self)
 
   private def updateAttributes(attrs: Seq[(QName, String)]): T = {
-    copy(wrapped.withAttributes(Attributes(attrs : _*)))
+    if (attrs.isEmpty) self else copy(wrapped.withAttributes(Attributes(attrs : _*)))
   }
 
   def addChildren(children: Seq[ElementWrapper]) : T = {
@@ -64,17 +64,15 @@ trait ElementWrapper {
   }
 
   def addChildren(children: Group[Node]) : T = {
-    if (children.isEmpty) self
-    else copy(wrapped.copy(children = wrapped.children ++ children))
+    if (children.isEmpty) self else copy(wrapped.copy(children = wrapped.children ++ children))
   }
 
-  def replaceChildren(selector: Selector[Elem], children: Seq[ElementWrapper]) : T = {
+  def replaceChildren(selector: Selector[Elem], children: IndexedSeq[ElementWrapper]) : T = {
     replaceChildren(selector, Group.fromSeq(children.map(_.wrapped)))
   }
 
   def replaceChildren(selector: Selector[Elem], children: Group[Node]) : T = {
-    if (children.isEmpty) self
-    else copy(removeChildren(selector).copy(children = wrapped.children ++ children))
+    if (children.isEmpty) self else copy(wrapped.withChildren((wrapped \ selector).take(0) ++ children))
   }
 
   def withChildren(children: Seq[ElementWrapper]) : T = {
@@ -91,11 +89,6 @@ trait ElementWrapper {
   def withAttribute(name: String, value: Any): T = withAttribute(QName(name), value)
 
   def withAttribute(name: QName, value: Any): T = copy(wrapped.withAttribute(name, value.toString))
-
-  protected def removeChildren(selector: Selector[Elem]): Elem = {
-    val zipper = (wrapped \ selector).take(0)
-    zipper.unselect.headOption.map(_.asInstanceOf[Elem]).getOrElse(wrapped)
-  }
 
   def addNamespaces(namespaces: Map[String, String]): T  = {
     if (namespaces.isEmpty) self

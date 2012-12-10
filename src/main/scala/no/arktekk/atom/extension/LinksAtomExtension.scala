@@ -21,8 +21,8 @@ import no.arktekk.atom._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-object LinksAtomExtension extends AtomExtension[ElementWrapper, Seq[Link]]{
+object LinksAtomExtension extends AtomExtension[ElementWrapper, IndexedSeq[Link]]{
   def fromLike(like: ElementWrapper) = (like \ atomSelector("link")).map(Link(_))
 
-  def toChildren(value: Seq[Link], parent: ElementWrapper) = value
+  def toChildren(value: IndexedSeq[Link]) = value
 }

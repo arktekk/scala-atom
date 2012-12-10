@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Arktekk AS
+ * Copyright 2012 Arktekk AS
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ trait OptionSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extend
   }
 }
 
-trait SeqSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends SelectableElementWrapperAtomExtension[A, B, Seq[B]] {
-  override protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => B): Seq[B] = {
+trait SeqSelectableElementWrapperAtomExtension[A <: ElementWrapper, B] extends SelectableElementWrapperAtomExtension[A, B, IndexedSeq[B]] {
+  override protected def select(elem: Elem, selector: Selector[Elem], f: (Elem) => B): IndexedSeq[B] = {
     (elem \ selector).map(f)
   }
 }

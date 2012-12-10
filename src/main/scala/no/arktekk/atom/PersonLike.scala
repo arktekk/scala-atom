@@ -38,7 +38,7 @@ trait PersonLike extends ElementWrapper {
 
   private def replace(name: String, value: String) = {
     replaceChildren(atomSelector(name),
-      Seq(ElementWrapper.withNameAndText(Atom.atom, name, value))
+      IndexedSeq(ElementWrapper.withNameAndText(Atom.atom, name, value))
     )
   }
 }

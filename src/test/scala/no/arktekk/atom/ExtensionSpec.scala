@@ -52,5 +52,5 @@ case class Hello(value: String)
 object HelloExtension extends AtomExtension[Entry, Hello] {
   def fromLike(like: Entry) = new Hello((like.wrapped \ (NSRepr("urn:ext:ext"), "hello") \ text).head)
 
-  def toChildren(a: Hello, w: ElementWrapper) = Seq(ElementWrapper.withNameAndText(NamespaceBinding("ext", "urn:ext:ext"), "hello", a.value))
+  def toChildren(a: Hello) = IndexedSeq(ElementWrapper.withNameAndText(NamespaceBinding("ext", "urn:ext:ext"), "hello", a.value))
 }

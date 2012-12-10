@@ -37,12 +37,15 @@ sealed trait Base extends AtomLike {
 
 private [atom] object BaseBuilder {
   def apply(name:String, id: URI, title: TextConstruct, updated: DateTime, author: Option[Person] = None): Elem = {
-    ElementWrapper.withName(NamespaceBinding(Atom.namespace), name).
-      addChild("id", id.toString).
-      addChild(title.toXML("title")).
-      addChild("updated", dateTimeToString(updated)).
-      addChildren(author.toSeq).wrapped
+    Elem(Atom.atom, name, Attributes(), Group.fromSeq(IndexedSeq(
+      Elem(Atom.atom, "id", Attributes(), Group[Node](Text(id.toString))),
+      title.toXML("title"),
+      Elem(Atom.atom, "updated", Attributes(), Group[Node](Text(dateTimeToString(updated))))
+    ) ++ author.map(_.wrapped)))
   }
+
+  def simpleTextElem(name: String, text: String) =
+    Elem(Atom.atom, name, Attributes(), Group[Node](Text(text)))
 }
 
 case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
@@ -54,14 +57,29 @@ case class Feed private[atom](wrapped: Elem) extends Base with FeedLike {
 
   def copy(elem: Elem) = new Feed(elem)
 
-  def withEntries(entries: Seq[Entry]) = {
-    val toCopy = removeChildren("entry")
-    copy(toCopy.copy(children = toCopy.children ++ entries.map(_.wrapped)))
-  }
+  override lazy val id = super.id
 
-  def addEntry(entry: Entry) = {
-    copy(wrapped.copy(children = wrapped.children ++ List(entry.wrapped)))
-  }
+  override lazy val title = super.title
+
+  override lazy val subtitle = super.subtitle
+
+  override lazy val updated = super.updated
+
+  override lazy val entries = super.entries
+
+  override lazy val logo = super.logo
+
+  override lazy val icon = super.icon
+
+  override lazy val rights = super.rights
+
+  override lazy val authors = super.authors
+
+  override lazy val contributors = super.contributors
+
+  override lazy val categories = super.categories
+
+  override lazy val links = super.links
 }
 
 object Feed {
@@ -71,6 +89,37 @@ object Feed {
 
   def apply(title: String, updated: DateTime, author: Person): Feed = {
     Feed(URI.create("urn:uuid:%s".format(UUID.randomUUID().toString)), title, updated, author)
+  }
+
+  def apply(
+             id: URI,
+             title: TextConstruct,
+             updated: DateTime,
+             links: IndexedSeq[Link],
+             authors: IndexedSeq[Person],
+             entries: IndexedSeq[Entry],
+             subtitle: Option[TextConstruct] = None,
+             logo: Option[URI] = None,
+             icon: Option[URI] = None,
+             rights: Option[TextConstruct] = None,
+             contributors: IndexedSeq[Person] = IndexedSeq.empty
+             ): Feed = {
+    import BaseBuilder._
+    val group = Group[Node](
+      simpleTextElem("id", id.toString),
+      simpleTextElem("updated", dateTimeToString(updated)),
+      title.toXML("title")
+    ) ++
+      subtitle.map(_.toXML("subtitle")) ++
+      authors.map(_.wrapped) ++
+      contributors.map(_.wrapped) ++
+      links.map(_.wrapped) ++
+      entries.map(_.wrapped) ++
+      logo.map(u => simpleTextElem("logo", u.toString)) ++
+      icon.map(u => simpleTextElem("icon", u.toString)) ++
+      rights.map(_.toXML("rights"))
+
+    Feed(Elem(Atom.atom, "feed", Attributes(), group))
   }
 }
 
@@ -83,14 +132,68 @@ case class Entry private[atom](wrapped: Elem) extends Base with EntryLike {
 
   def copy(elem: Elem) = new Entry(elem)
 
+  override lazy val id = super.id
+
+  override lazy val title = super.title
+
+  override lazy val rights = super.rights
+
+  override lazy val updated = super.updated
+
+  override lazy val authors = super.authors
+
+  override lazy val contributors = super.contributors
+
+  override lazy val categories = super.categories
+
+  override lazy val links = super.links
+
+  override lazy val published = super.published
+
+  override lazy val content = super.content
+
+  override lazy val summary = super.summary
 }
 
 object Entry {
-  def apply(id: URI, title: TextConstruct, updated: DateTime, author: Option[Person] = None): Entry = {
+  def apply(id: URI, title: TextConstruct, updated: DateTime, author: Option[Person]): Entry = {
     Entry(BaseBuilder("entry", id, title, updated, author))
   }
 
   def apply(id: URI, title: String, updated: DateTime): Entry = {
-    apply(id, TextConstruct.Textual(title), updated)
+    apply(id, TextConstruct.Textual(title), updated, None)
   }
+
+  def apply(id: URI,
+            title: TextConstruct,
+            updated: DateTime,
+            published: DateTime,
+            links: IndexedSeq[Link],
+            authors: IndexedSeq[Person],
+            rights: Option[TextConstruct] = None,
+            summary: Option[Content] = None,
+            content: Option[Content] = None,
+            source: Option[Source] = None,
+            contributors: IndexedSeq[Person] = IndexedSeq.empty
+             ): Entry = {
+
+    import BaseBuilder._
+
+    val group = Group[Node](
+      simpleTextElem("id", id.toString),
+      title.toXML("title"),
+      simpleTextElem("updated", dateTimeToString(updated)),
+      simpleTextElem("published", dateTimeToString(published))
+    ) ++
+      authors.map(_.wrapped) ++
+      contributors.map(_.wrapped) ++
+      links.map(_.wrapped) ++
+      summary.map(_.toXML("summary")) ++
+      content.map(_.toXML("content")) ++
+      source.map(_.wrapped) ++
+      rights.map(_.toXML("rights"))
+
+    Entry(Elem(Atom.atom, "entry", Attributes(), group))
+  }
+
 }

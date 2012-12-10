@@ -28,15 +28,15 @@ case class Workspace(wrapped: Elem) extends ElementWrapper {
 
   def title: Option[TextConstruct] = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_))
 
-  def collections: Seq[Collection] = (wrapped \ atomPubSelector("collection")).map(Collection(_))
+  def collections: IndexedSeq[Collection] = (wrapped \ atomPubSelector("collection")).map(Collection(_))
 
   def withTitle(text: TextConstruct) = {
-    replaceChildren(atomSelector("title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
+    replaceChildren(atomSelector("title"), IndexedSeq(ElementWrapper(text.toXML("title", Some("atom")))))
   }
 
   def addCollection(collection: Collection) = addChild(collection)
 
-  def withCollections(collections: Seq[Collection]) = replaceChildren(atomPubSelector("collection"), collections)
+  def withCollections(collections: IndexedSeq[Collection]) = replaceChildren(atomPubSelector("collection"), collections)
 
   type T = Workspace
 

@@ -22,7 +22,7 @@ import java.net.URI
 import no.arktekk.atom._
 
 /**
- * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
+ * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 
 class ThreadingSpec extends Specification {

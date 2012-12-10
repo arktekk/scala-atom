@@ -31,24 +31,20 @@ case class Collection(wrapped: Elem) extends ElementWrapper {
 
   def title: Option[TextConstruct] = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_))
 
-  def accepts: Seq[MediaType] = (wrapped \ atomPubSelector("accept") \ text).flatMap(MediaType(_).toSeq)
+  def accepts: IndexedSeq[MediaType] = (wrapped \ atomPubSelector("accept") \ text).flatMap(MediaType(_).toSeq)
 
   def withHref(uri: URI) = withAttribute("href", uri.toString)
 
   def withTitle(text: TextConstruct) = {
-    replaceChildren(atomSelector("title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
+    replaceChildren(atomSelector("title"), text.toXML("title", Some("atom")).toGroup)
   }
 
   def addAccept(mt: MediaType) = addChild(ElementWrapper.withNameAndText(
     NamespaceBinding("app", Atom.atompubNamespace), "accept", mt.toString
   ))
 
-  def withAccepts(accepts: Seq[MediaType]) = {
-    replaceChildren(atomPubSelector("accept"),
-      accepts.map(a => ElementWrapper.withNameAndText(
-        NamespaceBinding("app", Atom.atompubNamespace), "accept", a.toString
-      ))
-    )
+  def withAccepts(accepts: IndexedSeq[MediaType]) = {
+    replaceChildren(atomPubSelector("accept"), Group.fromSeq(accepts.map(a => Elem(NamespaceBinding("app", Atom.atompubNamespace), "accept", Attributes(), Group[Node](Text(a.toString))))))
   }
 
   type T = Collection

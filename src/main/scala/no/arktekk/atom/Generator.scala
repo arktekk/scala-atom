@@ -22,20 +22,37 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Generator private[atom](wrapped: Elem) {
+case class Generator private[atom](wrapped: Elem) extends ElementWrapper {
   require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
   require(wrapped.name == "generator")
 
-  def uri = wrapped.attrs.get("uri").map(URI.create(_))
 
-  def version = wrapped.attrs.get("version")
+  type T = Generator
 
-  def value = (wrapped \ text).head
+  protected def self = this
+
+  def copy(elem: Elem) = new Generator(elem)
+
+  lazy val uri = wrapped.attrs.get("uri").map(URI.create(_))
+
+  lazy val version = wrapped.attrs.get("version")
+
+  lazy val value = (wrapped \ text).head
+
+  def withURI(href: URI) = withAttribute("uri", href.toString)
+
+  def withVersion(version: String) = withAttribute("version", version)
+
+  def withValue(value: String) = withChildren(Group[Node](Text(value)))
 }
 
 object Generator {
   def apply(uri: Option[URI], version: Option[String], value: String): Generator = {
     val attr = Attributes() ++ uri.map((QName("uri") -> _.toString)) ++ version.map((QName("version") -> _))
     Generator(Elem(Atom.atom, "generator", attr).addChild(Text(value)))
+  }
+
+  def apply(uri: URI, version: String, value: String): Generator = {
+    apply(Some(uri), Some(version), value)
   }
 }
