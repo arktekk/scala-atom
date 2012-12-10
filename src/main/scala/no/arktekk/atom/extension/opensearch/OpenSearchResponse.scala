@@ -16,10 +16,6 @@
 
 package no.arktekk.atom.extension.opensearch
 
-import no.arktekk.atom.extension.AtomExtension
-import no.arktekk.atom._
-import com.codecommit.antixml.Elem
-import no.arktekk.atom.extension.opensearch.OpensearchConstants._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
@@ -52,27 +48,4 @@ case class OpenSearchResponse(queries: Seq[Query] = Nil, totalResults: Option[In
 
 object OpenSearchResponse {
   def apply(): OpenSearchResponse = apply(Nil, None, None, None)
-}
-
-object OpenSearchResponseAtomExtension extends AtomExtension[FeedLike, OpenSearchResponse] {
-  val numberExt = AtomExtension(new IntAtomExtension("totalResults"), new IntAtomExtension("itemsPerPage"), new IntAtomExtension("startIndex"))
-
-  def fromLike(like: FeedLike) = {
-    val numbers = numberExt.fromLike(like)
-    val queries = QueriesAtomExtension.fromLike(like)
-    OpenSearchResponse(queries, numbers._1, numbers._2, numbers._3)
-  }
-
-  def toChildren(a: OpenSearchResponse, wrapper: ElementWrapper) = {
-    QueriesAtomExtension.toChildren(a.queries, wrapper) ++ numberExt.toChildren((a.totalResults, a.itemsPerPage, a.startIndex), wrapper)
-  }
-}
-
-object QueriesAtomExtension extends AtomExtension[ElementWrapper, Seq[Query]] {
-
-  def fromLike(like: ElementWrapper) = {
-    (like.wrapped \ Query.selector).map(Query(_))
-  }
-
-  def toChildren(a: Seq[Query], wrapper: ElementWrapper) = a
 }

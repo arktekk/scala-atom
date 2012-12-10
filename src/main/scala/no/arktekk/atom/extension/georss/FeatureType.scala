@@ -16,13 +16,8 @@
 
 package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.ElementWrapper
-import com.codecommit.antixml.{NamespaceBinding, QName}
-
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class FeatureType(name: String) {
-  def toXML = ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "featureTypeTag", name)
-}
+case class FeatureType(name: String)

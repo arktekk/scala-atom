@@ -16,23 +16,32 @@
 package no.arktekk.atom
 
 import java.net.URI
-import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait FeedLike extends AtomLike {
-  def subtitle: Option[TextConstruct] = element("subtitle").headOption.flatMap(TextConstruct(_))
+trait FeedLike extends AtomLike[FeedLike] {
+  def subtitle: Option[TextConstruct]
 
-  def entries: List[Entry] = element("entry").map(Entry(_)).toList
+  def entries: IndexedSeq[EntryLike]
 
-  def logo = elementText("logo").headOption.map(URI.create(_))
+  def logo: Option[URI]
 
-  def icon = elementText("icon").headOption.map(URI.create(_))
+  def icon: Option[URI]
 
-  def withSubtitle(title: TextConstruct) = copy(removeChildren("subtitle").copy(children = wrapped.children ++ List(title.toXML("subtitle"))))
+  def withSubtitle(title: TextConstruct): FeedLike
 
-  def withLogo(logo: URI) = copy(removeChildren("logo")).addChild("logo", logo.toString)
+  def withLogo(logo: URI): FeedLike
 
-  def withIcon(icon: URI) = copy(removeChildren("icon")).addChild("icon", icon.toString)
+  def withIcon(icon: URI): FeedLike
+
+  def addEntry(entry: EntryLike): FeedLike
+
+  def addEntries(seq: IndexedSeq[EntryLike]): FeedLike
+
+  def withEntries(seq: IndexedSeq[EntryLike]): FeedLike
+
+  def entryById(id: URI) = entries.find(_.id == id)
+
+  def entryBySelfLink(href: URI) = entries.find(_.selfLink.filter(_.href == href).isDefined)
 }

@@ -16,29 +16,22 @@
 
 package no.arktekk.atom
 
-import com.codecommit.antixml._
 import java.net.URI
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait PersonLike extends ElementWrapper {
+trait PersonLike {
 
-  def name = (wrapped \ atomSelector("name") \ text).head
+  def name: String
 
-  def email = (wrapped \ atomSelector("email") \ text).headOption
+  def email: Option[String]
 
-  def url = (wrapped \ atomSelector("url") \ text).headOption
+  def url: Option[URI]
 
-  def withName(name: String) = replace("name", name)
+  def withName(name: String):PersonLike
 
-  def withEmail(email: String) = replace("email", email)
+  def withEmail(email: String):PersonLike
 
-  def withUrl(url: URI) = replace("url", url.toString)
-
-  private def replace(name: String, value: String) = {
-    replaceChildren(atomSelector(name),
-      Seq(ElementWrapper.withNameAndText(Atom.atom, name, value))
-    )
-  }
+  def withUrl(url: URI): PersonLike
 }

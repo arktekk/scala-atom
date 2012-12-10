@@ -17,8 +17,6 @@
 package no.arktekk.atom.extension.georss
 
 import java.text.DecimalFormat
-import com.codecommit.antixml.{NamespaceBinding, QName}
-import no.arktekk.atom.ElementWrapper
 
 /**
  * http://georss.org/simple
@@ -30,10 +28,6 @@ case class Point(lat: Double, lon: Double) {
   def toValue(format: String) = {
     val formatter = new DecimalFormat(format)
     "%s %s".format(formatter.format(lat), formatter.format(lon))
-  }
-
-  def toXML(format: String) = {
-    ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "point", toValue(format))
   }
 }
 

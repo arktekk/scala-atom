@@ -20,20 +20,20 @@ import org.joda.time.DateTime
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait EntryLike extends AtomLike {
-  def published: Option[DateTime] = elementText("published").headOption.map(parseDateTime(_))
+trait EntryLike extends AtomLike[EntryLike] {
+  def published: Option[DateTime]
 
-  def content: Option[Content] = element("content").headOption.flatMap(Content(_))
+  def content: Option[Content]
 
-  def summary: Option[Content] = element("summary").headOption.flatMap(Content(_))
+  def summary: Option[Content]
 
-  def withPublished(published: DateTime) = copy(removeChildren("published")).addChild("published", dateTimeToString(published))
+  def withPublished(published: DateTime): EntryLike
 
-  def withSummary(summary: Content) = removeSummary().addChild(summary.toXML("summary"))
+  def withSummary(summary: Content): EntryLike
 
-  def withContent(content: Content) = removeContent().addChild(content.toXML("content"))
+  def withContent(content: Content): EntryLike
 
-  def removeContent() = copy(removeChildren("content"))
+  def removeContent(): EntryLike
 
-  def removeSummary() = copy(removeChildren("summary"))
+  def removeSummary(): EntryLike
 }

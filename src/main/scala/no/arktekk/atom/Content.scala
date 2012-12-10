@@ -16,51 +16,8 @@
 package no.arktekk.atom
 
 import java.net.URI
-import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-sealed trait Content {
-  private[atom] def toXML(name: String): Elem
-}
-
-object Content {
-  private val elementSelector = new Selector[Elem] {
-    def apply(v1: Node) = v1.asInstanceOf[Elem]
-
-    def isDefinedAt(x: Node) = x match {
-      case x: Elem => true
-      case _ => false
-    }
-  }
-
-  def apply(elem: Elem): Option[Content] = {
-    require(Elem.validateNamespace(elem, Atom.namespace), "Wrong namespace defined")
-    require(Set("content", "summary").contains(elem.name), "Wrong name of element, Was: " + elem.name)
-    val mediaType = elem.attrs.get("type").flatMap(MediaType(_))
-    mediaType match {
-      case mt@Some(_) if (elem.attrs.contains("href")) => Some(External(URI.create(elem.attrs("href")), mt))
-      case Some(mt) => (elem \ elementSelector).headOption.map(Inline(mt, _))
-      case None => TextConstruct(elem).map(Text(_))
-    }
-  }
-
-  case class Text(text: TextConstruct) extends Content {
-    private[atom] def toXML(name: String) = text.toXML(name)
-  }
-
-  case class Inline(mediaType: MediaType, elem: Elem) extends Content {
-    private[atom] def toXML(name: String) = Elem(Atom.atom, name, Attributes("type" -> mediaType.toString)).
-          addChild(elem)
-  }
-
-  case class External(href: URI, mediaType: Option[MediaType]) extends Content {
-    private[atom] def toXML(name: String) = {
-      val elem = Elem(Atom.atom, name, Attributes("href" -> href.toString))
-      if (mediaType.isDefined) elem.withAttribute("type", mediaType.get.toString) else elem
-    }
-  }
-
-
-}
+sealed trait Content

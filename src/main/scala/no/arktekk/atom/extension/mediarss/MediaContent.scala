@@ -20,7 +20,7 @@ import java.net.URI
 import java.util.Locale
 import org.joda.time.Seconds
 import no.arktekk.atom._
-import com.codecommit.antixml._
+import extension.Extensible
 
 /**
  * http://www.rssboard.org/media-rss#media-content
@@ -28,90 +28,64 @@ import com.codecommit.antixml._
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
 //support expression attribute
-case class MediaContent(wrapped: Elem) extends ElementWrapper {
-  type T = MediaContent
-
-  protected def self = this
-
-  def copy(elem: Elem) = new MediaContent(elem)
+trait MediaContent extends Extensible[MediaContent] {
 
   //TODO: support type attribute
-  def description = (wrapped \ (NSRepr(MediaRSSConstants.ns), "description") \ text)
+  def description: Option[String]
 
-  def url = wrapped.attrs.get("url").map(URI.create(_)).get
+  def url: URI
 
-  def fileSize = wrapped.attrs.get("fileSize").map(_.toLong)
+  def fileSize: Long
 
-  def mediaType = wrapped.attrs.get("type").flatMap(MediaType(_))
+  def mediaType: Option[MediaType]
 
-  def medium = wrapped.attrs.get("medium").map(Medium(_))
+  def medium: Option[Medium]
 
-  def isDefault = wrapped.attrs.get("isDefault").map(_.toBoolean)
+  def isDefault: Boolean
 
-  def width = wrapped.attrs.get("width").map(_.toInt)
+  def width: Option[Int]
 
-  def height = wrapped.attrs.get("height").map(_.toInt)
+  def height: Option[Int]
 
-  def bitrate = wrapped.attrs.get("bitrate").map(_.toInt)
+  def bitrate: Option[Int]
 
-  def framerate = wrapped.attrs.get("framerate").map(_.toInt)
+  def framerate: Option[Int]
 
-  def samplingrate = wrapped.attrs.get("samplingrate").map(_.toDouble)
+  def samplingrate: Option[Double]
 
-  def channels = wrapped.attrs.get("channels").map(_.toInt)
+  def channels: Option[Int]
 
-  def duration = wrapped.attrs.get("duration").map(_.toInt).map(Seconds.seconds(_))
+  def duration: Option[Seconds]
 
-  def lang = wrapped.attrs.get("duration").map(new Locale(_))
+  def lang: Option[Locale]
 
-  def withUrl(uri: URI) = withAttribute("url", uri)
+  def withUrl(uri: URI): MediaContent
 
-  def withFileSize(input: Long) = withAttribute("fileSize", input)
+  def withFileSize(input: Long): MediaContent
 
-  def withMediaType(input: MediaType) = withAttribute("type", input)
+  def withMediaType(input: MediaType): MediaContent
 
-  def withMedium(input: Medium) = withAttribute("medium", input)
+  def withMedium(input: Medium): MediaContent
 
-  def withDefault(b: Boolean) = withAttribute("isDefault", b)
+  def withDefault(b: Boolean): MediaContent
 
-  def withWidth(input: Int) = withAttribute("width", input)
+  def withWidth(input: Int): MediaContent
 
-  def withHeight(input: Int) = withAttribute("height", input)
+  def withHeight(input: Int): MediaContent
 
-  def withBitrate(input: Int) = withAttribute("bitrate", input)
+  def withBitrate(input: Int): MediaContent
 
-  def withFramerate(input: Int) = withAttribute("framerate", input)
+  def withFramerate(input: Int): MediaContent
 
-  def withSamplingRate(input: Int) = withAttribute("samplingrate", input)
+  def withSamplingRate(input: Int): MediaContent
 
-  def withChannels(input: Int) = withAttribute("channels", input)
+  def withChannels(input: Int): MediaContent
 
-  def withDuration(input: Seconds) = withAttribute("seconds", input.getSeconds)
+  def withDuration(input: Seconds): MediaContent
 
-  def withLang(input: Locale) = withAttribute("lang", input.getLanguage)
+  def withLang(input: Locale): MediaContent
 
-  def withDescription(description: String) =
-    addChild(ElementWrapper.withNameAndText(NamespaceBinding(MediaRSSConstants.prefix, MediaRSSConstants.ns), "description", description))
-}
-
-object MediaContent {
-  def apply(): MediaContent = {
-    val elem = Elem(NamespaceBinding(MediaRSSConstants.prefix, MediaRSSConstants.ns), "content")
-    MediaContent(elem)
-  }
-
-  def image(href: URI, mediaType: Option[MediaType]): MediaContent = {
-    val attrs = Attributes(QName("url") -> href.toString, QName("medium") -> Medium.IMAGE.toString) ++
-      mediaType.map(QName("type") -> _.toString).toSeq
-    val wrapper = Elem(
-      NamespaceBinding(MediaRSSConstants.prefix, MediaRSSConstants.ns), "content",
-      attrs)
-    MediaContent(wrapper)
-  }
-
-  def image(href: URI, mediaType: Option[MediaType], width: Int, height: Int): MediaContent = {
-    image(href, mediaType).withWidth(width).withHeight(height)
-  }
+  def withDescription(description: String): MediaContent
 }
 
 sealed abstract class Medium(val value: String) {

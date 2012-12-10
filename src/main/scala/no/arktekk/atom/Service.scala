@@ -16,28 +16,17 @@
 
 package no.arktekk.atom
 
-import com.codecommit.antixml._
-
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Service(wrapped: Elem) extends ElementWrapper {
-  require(wrapped.name == "service" && Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong name or namespace of wrapped element")
-  def workspaces : Seq[Workspace] = (wrapped \ atomPubSelector("workspace")).map(Workspace(_))
+trait Service {
+  def workspaces : Seq[Workspace]
 
-  def addWorkspace(workspace: Workspace) = addChild(workspace)
+  def addWorkspace(workspace: Workspace): Service
 
-  def withWorkspaces(workspaces: Seq[Workspace]) = replaceChildren(NSRepr(Atom.atompubNamespace) -> "workspace", workspaces)
+  def addWorkspaces(workspaces: Seq[Workspace]): Service
 
-  type T = Service
-
-  protected def self = this
-
-  def copy(elem: Elem) = new Service(elem)
+  def withWorkspaces(workspaces: Seq[Workspace]): Service
 
   def findWorkspace(title: String): Option[Workspace] = workspaces.find(_.title.filter(_.toString == title).isDefined)
-}
-
-object Service {
-  def apply(): Service = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "service"))
 }

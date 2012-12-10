@@ -17,70 +17,48 @@ package no.arktekk.atom.extension.opensearch
 
 import java.util.Locale
 import java.nio.charset.Charset
-import com.codecommit.antixml._
-import no.arktekk.atom.extension.opensearch.OpensearchConstants._
-import no.arktekk.atom._
-import scala.Some
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Query private[opensearch](wrapped: Elem) extends ElementWrapper{
+trait Query  {
 
-  type T = Query
+  def role: Role
 
-  protected def self = this
+  def title: Option[String]
 
-  def copy(elem: Elem) = new Query(elem)
+  def searchTerms: Option[String]
 
-  def role = attr("role").map(Role(_)).get
+  def count: Option[Int]
 
-  def title = attr("title")
+  def totalResults: Option[Int]
 
-  def searchTerms = attr("searchTerms")
+  def startIndex: Option[Int]
 
-  def count = attr("count").map(_.toInt)
+  def startPage: Option[Int]
 
-  def totalResults = attr("totalResults").map(_.toInt)
+  def inputEncoding: Option[Charset]
 
-  def startIndex = attr("startIndex").map(_.toInt)
+  def outputEncoding: Option[Charset]
 
-  def startPage = attr("startPage").map(_.toInt)
+  def withRole(role: Role): Query
 
-  def inputEncoding = attr("inputEncoding").map(Charset.forName(_))
+  def withTitle(title: String): Query
 
-  def outputEncoding = attr("outputEncoding").map(Charset.forName(_))
+  def withSearchTerms(terms: String):Query
 
-  def withRole(role: Role) = withAttribute("role", role.name)
+  def withCount(count: Int):Query
 
-  def withTitle(title: String) = withAttribute("title", title)
+  def withTotalResults(results: Int): Query
 
-  def withSearchTerms(terms: String) = withAttribute("searchTerms", terms)
+  def withStartIndex(index: Int):Query
 
-  def withCount(count: Int) = withAttribute("count", count.toString)
+  def withStartPage(page: Int):Query
 
-  def withTotalResults(results: Int) = withAttribute("totalResults", results.toString)
+  def withInputEncoding(encoding: Charset):Query
 
-  def withStartIndex(index: Int) = withAttribute("startIndex", index.toString)
+  def withOutputEncoding(encoding: Charset):Query
 
-  def withStartPage(page: Int) = withAttribute("startPage", page.toString)
-
-  def withInputEncoding(encoding: Charset) = withAttribute("inputEncoding", encoding.name())
-
-  def withOutputEncoding(encoding: Charset) = withAttribute("outputEncoding", encoding.name())
-
-}
-
-object Query {
-  val selector: Selector[Elem] = NSRepr(ns) -> "Query"
-
-  def apply(role: Role): Query = {
-    Query(Elem(NamespaceBinding(prefix, ns), "Query", Attributes("role" -> role.name)))
-  }
-
-  def apply(): Query = {
-    apply(Role.REQUEST)
-  }
 }
 
 class Role(val name: String) {

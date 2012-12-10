@@ -16,39 +16,20 @@
 
 package no.arktekk.atom
 
-import com.codecommit.antixml._
-
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Workspace(wrapped: Elem) extends ElementWrapper {
-  require(Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong namespace defined")
-  require(wrapped.name == "workspace", "Wrong name of element")
+trait Workspace {
+  def title: Option[TextConstruct]
 
-  def title: Option[TextConstruct] = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_))
+  def collections: Seq[Collection]
 
-  def collections: Seq[Collection] = (wrapped \ atomPubSelector("collection")).map(Collection(_))
+  def withTitle(text: TextConstruct): Workspace
 
-  def withTitle(text: TextConstruct) = {
-    replaceChildren(atomSelector("title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
-  }
+  def addCollection(collection: Collection): Workspace
 
-  def addCollection(collection: Collection) = addChild(collection)
-
-  def withCollections(collections: Seq[Collection]) = replaceChildren(atomPubSelector("collection"), collections)
-
-  type T = Workspace
-
-  protected def self = this
-
-  def copy(elem: Elem) = new Workspace(elem)
+  def withCollections(collections: Seq[Collection]): Workspace
 
   def findCollection(title: String): Option[Collection] = collections.find(_.title.filter(_.toString == title).isDefined)
-}
-
-object Workspace {
-  def apply(): Workspace = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "workspace"))
-
-  def apply(title: TextConstruct): Workspace = apply().withTitle(title)
 }

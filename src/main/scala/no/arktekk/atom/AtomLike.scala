@@ -15,56 +15,51 @@
  */
 package no.arktekk.atom
 
+import extension.Extensible
 import java.net.URI
 import org.joda.time.DateTime
-import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-private[atom] trait AtomLike extends ElementWrapper {
-  protected def element(name: String) = (wrapped \ atomSelector(name))
-  protected def elementText(name: String) = element(name) \ text
+private[atom] trait AtomLike[T <: Extensible[_]] extends Extensible[T] { self: T =>
+  def id: URI
 
-  def id: URI = elementText("id").headOption.map(URI.create(_)).get
+  def title: TextConstruct
 
-  def title: TextConstruct = element("title").headOption.flatMap(TextConstruct(_)).get
+  def rights: Option[TextConstruct]
 
-  def rights: Option[TextConstruct] = element("rights").headOption.flatMap(TextConstruct(_))
+  def updated: DateTime
 
-  def updated: DateTime = elementText("updated").headOption.map(parseDateTime(_)).get
+  def authors: Seq[PersonLike]
 
-  def authors: List[Person] = element("author").map(Person(_)).toList
+  def contributors: Seq[PersonLike]
 
-  def contributors: List[Person] = element("contributor").map(Person(_)).toList
+  def categories: Seq[Category]
 
-  def categories: List[Category] = element("category").map(Category(_)).toList
+  def links: Seq[Link]
 
-  def links: List[Link] = element("link").map(Link(_)).toList
+  def withId(id: URI): T
 
-  def withId(id: URI) = copy(removeChildren("id")).addChild("id", id.toString)
+  def withTitle(title: TextConstruct): T
 
-  def withTitle(title: TextConstruct) = replaceChildren(atomSelector("title"), title.toXML("title").toGroup)
+  def withRights(rights: TextConstruct):T
 
-  def withRights(rights: TextConstruct) = replaceChildren(atomSelector("rights"), rights.toXML("rights").toGroup)
+  def withUpdated(updated: DateTime):T
 
-  def withUpdated(updated: DateTime) = copy(removeChildren("updated")).addChild("updated", dateTimeToString(updated))
+  def addAuthor(author: PersonLike):T
 
-  def addAuthor(author: Person) = addChild(author)
+  def addContributor(contrib: PersonLike):T
 
-  def addContributor(contrib: Person) = addChild(contrib)
+  def addCategory(category: Category):T
 
-  def addCategory(category: Category) = addChild(category)
+  def addLink(link: Link):T = addLinks(Seq(link))
 
-  def addLink(link: Link) = addLinks(Seq(link))
+  def addLinks(links: Seq[Link]):T
 
-  def addLinks(links: Seq[Link]) = addChildren(links)
-
-  protected def removeChildren(name: String): Elem = {
-    super.removeChildren(atomSelector(name))
-  }
-  
   def linkByRel(rel: String) = links.find(_.rel == Some(rel))
+
+  def selfLink : Option[Link] = linkByRel("self")
 
   def linksByType(mt: MediaType) = links.filter(_.mediaType == Some(mt))
 

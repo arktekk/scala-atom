@@ -22,20 +22,16 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Generator private[atom](wrapped: Elem) {
-  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
-  require(wrapped.name == "generator")
+trait Generator {
+  def uri: Option[URI]
 
-  def uri = wrapped.attrs.get("uri").map(URI.create(_))
+  def version: Option[String]
 
-  def version = wrapped.attrs.get("version")
+  def value: String
 
-  def value = (wrapped \ text).head
-}
+  def withUri(uri: URI): Generator
 
-object Generator {
-  def apply(uri: Option[URI], version: Option[String], value: String): Generator = {
-    val attr = Attributes() ++ uri.map((QName("uri") -> _.toString)) ++ version.map((QName("version") -> _))
-    Generator(Elem(Atom.atom, "generator", attr).addChild(Text(value)))
-  }
+  def withVersion(version: String): Generator
+
+  def withValue(value: String): Generator
 }

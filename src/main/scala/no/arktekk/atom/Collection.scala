@@ -16,50 +16,26 @@
 
 package no.arktekk.atom
 
-import com.codecommit.antixml._
 import java.net.URI
 
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Collection(wrapped: Elem) extends ElementWrapper {
-  require(Elem.validateNamespace(wrapped, Atom.atompubNamespace), "Wrong namespace defined")
-  require(wrapped.name == "collection", "Wrong name of element")
+trait Collection {
 
-  def href: URI = wrapped.attrs.get("href").map(URI.create(_)).get
+  def href: URI
 
-  def title: Option[TextConstruct] = (wrapped \ atomSelector("title")).headOption.flatMap(TextConstruct(_))
+  def title: Option[TextConstruct]
 
-  def accepts: Seq[MediaType] = (wrapped \ atomPubSelector("accept") \ text).flatMap(MediaType(_).toSeq)
+  def accepts: Seq[MediaType]
 
-  def withHref(uri: URI) = withAttribute("href", uri.toString)
+  def withHref(uri: URI): Collection
 
-  def withTitle(text: TextConstruct) = {
-    replaceChildren(atomSelector("title"), Seq(ElementWrapper(text.toXML("title", Some("atom")))))
-  }
+  def withTitle(text: TextConstruct): Collection
 
-  def addAccept(mt: MediaType) = addChild(ElementWrapper.withNameAndText(
-    NamespaceBinding("app", Atom.atompubNamespace), "accept", mt.toString
-  ))
+  def addAccept(mt: MediaType): Collection
 
-  def withAccepts(accepts: Seq[MediaType]) = {
-    replaceChildren(atomPubSelector("accept"),
-      accepts.map(a => ElementWrapper.withNameAndText(
-        NamespaceBinding("app", Atom.atompubNamespace), "accept", a.toString
-      ))
-    )
-  }
+  def withAccepts(accepts: Seq[MediaType]): Collection
 
-  type T = Collection
-
-  protected def self = this
-
-  def copy(elem: Elem) = new Collection(elem)
-}
-
-object Collection {
-  def apply(): Collection = apply(Elem(NamespaceBinding("app", Atom.atompubNamespace), "collection"))
-
-  def apply(href: URI): Collection = apply().withHref(href)
 }

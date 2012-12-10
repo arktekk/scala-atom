@@ -16,13 +16,9 @@
 
 package no.arktekk.atom.extension.georss
 
-import no.arktekk.atom.ElementWrapper
-import com.codecommit.antixml.{NamespaceBinding, QName}
 
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Relationship(name: String) {
-  def toXML = ElementWrapper.withNameAndText(NamespaceBinding(GeorssConstants.prefix, GeorssConstants.ns), "relationshipTag", name)
-}
+case class Relationship(name: String)

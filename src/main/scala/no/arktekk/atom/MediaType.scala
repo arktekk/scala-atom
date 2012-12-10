@@ -28,6 +28,7 @@ object MediaType {
   val IMAGE_JPEG = MediaType("image", "jpeg")
   val IMAGE_PNG = MediaType("image", "png")
   val ATOM = MediaType("application", "atom+xml")
+  val ATOM_ENTRY = MediaType("application", "atom+xml", Map("type" -> "entry"))
   val CATEGORY = MediaType("application", "atomcat+xml")
   val SERVICE = MediaType("application", "atomsvc+xml")
 
@@ -41,7 +42,7 @@ object MediaType {
       Some(new MediaType(mimeType.getPrimaryType, mimeType.getSubType, params))
     }
     catch {
-      case _ => None
+      case _: Exception => None
     }
   }
 }

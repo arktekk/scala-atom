@@ -30,11 +30,6 @@ sealed trait TextConstruct {
   def value: Node
 
   def toString: String
-
-  def toXML(name: String, prefix: Option[String] = None) = {
-    val binding = prefix.map(NamespaceBinding(_, Atom.namespace)).getOrElse(NamespaceBinding(Atom.namespace))
-    Elem(binding, name, Attributes("type" -> textType.value), Group(value))
-  }
 }
 
 object TextConstruct {
@@ -87,5 +82,4 @@ object TextConstruct {
 
     def apply(text: String): Div = Div(XML.fromString("<div xmlns=\"%s\">%s</div>".format(namespace, text)))
   }
-
 }

@@ -21,41 +21,21 @@ import com.codecommit.antixml._
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Link(wrapped: Elem) extends ElementWrapper {
-  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
-  require(wrapped.name == "link")
+trait Link {
 
-  type T = Link
+  def href: URI
 
-  protected val self = this
+  def rel: Option[String]
 
-  def copy(wrapped: Elem) = new Link(wrapped)
+  def mediaType: Option[MediaType]
 
-  def href = wrapped.attrs.get("href").map(URI.create(_)).get
+  def title: Option[String]
 
-  def rel = wrapped.attrs.get("rel")
+  def withTitle(title: String): Link
 
-  def mediaType: Option[MediaType] = wrapped.attrs.get("type").flatMap(MediaType(_))
+  def withHref(href: URI):Link
 
-  def title = wrapped.attrs.get("title")
+  def withRel(rel: String):Link
 
-  def withTitle(title: String) = withAttribute("title", title)
-
-  def withHref(href: URI) = withAttribute("href", href.toString)
-
-  def withRel(rel: String) = withAttribute("rel", rel)
-
-  def withMediaType(mt: MediaType) = withAttribute("type", mt.toString)
-}
-
-
-object Link {
-  private def toAttributes[A](name: String, option: Option[A]) = {
-    option.map(x => (QName(name) -> x.toString))
-  }
-
-  def apply(href: URI, rel: String, mediaType: Option[MediaType] = None, title: Option[String] = None): Link = {
-    val attrs = List[(QName, String)](("href" -> href.toString), ("rel" -> rel)) ++ toAttributes("type", mediaType) ++ toAttributes("title", title)
-    Link(Elem(Atom.atom, "link", Attributes(attrs : _*)))
-  }
+  def withMediaType(mt: MediaType): Link
 }

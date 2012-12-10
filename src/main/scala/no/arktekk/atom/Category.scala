@@ -15,31 +15,22 @@
  */
 package no.arktekk.atom
 
-import com.codecommit.antixml._
-
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-case class Category private[atom](wrapped: Elem) extends ElementWrapper {
-  require(Elem.validateNamespace(wrapped, Atom.namespace), "Wrong namespace defined")
-  require(wrapped.name == "category", "Wrong name of element")
+trait Category {
 
-  type T = Category
+  def scheme: String
 
-  protected val self = this
+  def term: String
 
-  def scheme = wrapped.attr("scheme")
+  def label: Option[String]
 
-  def term = wrapped.attr("term").get
+  def withScheme(sch: String): Category
 
-  def label = wrapped.attr("label")
+  def withTerm(term: String): Category
 
-  def copy(elem: Elem) = new Category(elem)
+  def withLabel(label: String): Category
+
 }
 
-object Category {
-  def apply(scheme: Option[String], term: String, label: Option[String]): Category = {
-    val attrs = Attributes() ++ scheme.map((QName("scheme") -> _.toString)) + ("term" -> term) ++ label.map((QName("label") -> _))
-    Category(Elem(NamespaceBinding(Atom.namespace), "category", attrs))
-  }
-}
