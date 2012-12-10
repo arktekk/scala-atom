@@ -16,10 +16,12 @@
 
 package no.arktekk.atom
 
+import extension.Extensible
+
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Service {
+trait Service extends Extensible[Service] {
   def workspaces : Seq[Workspace]
 
   def addWorkspace(workspace: Workspace): Service

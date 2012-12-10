@@ -43,6 +43,6 @@ trait Implicits {
 
   implicit def string2URI(iri: String): URI = URI.create(iri)
 
-  implicit def string2TextConstruct(text: String): TextConstruct = TextConstruct.Textual(text)
+  //implicit def string2TextConstruct(text: String): TextConstruct = TextConstruct.Textual(text)
 
 }

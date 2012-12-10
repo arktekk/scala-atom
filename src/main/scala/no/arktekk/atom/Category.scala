@@ -15,10 +15,12 @@
  */
 package no.arktekk.atom
 
+import extension.Extensible
+
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Category {
+trait Category extends Extensible[Category] {
 
   def scheme: String
 

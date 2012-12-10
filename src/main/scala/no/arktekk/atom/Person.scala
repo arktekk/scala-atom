@@ -16,12 +16,13 @@
 
 package no.arktekk.atom
 
+import extension.Extensible
 import java.net.URI
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait PersonLike {
+trait Person extends Extensible[Person] {
 
   def name: String
 
@@ -29,9 +30,9 @@ trait PersonLike {
 
   def url: Option[URI]
 
-  def withName(name: String):PersonLike
+  def withName(name: String): Person
 
-  def withEmail(email: String):PersonLike
+  def withEmail(email: String): Person
 
-  def withUrl(url: URI): PersonLike
+  def withUrl(url: URI): Person
 }

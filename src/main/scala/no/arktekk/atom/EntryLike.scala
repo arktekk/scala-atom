@@ -20,7 +20,7 @@ import org.joda.time.DateTime
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait EntryLike extends AtomLike[EntryLike] {
+sealed trait EntryLike extends AtomLike[EntryLike] {
   def published: Option[DateTime]
 
   def content: Option[Content]
@@ -37,3 +37,5 @@ trait EntryLike extends AtomLike[EntryLike] {
 
   def removeSummary(): EntryLike
 }
+
+trait Entry extends EntryLike

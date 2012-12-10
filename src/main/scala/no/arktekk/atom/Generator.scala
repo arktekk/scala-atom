@@ -15,12 +15,13 @@
  */
 package no.arktekk.atom
 
+import extension.Extensible
 import java.net.URI
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Generator {
+trait Generator extends Extensible[Generator] {
   def uri: Option[URI]
 
   def version: Option[String]

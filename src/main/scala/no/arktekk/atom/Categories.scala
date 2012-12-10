@@ -16,12 +16,13 @@
 
 package no.arktekk.atom
 
+import extension.Extensible
 import java.net.URI
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Categories { self =>
+trait Categories extends Extensible[Categories] {
 
   def href: URI
 

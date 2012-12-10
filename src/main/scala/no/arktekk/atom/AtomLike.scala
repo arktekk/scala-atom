@@ -25,15 +25,15 @@ import org.joda.time.DateTime
 private[atom] trait AtomLike[T <: Extensible[_]] extends Extensible[T] { self: T =>
   def id: URI
 
-  def title: TextConstruct
+  def title: TextConstruct[_]
 
-  def rights: Option[TextConstruct]
+  def rights: Option[TextConstruct[_]]
 
   def updated: DateTime
 
-  def authors: Seq[PersonLike]
+  def authors: Seq[Person]
 
-  def contributors: Seq[PersonLike]
+  def contributors: Seq[Person]
 
   def categories: Seq[Category]
 
@@ -41,15 +41,15 @@ private[atom] trait AtomLike[T <: Extensible[_]] extends Extensible[T] { self: T
 
   def withId(id: URI): T
 
-  def withTitle(title: TextConstruct): T
+  def withTitle(title: TextConstruct[_]): T
 
-  def withRights(rights: TextConstruct):T
+  def withRights(rights: TextConstruct[_]):T
 
   def withUpdated(updated: DateTime):T
 
-  def addAuthor(author: PersonLike):T
+  def addAuthor(author: Person):T
 
-  def addContributor(contrib: PersonLike):T
+  def addContributor(contrib: Person):T
 
   def addCategory(category: Category):T
 

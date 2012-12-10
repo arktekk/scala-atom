@@ -16,16 +16,18 @@
 
 package no.arktekk.atom
 
+import extension.Extensible
+
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Workspace {
-  def title: Option[TextConstruct]
+trait Workspace extends Extensible[Workspace] {
+  def title: Option[TextConstruct[_]]
 
   def collections: Seq[Collection]
 
-  def withTitle(text: TextConstruct): Workspace
+  def withTitle(text: TextConstruct[_]): Workspace
 
   def addCollection(collection: Collection): Workspace
 

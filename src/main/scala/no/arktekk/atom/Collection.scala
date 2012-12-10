@@ -16,23 +16,24 @@
 
 package no.arktekk.atom
 
+import extension.Extensible
 import java.net.URI
 
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait Collection {
+trait Collection extends Extensible[Collection] {
 
   def href: URI
 
-  def title: Option[TextConstruct]
+  def title: Option[TextConstruct[_]]
 
   def accepts: Seq[MediaType]
 
   def withHref(uri: URI): Collection
 
-  def withTitle(text: TextConstruct): Collection
+  def withTitle(text: TextConstruct[_]): Collection
 
   def addAccept(mt: MediaType): Collection
 

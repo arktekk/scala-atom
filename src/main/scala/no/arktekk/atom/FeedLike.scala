@@ -20,8 +20,8 @@ import java.net.URI
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
  */
-trait FeedLike extends AtomLike[FeedLike] {
-  def subtitle: Option[TextConstruct]
+sealed trait FeedLike[T <: AtomLike[_]] extends AtomLike[T] { self: T =>
+  def subtitle: Option[TextConstruct[_]]
 
   def entries: IndexedSeq[EntryLike]
 
@@ -29,19 +29,23 @@ trait FeedLike extends AtomLike[FeedLike] {
 
   def icon: Option[URI]
 
-  def withSubtitle(title: TextConstruct): FeedLike
+  def withSubtitle(title: TextConstruct[_]): T
 
-  def withLogo(logo: URI): FeedLike
+  def withLogo(logo: URI): T
 
-  def withIcon(icon: URI): FeedLike
+  def withIcon(icon: URI): T
 
-  def addEntry(entry: EntryLike): FeedLike
+  def addEntry(entry: EntryLike): T
 
-  def addEntries(seq: IndexedSeq[EntryLike]): FeedLike
+  def addEntries(seq: IndexedSeq[EntryLike]): T
 
-  def withEntries(seq: IndexedSeq[EntryLike]): FeedLike
+  def withEntries(seq: IndexedSeq[EntryLike]): T
 
   def entryById(id: URI) = entries.find(_.id == id)
 
   def entryBySelfLink(href: URI) = entries.find(_.selfLink.filter(_.href == href).isDefined)
 }
+
+trait Source extends FeedLike[Source]
+
+trait Feed extends FeedLike[Feed]
