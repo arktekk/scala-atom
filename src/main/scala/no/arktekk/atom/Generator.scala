@@ -16,8 +16,6 @@
 package no.arktekk.atom
 
 import java.net.URI
-import collection.immutable.Map
-import com.codecommit.antixml._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>

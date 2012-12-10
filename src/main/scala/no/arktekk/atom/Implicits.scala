@@ -20,8 +20,6 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.DateTime
 import java.net.URI
 import scala.util.control.Exception._
-import com.codecommit.antixml._
-import Atom._
 
 /**
  * @author Erlend Hamnaberg<erlend@hamnaberg.net>
