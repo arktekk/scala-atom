@@ -49,7 +49,7 @@ trait ElementWrapper {
   def addChild(node: Node):T = copy(wrapped.copy(children = wrapped.children ++ Group(node)))
 
   def apply[A >: T, B](ext: AtomExtension[A, B], value: B) : T = {
-    val applied = updateAttributes(ext.toAttributes(value)).asInstanceOf[T]
+    val applied : T = updateAttributes(ext.toAttributes(value))
     applied.addChildren(ext.toChildren(value)).asInstanceOf[T]
   }
 
