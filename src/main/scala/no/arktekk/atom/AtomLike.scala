@@ -26,7 +26,7 @@ private[atom] trait AtomLike extends ElementWrapper {
   protected def element(name: String) = (wrapped \ atomSelector(name))
   protected def elementText(name: String) = element(name) \ text
 
-  def id: URI = elementText("id").headOption.map(URI.create(_)).get
+  def id: URI = elementText("id").headOption.map(URI.create(_)).getOrElse(throw new IllegalStateException("id is required"))
 
   def title: TextConstruct = element("title").headOption.flatMap(TextConstruct(_)).get
 
