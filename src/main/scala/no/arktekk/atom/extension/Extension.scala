@@ -14,7 +14,7 @@ trait StringExtension extends Extension {
 }
 
 trait AttributeExtension {
-  def prefix: Option[String]
+  def namespace: Option[String]
   def name: String
   def value: String
 }
