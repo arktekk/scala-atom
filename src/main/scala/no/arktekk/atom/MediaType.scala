@@ -41,7 +41,7 @@ object MediaType {
       Some(new MediaType(mimeType.getPrimaryType, mimeType.getSubType, params))
     }
     catch {
-      case _ => None
+      case _ : Exception => None
     }
   }
 }
