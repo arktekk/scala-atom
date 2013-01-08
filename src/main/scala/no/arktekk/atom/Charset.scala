@@ -17,7 +17,6 @@
 package no.arktekk.atom
 
 import java.nio.charset.{Charset => JCharset}
-import io.Codec
 
 /**
  * @author Erlend Hamnaberg<erlend.hamnaberg@arktekk.no>
@@ -28,7 +27,7 @@ case class Charset(wrapped: JCharset) {
 }
 
 object Charset {
-  implicit val defaultCharset = Charset(Codec.UTF8)
+  implicit val defaultCharset: Charset = forName("UTF-8")
 
   def forName(name: String) = Charset(JCharset.forName(name))
 
