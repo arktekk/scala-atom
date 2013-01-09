@@ -9,12 +9,12 @@ object Build extends sbt.Build {
 
   lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "no.arktekk.atom",
-    scalaVersion := "2.9.1",
+    scalaVersion := "2.10.0",
+    crossScalaVersions := Seq("2.9.2", "2.9.1", "2.10.0"),
     scalacOptions := Seq("-deprecation"),
     publishTo <<= (version) apply {
       (v: String) => if (v.trim().endsWith("SNAPSHOT")) Some(Resolvers.sonatypeNexusSnapshots) else Some(Resolvers.sonatypeNexusStaging)
     },
-    crossScalaVersions := Seq("2.9.2", "2.9.1"),
     pomIncludeRepository := { x => false },
     credentials += Credentials(Path.userHome / ".sbt" / "arktekk-credentials")
   ) ++ Aether.aetherPublishSettings
