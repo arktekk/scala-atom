@@ -25,12 +25,15 @@ object Build extends sbt.Build {
     settings = buildSettings ++ Seq(
       description := "Scala Atom",
       name := "scala-atom", 
-      libraryDependencies := Seq(
-        "joda-time" % "joda-time" % "2.1",
-	    	"org.joda" % "joda-convert" % "1.1",
-		    "no.arktekk" %% "anti-xml" % antiXMLversion,
-        "org.specs2" %% "specs2" % "1.13" % "test"
-      ),
+      libraryDependencies <++= scalaVersion {
+        (sc) => Seq(
+          "joda-time" % "joda-time" % "2.1",
+          "org.joda" % "joda-convert" % "1.1",
+          "no.arktekk" %% "anti-xml" % antiXMLversion,
+          if (sc.startsWith("2.10")) "org.specs2" %% "specs2" % "1.13" % "test"
+          else "org.specs2" %% "specs2" % "1.12.3" % "test"
+        )
+      },
     manifestSetting
     ) ++ mavenCentralFrouFrou
   )
