@@ -29,7 +29,7 @@ object Build extends sbt.Build {
         "joda-time" % "joda-time" % "2.1",
 	    	"org.joda" % "joda-convert" % "1.1",
 		    "no.arktekk" %% "anti-xml" % antiXMLversion,
-        "org.specs2" %% "specs2" % "1.12.3" % "test"
+        "org.specs2" %% "specs2" % "1.13" % "test"
       ),
     manifestSetting
     ) ++ mavenCentralFrouFrou
